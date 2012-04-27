@@ -1,0 +1,447 @@
+//
+// Copyright (c) 2012, Brian Frank
+// Licensed under the Academic Free License version 3.0
+//
+// History:
+//   23 Apr 12  Brian Frank  Creation
+//
+
+using gfx
+using fwt
+using syntax
+
+**
+** Viewport
+**
+internal class Viewport
+{
+
+//////////////////////////////////////////////////////////////////////////
+// Constructor
+//////////////////////////////////////////////////////////////////////////
+
+  new make(Editor editor)
+  {
+    this.editor  = editor
+    this.size    = Size.defVal
+    this.vthumb  = Rect.defVal
+    this.hthumb  = Rect.defVal
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Conveniences
+//////////////////////////////////////////////////////////////////////////
+
+  Doc doc() { editor.doc }
+
+  Options options() { editor.options }
+
+  Font font() { editor.options.font }
+
+  Controller controller() { editor.controller }
+
+//////////////////////////////////////////////////////////////////////////
+// Positioning
+//////////////////////////////////////////////////////////////////////////
+
+  Point caret() { Point(caretCol, caretLine) }
+
+  Int posToLine(Point pt)
+  {
+    y := pt.y - margin.top
+    line := startLine + y / lineh
+    if (line < startLine) return startLine
+    if (line > endLine) return endLine
+    return line
+  }
+
+  Int posToCol(Point pt)
+  {
+    x := pt.x - margin.left
+    col := startCol + x / colw
+    if (col < startCol) return startCol
+    if (col > endCol) return endCol
+    return col
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Caret
+//////////////////////////////////////////////////////////////////////////
+
+  Void up()       { caretLine--;  updateCaret(caretLine <= startLine) }
+  Void down()     { caretLine++;  updateCaret(caretLine >= endLine) }
+  Void left()     { caretCol--;   updateCaret }
+  Void right()    { caretCol++;   updateCaret}
+  Void end()      { caretCol = doc.line(caretLine).size; updateCaret }
+  Void pageUp()   { page := visibleLines - 4; caretLine -= page; startLine -= page; updateCaret(true) }
+  Void pageDown() { page := visibleLines - 4; caretLine += page; startLine += page; updateCaret(true) }
+  Void docHome()  { caretLine = 0; caretCol = 0; updateCaret(true) }
+  Void docEnd()   { caretLine = docLines-1; caretCol = doc.line(caretLine).size; updateCaret(true) }
+
+  Void home()
+  {
+    line := doc.line(caretLine)
+    nonws := 0
+    while (nonws < line.size && line[nonws].isSpace) nonws++
+    caretCol = caretCol <= nonws ? 0 : nonws
+    updateCaret
+  }
+
+  Void prevWord()
+  {
+    if (caretCol <= 0) return
+    line := doc.line(caretLine)
+    if (caretCol >= line.size) caretCol = line.size
+    caretCol--
+    while (caretCol > 0 && !isWord(line[caretCol-1])) --caretCol
+    while (caretCol > 0 && isWord(line[caretCol-1])) --caretCol
+    updateCaret
+  }
+
+  Void nextWord()
+  {
+    line := doc.line(caretLine)
+    if (caretCol >= line.size) return
+    caretCol++
+    while (caretCol < line.size && !isWord(line[caretCol])) ++caretCol
+    while (caretCol < line.size && isWord(line[caretCol])) ++caretCol
+    updateCaret
+  }
+
+  private Bool isWord(Int char) { char.isAlphaNum || char == '_' }
+
+  Void goto(Int line, Int col)
+  {
+    caretLine = line
+    caretCol  = col
+    startLine = line - visibleLines/3
+    updateCaret
+  }
+
+  Void caretTo(Point pt)
+  {
+    caretLine = posToLine(pt)
+    caretCol  = posToCol(pt)
+    updateCaret
+  }
+
+  private Void updateCaret(Bool vhover := false)
+  {
+    checkCaret
+    if (vhover) vbarHover
+    relayout
+  }
+
+  private Void checkCaret()
+  {
+    // check caret needs adjusting
+    if (caretLine >= docLines) caretLine = docLines-1
+    if (caretLine < 0) caretLine = 0
+    if (caretCol < 0) caretCol = 0
+    if (caretCol >= docCols) caretCol = docCols
+
+    // check caret line is visible
+    if (caretLine < startLine) startLine = caretLine
+    if (caretLine >= startLine + visibleLines) startLine = caretLine - visibleLines + 1
+
+    // check caret col is visible
+    if (caretCol < startCol) startCol = caretCol
+    if (caretCol >= startCol + visibleCols) startCol = caretCol - visibleCols + 1
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Scrolling
+//////////////////////////////////////////////////////////////////////////
+
+  Int? vthumbDragStart(Point pt)
+  {
+    if (!vthumb.contains(pt.x, pt.y)) return null
+    return pt.y - vthumb.y
+  }
+
+  Void vthumbDrag(Int start, Point pt)
+  {
+    thumby := pt.y - start
+    startLine = ((thumby.toFloat / size.h.toFloat) * docLines.toFloat).toInt
+    vbarHover
+    relayout
+  }
+
+  Int? hthumbDragStart(Point pt)
+  {
+    if (!hthumb.contains(pt.x, pt.y)) return null
+    vbarHovering = null
+    return pt.x - hthumb.x
+  }
+
+  Void hthumbDrag(Int start, Point pt)
+  {
+    thumbx := pt.x - start
+    startCol = ((thumbx.toFloat / size.w.toFloat) * docCols.toFloat).toInt
+    relayout
+  }
+
+  Void vscroll(Int delta)
+  {
+    startLine = (startLine + delta).max(0)
+    vbarHover
+    relayout
+  }
+
+  private Void vbarHover()
+  {
+    vbarHovering = Duration.now + barHover
+    Desktop.callLater(barHover) |->|
+    {
+      if (Duration.now < vbarHovering) return
+      vbarHovering = null
+      editor.repaint
+    }
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Relayout
+//////////////////////////////////////////////////////////////////////////
+
+  Void relayout()
+  {
+    this.size = Size.defVal
+    editor.repaint
+  }
+
+  Void checkLayout()
+  {
+    if (editor.size != this.size || doc.lineCount != this.docLines)
+      onRelayout
+  }
+
+  Void onRelayout()
+  {
+    this.size         = editor.size
+    this.lineh        = font.height
+    this.colw         = font.width("m")
+    this.docLines     = doc.lineCount
+    this.docCols      = doc.colCount
+    this.visibleLines = (((size.h-margin.toSize.h) / lineh)).min(docLines)
+    this.visibleCols  = (((size.w-margin.toSize.w) / colw)).min(docCols)
+
+    // check if startLine needs adjusting
+    maxStartLine := (docLines - visibleLines + 1).max(0)
+    if (startLine >= maxStartLine) this.startLine = maxStartLine
+    if (startLine >= docLines) startLine = docLines - 1
+    if (visibleLines >= docLines) startLine = 0
+    if (startLine < 0) startLine = 0
+
+    // now we know end line
+    this.endLine = startLine + visibleLines
+    if (endLine >= docLines) endLine = docLines - 1
+
+    // check if startCol needs adjusting
+    maxStartCol := (docCols - visibleCols + 1).max(0)
+    if (startCol >= maxStartCol) this.startCol = maxStartCol
+    if (startCol < 0) startCol = 0
+
+    // now we know end col
+    this.endCol = startCol + visibleCols
+    if (endCol >= docCols) endCol = docCols - 1
+
+    // compute/limit size of vertical thumb
+    vthumb1 := (startLine.toFloat / docLines.toFloat * size.h).toInt
+    vthumb2 := (endLine.toFloat   / docLines.toFloat * size.h).toInt
+    vthumbh := vthumb2 - vthumb1
+    if (vthumbh < thumbMin) vthumbh = thumbMin
+    if (vthumb1 + vthumbh > size.h) vthumb1 = size.h - vthumbh
+    this.vthumb = Rect(size.w - thumbSize, vthumb1, thumbSize, vthumbh)
+
+    // compute/limit size of horizontal thumb
+    hthumb1 := (startCol.toFloat / docCols.toFloat * size.w).toInt
+    hthumb2 := (endCol.toFloat   / docCols.toFloat * size.w).toInt
+    hthumbw := hthumb2 - hthumb1
+    if (hthumbw < thumbMin) hthumbw = thumbMin
+    if (hthumb1 + hthumbw > size.w) hthumb1 = size.w - hthumbw
+    this.hthumb = Rect(hthumb1, size.h - thumbSize, hthumbw, thumbSize)
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Painting
+//////////////////////////////////////////////////////////////////////////
+
+  Void onPaint(Graphics g)
+  {
+    checkLayout
+    paintBackground(g)
+    paintLines(g)
+    paintDivs(g)
+    paintShowCols(g)
+    paintScroll(g)
+  }
+
+  private Void paintBackground(Graphics g)
+  {
+    g.brush = options.bg
+    g.fillRect(0, 0, size.w, size.h)
+  }
+
+  private Void paintLines(Graphics g)
+  {
+    g.push
+    g.font  = font
+    g.brush = Color.black
+
+    if (startCol > 0) g.translate(-startCol*colw, 0)
+
+    linex := margin.left
+    liney := margin.top
+
+
+    marks := Int:Mark[][:]
+    if (editor.app != null)
+    {
+      editor.app.marks.each |mark|
+      {
+        if (mark.res !== editor.res) return
+        x := marks[mark.line]
+        if (x == null) marks[mark.line] = [mark]
+        else x.add(mark)
+      }
+    }
+
+    (startLine..endLine).each |linei|
+    {
+      paintLine(g, marks[linei], linex, liney, linei)
+      liney += lineh
+    }
+
+    g.pop
+  }
+
+  private Void paintLine(Graphics g, Mark[]? marks, Int linex, Int liney, Int linei)
+  {
+    focused := editor.controller.focused
+    if (focused && linei == caretLine)
+    {
+      g.brush = options.highlightCurLine
+      g.fillRect(0, liney, 10_000, lineh)
+    }
+
+    if (linei == editor.markLineIndex)
+    {
+      g.brush = options.highlightMark
+      g.fillRect(0, liney, 10_000, lineh)
+    }
+
+    if (marks != null)
+    {
+      g.brush = options.highlightMark
+      marks.each |mark|
+      {
+        x1 := linex + colw * mark.col
+        x2 := linex + colw * mark.colEnd
+        g.fillRect(x1, liney, x2-x1, lineh)
+      }
+    }
+
+    linex0  := linex
+    line    := doc.line(linei)
+    styling := doc.lineStyling(linei) ?: [0, RichTextStyle()]
+    for (i := 0; i < styling.size; i += 2)
+    {
+      start := (Int)styling[i]
+      style := (RichTextStyle)styling[i+1]
+      end   := styling.getSafe(i+2) as Int ?: line.size
+      text  := line[start..<end]
+
+      g.brush = style.fg
+      g.drawText(text, linex, liney)
+      linex += g.font.width(text)
+    }
+
+    if (focused && linei == caretLine && editor.paintCaret)
+    {
+      caretx := linex0 + (caretCol * colw)
+      g.brush = Color.black
+      g.drawLine(caretx, liney, caretx, liney+lineh)
+    }
+  }
+
+  private Void paintDivs(Graphics g)
+  {
+    g.brush = Theme.div
+    if (editor.paintLeftDiv)
+    {
+      g.drawLine(0, 0, 0, size.h)
+      g.drawLine(1, 0, 1, size.h)
+    }
+
+    if (editor.paintRightDiv)
+    {
+      g.drawLine(size.w-1, 0, size.w-1, size.h)
+      g.drawLine(size.w-2, 0, size.w-2, size.h)
+    }
+  }
+
+  private Void paintShowCols(Graphics g)
+  {
+    if (!editor.paintShowCols || options.showCols.isEmpty) return
+
+    oldPen := g.pen
+    g.brush = Theme.showCol
+    g.pen   =  Theme.showColPen
+    options.showCols.each |col|
+    {
+      x := margin.left + colw*col
+      g.drawLine(x, 0, x, size.h)
+    }
+    g.pen = oldPen
+  }
+
+  private Void paintScroll(Graphics g)
+  {
+    // vertical thumb
+    if (controller.vbarVisible || vbarHovering != null)
+    {
+      g.brush = Theme.scrollBg
+      g.fillRect(vthumb.x, 0, vthumb.w, size.h)
+      g.brush = Theme.scrollFg
+      g.fillRoundRect(vthumb.x, vthumb.y, vthumb.w, vthumb.h, 8, 8)
+    }
+
+    // horizontal thumb
+    if (controller.hbarVisible)
+    {
+      g.brush = Theme.scrollBg
+      g.fillRect(0, hthumb.y, size.w, hthumb.h)
+      g.brush = Theme.scrollFg
+      g.fillRoundRect(hthumb.x, hthumb.y, hthumb.w, hthumb.h, 8, 8)
+    }
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Fields
+//////////////////////////////////////////////////////////////////////////
+
+  static const Insets margin     := Insets(10, 0, 2, 10)
+  static const Int thumbSize     := 10
+  static const Int thumbMin      := 30
+  static const Duration barHover := 1500ms
+
+  private Editor editor          // parent
+  private Size size              // last relayout size
+  private Int lineh              // height of each line
+  private Int colw               // fudged column width
+  private Int docLines           // number of lines in doc
+  private Int docCols            // number of columns in doc
+  private Int visibleLines       // number of visible lines in viewport
+  private Int visibleCols        // number of visible cols in viewport
+  private Int caretLine          // current line of caret
+  private Int caretCol           // current col of caret
+  private Int startLine          // index of top visible line
+  private Int endLine            // index of bottom visible line
+  private Int startCol           // index of left visible col
+  private Int endCol             // index of right visible col
+  private Rect vthumb            // bounds for vertical thumb
+  private Rect hthumb            // bounds for horizontal thumb
+  private Duration? vbarHovering // temp display of vertical scroll
+
+}
+

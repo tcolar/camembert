@@ -1,0 +1,19 @@
+# ignore files
+
+# globs in any directory
+syntax: glob
+
+Thumbs.db
+.DS_Store
+fan.props
+
+# Specific directories and files
+syntax: regexp
+
+# lib/
+^lib/
+
+# temp/
+^temp/
+
+

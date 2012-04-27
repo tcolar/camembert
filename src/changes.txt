@@ -1,0 +1,7 @@
+Change Log for Brie
+====================
+
+Version 1.0.1 (working)
+-----------------------
+- Coding started on 21-Apr-2012
+
