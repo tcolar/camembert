@@ -9,6 +9,7 @@
 using gfx
 using fwt
 using syntax
+using bocce
 
 **
 ** Lister re-uses Editor to show/select from list of strings
@@ -17,19 +18,32 @@ class Lister : Editor
 {
 
   new make(Obj[] items, Str str := items.join("\n"))
-    : super(null, FileRes(StrFile(`items.txt`, str)))
+    : super(null)
   {
     this.items = items
     this.paintCaret = false
+    load(str.in)
   }
 
   once EventListeners onAction() { EventListeners() }
 
   Obj[] items
 
+  override Void trapEvent(Event event)
+  {
+    if (event.id === EventId.keyDown)
+    {
+      if (event.key.toStr == "Enter") doAction
+    }
+    else if (event.id === EventId.mouseDown)
+    {
+      if (event.count >= 2) doAction
+    }
+  }
+
   internal Void doAction()
   {
-    index := viewport.caret.y
+    index := caret.line
     item := items.getSafe(index)
     if (item == null) return
     event := Event

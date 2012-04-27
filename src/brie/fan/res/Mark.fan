@@ -8,6 +8,7 @@
 
 using gfx
 using fwt
+using bocce
 
 **
 ** Mark is a pointer to a location to resource with
@@ -40,6 +41,9 @@ const class Mark
   ** Auxiliary text for the mark such as the text found
   ** or console line that defined the error location
   const Str text := ""
+
+  ** Get line and column as Pos
+  Pos pos() { Pos(line, col) }
 
   override Str toStr()
   {

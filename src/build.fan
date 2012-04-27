@@ -23,6 +23,7 @@ class Build : BuildGroup
   {
     childrenScripts =
     [
+      `bocce/build.fan`,
       `brie/build.fan`,
     ]
   }

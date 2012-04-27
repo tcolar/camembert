@@ -9,6 +9,7 @@
 using gfx
 using fwt
 using compiler
+using bocce
 
 **
 ** Console
@@ -91,7 +92,7 @@ class Console : EdgePane
 
   Void onCurMark(Int curMark)
   {
-    lister.markLine(curMark)
+    lister.highlights = [Span(curMark, 0, curMark, 10_000)]
   }
 
   App app

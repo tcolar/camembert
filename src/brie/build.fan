@@ -17,7 +17,7 @@ class Build : BuildPod
   new make()
   {
     podName = "brie"
-    summary = "Brians Rocking IDE Editor"
+    summary = "Brian's Rocking Integrated Environment"
     depends = ["sys 1.0",
                "compiler 1.0",
                "compilerDoc 1.0",
@@ -25,10 +25,10 @@ class Build : BuildPod
                "fandoc 1.0",
                "syntax 1.0",
                "gfx 1.0",
-               "fwt 1.0"]
+               "fwt 1.0",
+               "bocce 1.0"]
     srcDirs = [`fan/`,
                `fan/console/`,
-               `fan/editor/`,
                `fan/index/`,
                `fan/res/`,
                `fan/view/`,

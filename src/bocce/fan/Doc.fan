@@ -13,7 +13,7 @@ using syntax
 **
 ** Doc is the line/char/text model for Editor
 **
-class Doc
+internal class Doc
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -24,8 +24,6 @@ class Doc
   {
     lines.add(Line { it.offset=0; it.text="" })
     this.editor    = editor
-    this.options   = editor.options
-    this.rules     = editor.rules
     this.parser    = Parser(this)
     this.delimiter = options.lineDelimiter
   }
@@ -35,6 +33,10 @@ class Doc
 //////////////////////////////////////////////////////////////////////////
 
   Editor editor
+
+  EditorOptions options() { editor.options }
+
+  SyntaxRules rules() { editor.rules }
 
   Str text
   {
@@ -353,13 +355,7 @@ class Doc
 // Utils
 //////////////////////////////////////////////////////////////////////////
 
-  **
-  ** Find the specified string in the document starting the
-  ** search at the document offset and looking forward.
-  ** Return null is not found.  Note we don't currently
-  ** support searching across multiple lines.
-  **
-  Mark? findNext(Str s, Mark? last, Bool matchCase)
+  Pos? findNext(Str s, Pos? last, Bool matchCase)
   {
     linei := last == null ? 0 : last.line
     coli  := last == null ? 0 : (last.col + s.size).min(lines[linei].text.size)
@@ -369,34 +365,12 @@ class Doc
       r := matchCase ?
         line.text.index(s, coli) :
         line.text.indexIgnoreCase(s, coli)
-      if (r != null) return Mark(editor.res, linei, r, r+s.size, line.text.trim)
+      if (r != null) return Pos(linei, r)
       coli = 0 // after first line we always start at zero
       linei++
     }
     return null
   }
-
-  /*
-  Mark? findNext(Str s, Int offset, Bool matchCase)
-  {
-    offset = offset.max(0).min(size)
-    lineIndex := lineAtOffset(offset)
-    offsetInLine := offset - lines[lineIndex].offset
-
-    while (lineIndex < lines.size)
-    {
-      line := lines[lineIndex]
-      r := matchCase ?
-        line.text.index(s, offsetInLine) :
-        line.text.indexIgnoreCase(s, offsetInLine)
-      if (r != null) return line.offset+r
-      offsetInLine = 0 // after first line we always start at zero
-      lineIndex++
-    }
-
-    return null
-  }
-  */
 
   **
   ** Find the specified string in the document starting the
@@ -404,6 +378,7 @@ class Doc
   ** Return null is not found.  Note we don't currently
   ** support searching across multiple lines.
   **
+  /*
   Int? findPrev(Str s, Int offset, Bool matchCase)
   {
     offset = offset.max(0).min(size)
@@ -423,6 +398,7 @@ class Doc
 
     return null
   }
+  */
 
   **
   ** Attempt to find the matching bracket the specified
@@ -529,23 +505,17 @@ class Doc
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
-  ** Text options for current document
-  const Options options
+  Int size                  // total char count
+  Int maxCol                // max column size
+  Line[] lines := Line[,]   // lines
+  Str delimiter             // line delimiter
+  Parser parser             // to parse lines into styled segments
 
-  ** Syntax rules for current document
-  SyntaxRules rules { private set }
-
-  internal Int size                  // total char count
-  internal Int maxCol                // max column size
-  internal Line[] lines := Line[,]   // lines
-  internal Str delimiter             // line delimiter
-  internal Parser parser             // to parse lines into styled segments
-
-  internal Int caretLine             // current line for highlighting
-  internal Int? bracketLine1         // matched bracket 1 line index
-  internal Int? bracketLine2         // matched bracket 2 line index
-  internal Int? bracketCol1          // matched bracket 1 offset in line
-  internal Int? bracketCol2          // matched bracket 2 offset in line
+  Int caretLine             // current line for highlighting
+  Int? bracketLine1         // matched bracket 1 line index
+  Int? bracketLine2         // matched bracket 2 line index
+  Int? bracketCol1          // matched bracket 1 offset in line
+  Int? bracketCol2          // matched bracket 2 offset in line
 }
 
 **************************************************************************

@@ -22,10 +22,11 @@ internal class Viewport
 
   new make(Editor editor)
   {
-    this.editor  = editor
-    this.size    = Size.defVal
-    this.vthumb  = Rect.defVal
-    this.hthumb  = Rect.defVal
+    this.editor     = editor
+    this.size       = Size.defVal
+    this.vthumb     = Rect.defVal
+    this.hthumb     = Rect.defVal
+    this.highlights = Int:Span[][:]
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,7 +35,7 @@ internal class Viewport
 
   Doc doc() { editor.doc }
 
-  Options options() { editor.options }
+  EditorOptions options() { editor.options }
 
   Font font() { editor.options.font }
 
@@ -44,7 +45,7 @@ internal class Viewport
 // Positioning
 //////////////////////////////////////////////////////////////////////////
 
-  Point caret() { Point(caretCol, caretLine) }
+  Pos caret() { Pos(caretLine, caretCol) }
 
   Int posToLine(Point pt)
   {
@@ -260,6 +261,21 @@ internal class Viewport
     if (hthumbw < thumbMin) hthumbw = thumbMin
     if (hthumb1 + hthumbw > size.w) hthumb1 = size.w - hthumbw
     this.hthumb = Rect(hthumb1, size.h - thumbSize, hthumbw, thumbSize)
+
+    // compute visible highlights
+    highlights.clear
+    editor.highlights.each |span|
+    {
+      // for now skip multi-line highlights
+      if (span.start.line != span.end.line) return
+      line := span.start.line
+      if (startLine <= line && line <= endLine)
+      {
+        x := highlights[line]
+        if (x == null) highlights[line] = [span]
+        else x.add(span)
+      }
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -293,50 +309,33 @@ internal class Viewport
     linex := margin.left
     liney := margin.top
 
-
-    marks := Int:Mark[][:]
-    if (editor.app != null)
-    {
-      editor.app.marks.each |mark|
-      {
-        if (mark.res !== editor.res) return
-        x := marks[mark.line]
-        if (x == null) marks[mark.line] = [mark]
-        else x.add(mark)
-      }
-    }
-
     (startLine..endLine).each |linei|
     {
-      paintLine(g, marks[linei], linex, liney, linei)
+      paintLine(g, linex, liney, linei)
       liney += lineh
     }
 
     g.pop
   }
 
-  private Void paintLine(Graphics g, Mark[]? marks, Int linex, Int liney, Int linei)
+  private Void paintLine(Graphics g, Int linex, Int liney, Int linei)
   {
     focused := editor.controller.focused
     if (focused && linei == caretLine)
     {
-      g.brush = options.highlightCurLine
+      g.brush = options.bgCurLine
       g.fillRect(0, liney, 10_000, lineh)
     }
 
-    if (linei == editor.markLineIndex)
+    highlights := this.highlights[linei]
+    if (highlights != null)
     {
-      g.brush = options.highlightMark
-      g.fillRect(0, liney, 10_000, lineh)
-    }
-
-    if (marks != null)
-    {
-      g.brush = options.highlightMark
-      marks.each |mark|
+      g.brush = options.highlight
+      highlights.each |span|
       {
-        x1 := linex + colw * mark.col
-        x2 := linex + colw * mark.colEnd
+        x1 := linex + colw * span.start.col
+        x2 := linex + colw * span.end.col
+        if (span.start.col == 0 && span.end.col > 1000) x1 = 0
         g.fillRect(x1, liney, x2-x1, lineh)
       }
     }
@@ -366,7 +365,7 @@ internal class Viewport
 
   private Void paintDivs(Graphics g)
   {
-    g.brush = Theme.div
+    g.brush = options.div
     if (editor.paintLeftDiv)
     {
       g.drawLine(0, 0, 0, size.h)
@@ -385,8 +384,8 @@ internal class Viewport
     if (!editor.paintShowCols || options.showCols.isEmpty) return
 
     oldPen := g.pen
-    g.brush = Theme.showCol
-    g.pen   =  Theme.showColPen
+    g.brush = options.showColColor
+    g.pen   = options.showColPen
     options.showCols.each |col|
     {
       x := margin.left + colw*col
@@ -400,18 +399,18 @@ internal class Viewport
     // vertical thumb
     if (controller.vbarVisible || vbarHovering != null)
     {
-      g.brush = Theme.scrollBg
+      g.brush = options.scrollBg
       g.fillRect(vthumb.x, 0, vthumb.w, size.h)
-      g.brush = Theme.scrollFg
+      g.brush = options.scrollFg
       g.fillRoundRect(vthumb.x, vthumb.y, vthumb.w, vthumb.h, 8, 8)
     }
 
     // horizontal thumb
     if (controller.hbarVisible)
     {
-      g.brush = Theme.scrollBg
+      g.brush = options.scrollBg
       g.fillRect(0, hthumb.y, size.w, hthumb.h)
-      g.brush = Theme.scrollFg
+      g.brush = options.scrollFg
       g.fillRoundRect(hthumb.x, hthumb.y, hthumb.w, hthumb.h, 8, 8)
     }
   }
@@ -442,6 +441,7 @@ internal class Viewport
   private Rect vthumb            // bounds for vertical thumb
   private Rect hthumb            // bounds for horizontal thumb
   private Duration? vbarHovering // temp display of vertical scroll
+  private Int:Span[] highlights  // visible highlights
 
 }
 

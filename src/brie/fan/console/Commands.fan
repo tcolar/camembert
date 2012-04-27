@@ -8,6 +8,7 @@
 
 using gfx
 using fwt
+using bocce
 
 class Commands
 {
@@ -45,15 +46,13 @@ abstract class Cmd
   Str summary := "?"
   override Str toStr := "?"
 
-  Doc? doc()
+  Editor? editor()
   {
     if (app.view isnot EditorView) return null
-    return ((EditorView)app.view).editor.doc
+    return ((EditorView)app.view).editor
   }
 
   virtual Obj[] match(Str arg) { Obj#.emptyList }
-
-//  abstract Void invoke()
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,16 +64,22 @@ class FindCmd : Cmd
   virtual Bool matchCase() { true }
   override Obj[] match(Str arg)
   {
-    doc := this.doc
-    matches := Mark[,]
-    if (arg.size < 2 || doc == null) return matches
-    while (matches.size < 1000)
+    res := app.res
+    editor := this.editor
+    marks := Mark[,]
+    spans := Span[,]
+    if (arg.size < 2 || editor == null) return marks
+    while (marks.size < 1000)
     {
-      mark := doc.findNext(arg, matches.last, matchCase)
-      if (mark == null) break
-      matches.add(mark)
+      lastMark := marks.last
+      pos := editor.findNext(arg, lastMark?.pos, matchCase)
+      if (pos == null) break
+      line := editor.line(pos.line).trim
+      spans.add(Span(pos, Pos(pos.line, pos.col+arg.size)))
+      marks.add(Mark(res, pos.line, pos.col, pos.col+arg.size, line))
     }
-    return matches
+    editor.highlights = spans
+    return marks
   }
 }
 

@@ -69,6 +69,9 @@ internal class Controller
 
   Void onKeyDown(Event event)
   {
+    editor.trapEvent(event)
+    if (event.consumed) return
+
     key := event.key
     switch (key.toStr)
     {
@@ -84,19 +87,6 @@ internal class Controller
       case "Ctrl+Right": event.consume; viewport.nextWord; return
       case "Ctrl+Home":  event.consume; viewport.docHome; return
       case "Ctrl+End":   event.consume; viewport.docEnd; return
-    }
-
-    // sort of hacky, but simple
-    if (editor is Lister && key.toStr == "Enter")
-      ((Lister)editor).doAction
-
-    // use local variable to route unhandled events
-    // to the main application
-    if (!event.consumed)
-    {
-      ac := Actor.locals["appController"] as AppController
-      if (ac == null) echo("Missing 'appController' actor local")
-      else ac.onKeyDown(event)
     }
   }
 
@@ -120,8 +110,8 @@ internal class Controller
 
     viewport.caretTo(event.pos)
 
-    // sort of hacky, but simple
-    if (editor is Lister && event.count >= 2) ((Lister)editor).doAction
+    editor.trapEvent(event)
+    if (event.consumed) return
   }
 
   Void onMouseUp(Event event)

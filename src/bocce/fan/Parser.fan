@@ -423,8 +423,8 @@ internal class Parser
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
-  internal Options options // configured options
-  internal SyntaxRules rules       // syntax rules for current document
+  private EditorOptions options    // configured options
+  private SyntaxRules rules        // syntax rules for current document
 
   private Str brackets             // str of bracket symbols
   private Int:Bool keywordPrefixes // first two letter of keywords
