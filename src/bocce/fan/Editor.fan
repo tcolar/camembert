@@ -80,7 +80,8 @@ class Editor : Canvas
   ** Get current caret position
   Pos caret() { viewport.caret }
 
-  ** Goto zero based line number and column number
+  ** Move caret and scroll to the given position
+  ** and ensure editor is focused
   Void goto(Pos pos)
   {
     viewport.goto(pos.line, pos.col)

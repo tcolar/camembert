@@ -93,7 +93,6 @@ internal class Viewport
     if (caretCol <= 0) return
     line := doc.line(caretLine)
     if (caretCol >= line.size) caretCol = line.size
-    caretCol--
     while (caretCol > 0 && !isWord(line[caretCol-1])) --caretCol
     while (caretCol > 0 && isWord(line[caretCol-1])) --caretCol
     updateCaret
@@ -103,7 +102,6 @@ internal class Viewport
   {
     line := doc.line(caretLine)
     if (caretCol >= line.size) return
-    caretCol++
     while (caretCol < line.size && !isWord(line[caretCol])) ++caretCol
     while (caretCol < line.size && isWord(line[caretCol])) ++caretCol
     updateCaret
