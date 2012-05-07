@@ -87,7 +87,30 @@ internal class Controller
       case "Ctrl+Right": event.consume; viewport.nextWord; return
       case "Ctrl+Home":  event.consume; viewport.docHome; return
       case "Ctrl+End":   event.consume; viewport.docEnd; return
+      case "Enter":      event.consume; onEnter; return
     }
+
+    if (event.keyChar != null && event.keyChar >= ' ')
+    {
+      event.consume
+      caret := editor.caret
+      editor.doc.modify(caret, caret, event.keyChar.toChar)
+      viewport.right
+    }
+  }
+
+  private Void onEnter()
+  {
+    // insert newline
+    caret := editor.caret
+    editor.doc.modify(caret, caret, "\n")
+
+    // find next place to indent
+    line := doc.line(caret.line)
+    col := 0
+    while (col < line.size && line[col].isSpace) col++
+    if (line[col] == '{') col += editor.options.tabSpacing
+    viewport.goto(caret.line+1, col, false)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,7 +131,7 @@ internal class Controller
       if (hthumbDrag != null) return
     }
 
-    viewport.caretTo(event.pos)
+    viewport.caretToPoint(event.pos)
 
     editor.trapEvent(event)
     if (event.consumed) return

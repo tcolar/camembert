@@ -38,4 +38,7 @@ const class Pos
     return this.line == x.line && this.col == x.col
   }
 
+  ** Return zero based "line:col"
+  override Str toStr() { "$line:$col" }
+
 }

@@ -109,15 +109,15 @@ internal class Viewport
 
   private Bool isWord(Int char) { char.isAlphaNum || char == '_' }
 
-  Void goto(Int line, Int col)
+  Void goto(Int line, Int col, Bool jump)
   {
     caretLine = line
     caretCol  = col
-    startLine = line - visibleLines/3
+    if (jump) startLine = line - visibleLines/3
     updateCaret
   }
 
-  Void caretTo(Point pt)
+  Void caretToPoint(Point pt)
   {
     caretLine = posToLine(pt)
     caretCol  = posToCol(pt)

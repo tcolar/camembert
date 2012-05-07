@@ -28,18 +28,5 @@ class Main
     App(options).window.open
   }
 
-
-/*
-    f := `/fan/src/compiler/fan/parser/Parser.fan`.toFile
-    echo("LOAD: $f")
-
-    top := Window
-    {
-      title = "Brie"
-      bounds = Rect(100, 10, 600, 800)
-      content = Editor(f)
-    }.open
-*/
-
 }
 

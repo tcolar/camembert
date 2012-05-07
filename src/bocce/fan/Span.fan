@@ -45,4 +45,7 @@ const class Span
     return this.start == x.start && this.end == x.end
   }
 
+  ** Return zero based "line:col-line:col"
+  override Str toStr() { "$start-$end" }
+
 }

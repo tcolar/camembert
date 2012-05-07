@@ -28,7 +28,7 @@ class App
     {
       title   = "Brie"
       icon    = Image(`fan://icons/x32/blueprints.png`)
-      bounds  = Rect(0, 0, 1400, 1160)
+      bounds  = Rect(0, 0, 1500, 1160)
       content = Label { text = "initializing..." }
       onKeyDown.add |e| { controller.onKeyDown(e) }
     }

@@ -41,7 +41,7 @@ internal class Doc
   Str text
   {
     get { return lines.join(delimiter) |Line line->Str| { return line.text } }
-    set { modify(0, size, it) }
+    set { modify(Pos(0, 0), Pos(lineCount, 0), it) }
   }
 
   Int charCount() { return size }
@@ -66,6 +66,7 @@ internal class Doc
     return line
   }
 
+  /*
   Str textRange(Int start, Int len)
   {
     // map offsets to line, if the offset is the line's
@@ -118,24 +119,27 @@ internal class Doc
     }
     return buf.toStr
   }
+  */
 
-  Void modify(Int startOffset, Int len, Str newText)
+  Void modify(Pos start, Pos end, Str newText)
   {
     // compute the lines being replaced
-    endOffset      := startOffset + len
-    startLineIndex := lineAtOffset(startOffset)
-    endLineIndex   := lineAtOffset(endOffset)
-    startLine      := lines[startLineIndex]
-    endLine        := lines[endLineIndex]
-    oldText        := textRange(startOffset, len)
+    startLineIndex := start.line
+    endLineIndex   := end.line
+    startLine      := lines[startLineIndex].text
+    endLine        := lines[endLineIndex].text
+
+    // if inserting past end of start, insert extra spaces
+    if (start.col >= startLine.size) startLine = startLine + Str.spaces(start.col - startLine.size + 1)
+    if (end.col >= endLine.size) endLine = endLine + Str.spaces(end.col - endLine.size + 1)
 
     // sample styles before insert
-    samplesBefore := [ lineStyling(endLineIndex+1), lineStyling(lines.size-1) ]
+//    samplesBefore := [ lineStyling(endLineIndex+1), lineStyling(lines.size-1) ]
 
     // compute the new text of the lines being replaced
-    offsetInStart := startOffset - startLine.offset
-    offsetInEnd   := endOffset - endLine.offset
-    newLinesText  := startLine.text[0..<offsetInStart] + newText + endLine.text[offsetInEnd..-1]
+    offsetInStart := start.col
+    offsetInEnd   := end.col
+    newLinesText  := startLine[0..<offsetInStart] + newText + endLine[offsetInEnd..-1]
 
     // split new text into new lines
     newLines := Line[,] { capacity=32 }
@@ -152,10 +156,14 @@ internal class Doc
     updateLines(lines)
 
     // sample styles after insert
+    /*
     samplesAfter := [ lineStyling(startLineIndex+newLines.size), lineStyling(lines.size-1) ]
     repaintToEnd := samplesBefore != samplesAfter
+    */
+    editor.repaint
 
     // fire modification event
+    /*
     tc := TextChange
     {
       it.startOffset    = startOffset
@@ -167,6 +175,7 @@ internal class Doc
       it.repaintLen     = repaintToEnd ? size-startOffset : null
     }
     //onModify.fire(Event { id =EventId.modified; data = tc })
+    */
   }
 
   **

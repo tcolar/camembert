@@ -84,7 +84,7 @@ class Editor : Canvas
   ** and ensure editor is focused
   Void goto(Pos pos)
   {
-    viewport.goto(pos.line, pos.col)
+    viewport.goto(pos.line, pos.col, true)
     focus
   }
 
