@@ -48,6 +48,8 @@ internal class Controller
 
   Viewport viewport() { editor.viewport }
 
+  EditorOptions options() { editor.options }
+
 //////////////////////////////////////////////////////////////////////////
 // Focus Eventing
 //////////////////////////////////////////////////////////////////////////
@@ -115,6 +117,8 @@ internal class Controller
       case "Ctrl+X":     event.consume; onCut; return
       case "Ctrl+V":     event.consume; onPaste; return
       case "Ctrl+Z":     event.consume; onUndo; return
+      case "Tab":        event.consume; onTab(true); return
+      case "Shift+Tab":  event.consume; onTab(false); return
     }
 
     // normal insert of character
@@ -186,7 +190,7 @@ internal class Controller
     caret := editor.caret
     line := doc.line(caret.line)
     col := 0
-    while (col < line.size && line[col].isSpace) col++
+    while (col < line.size - 1 && line[col].isSpace) col++
     if (line.getSafe(col) == '{') col += editor.options.tabSpacing
     if (line.getSafe(caret.col) == '}') col -= editor.options.tabSpacing
 
@@ -234,6 +238,64 @@ internal class Controller
     viewport.goto(sel.start)
   }
 
+  private Void onTab(Bool indent)
+  {
+    // if batch indent/detent
+    if (editor.selection != null) { onBatchTab(indent); return }
+
+    // indent single line
+    caret := editor.caret
+    if (indent)
+    {
+      col := caret.col + 1
+      while (col % options.tabSpacing != 0) col++
+      spaces := Str.spaces(col - caret.col)
+      x := modify(Span(caret, caret), spaces)
+      viewport.goto(x)
+    }
+    else
+    {
+      col := caret.col - 1
+      while (col % options.tabSpacing != 0) col--
+      if (col < 0) col = 0
+      if (col == caret.col) return
+      x := modify(Span(Pos(caret.line, col), caret), "")
+      viewport.goto(x)
+    }
+  }
+
+  private Void onBatchTab(Bool indent)
+  {
+    changes := Change[,]
+    doc := editor.doc
+    sel := editor.selection
+    endLine := sel.end.line
+    if (endLine > sel.start.line && sel.end.col == 0) endLine--
+    for (linei := sel.start.line; linei <= endLine; ++linei)
+    {
+      // find first non-space
+      first := 0
+      line := doc.line(linei)
+      while (first < line.size && line[first].isSpace) first++
+
+      pos := Pos(linei, 0)
+      if (indent)
+      {
+        spaces := Str.spaces(options.tabSpacing)
+        doc.modify(Span(pos, pos), spaces)
+        changes.add(SimpleChange(pos, "", spaces))
+      }
+      else
+      {
+        if (first == 0) continue
+        end := Pos(linei, first.min(2))
+        changes.add(SimpleChange(pos, Str.spaces(end.col), ""))
+        doc.modify(Span(pos, end), "")
+      }
+    }
+    this.changes.push(BatchChange(changes))
+  }
+
 //////////////////////////////////////////////////////////////////////////
 // Modification / Undo
 //////////////////////////////////////////////////////////////////////////
@@ -242,25 +304,25 @@ internal class Controller
   {
     doc := editor.doc
     oldText := doc.textRange(span)
-    pushChange(Change(span.start, oldText, newText))
+    pushChange(SimpleChange(span.start, oldText, newText))
     return doc.modify(span, newText)
   }
 
-  private Void pushChange(Change c)
+  private Void pushChange(SimpleChange c)
   {
     // if appending a single char to end of last
     // change then make it one big atomic undo change
-    top := changes.peek
+    top := changes.peek as SimpleChange
     if (isAtomicUndo(top, c))
-      changes[-1] = Change(top.pos, top.oldText, top.newText+c.newText)
+      changes[-1] = SimpleChange(top.pos, top.oldText, top.newText+c.newText)
     else
       changes.push(c)
   }
 
-  private Bool isAtomicUndo(Change? a, Change b)
+  private Bool isAtomicUndo(SimpleChange? a, SimpleChange b)
   {
     if (a == null) return false
-    if (b.oldText.size > 0) return false
+    if (a.oldText.size > 0) return false
     if (b.newText.size > 1) return false
     if (a.pos.line != b.pos.line) return false
     return a.pos.col + a.newText.size == b.pos.col
@@ -270,12 +332,7 @@ internal class Controller
   {
     c := changes.pop
     if (c == null) return
-
-    doc := editor.doc
-    start := c.pos
-    end := doc.offsetToPos(doc.posToOffset(start) + c.newText.size)
-    caret := doc.modify(Span(start, end), c.oldText)
-    viewport.goto(caret)
+    c.undo(editor)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -379,7 +436,20 @@ internal class Controller
   Bool focused                 // are we currently focused
 }
 
-internal const class Change
+**************************************************************************
+** Change
+**************************************************************************
+
+internal abstract const class Change
+{
+  abstract Void undo(Editor editor)
+}
+
+**************************************************************************
+** SimpleChange
+**************************************************************************
+
+internal const class SimpleChange : Change
 {
   new make(Pos pos, Str oldText, Str newText)
   {
@@ -387,8 +457,34 @@ internal const class Change
     this.oldText = oldText
     this.newText = newText
   }
+
   const Pos pos
   const Str oldText
   const Str newText
+
+  override Void undo(Editor editor)
+  {
+    doc := editor.doc
+    start := pos
+    end := doc.offsetToPos(doc.posToOffset(start) + newText.size)
+    caret := doc.modify(Span(start, end), oldText)
+    editor.viewport.goto(caret)
+  }
 }
+
+**************************************************************************
+** BatchChange
+**************************************************************************
+
+internal const class BatchChange : Change
+{
+  new make(Change[] changes) { this.changes = changes }
+  const Change[] changes
+
+  override Void undo(Editor editor)
+  {
+    changes.eachr |c| { c.undo(editor) }
+  }
+}
+
 

@@ -120,15 +120,24 @@ const final class Pos
     c := this.col
     line := doc.line(this.line)
     if (c >= line.size) return right(doc)
-    if (isWord(line[c]))
+
+    // in space, then delete up to next non-space
+    if (line[c].isSpace)
     {
-      while (c < line.size && isWord(line[c])) ++c
       while (c < line.size && line[c].isSpace) ++c
     }
+
+    // if in word then delete up to next non-word + spaces,
+    // of in non-word then up to next word + spaces
     else
     {
-      while (c < line.size && !isWord(line[c])) ++c
+      if (isWord(line[c]))
+        while (c < line.size && isWord(line[c])) ++c
+      else
+        while (c < line.size && !isWord(line[c])) ++c
+      while (c < line.size && line[c].isSpace) ++c
     }
+
     return Pos(this.line, c)
   }
 
