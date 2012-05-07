@@ -41,6 +41,9 @@ class Editor : Canvas
   ** Syntax rules to use for color coding
   const SyntaxRules rules := SyntaxRules {}
 
+  ** Is editor read only
+  const Bool ro := false
+
 //////////////////////////////////////////////////////////////////////////
 // I/O
 //////////////////////////////////////////////////////////////////////////
@@ -84,7 +87,7 @@ class Editor : Canvas
   ** and ensure editor is focused
   Void goto(Pos pos)
   {
-    viewport.goto(pos.line, pos.col, true)
+    viewport.goto(pos, true)
     focus
   }
 

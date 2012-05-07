@@ -22,6 +22,7 @@ class Lister : Editor
   {
     this.items = items
     this.paintCaret = false
+    this.ro = true
     load(str.in)
   }
 

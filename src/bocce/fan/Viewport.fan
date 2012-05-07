@@ -69,51 +69,14 @@ internal class Viewport
 // Caret
 //////////////////////////////////////////////////////////////////////////
 
-  Void up()       { caretLine--;  updateCaret(caretLine <= startLine) }
-  Void down()     { caretLine++;  updateCaret(caretLine >= endLine) }
-  Void left()     { caretCol--;   updateCaret }
-  Void right()    { caretCol++;   updateCaret}
-  Void end()      { caretCol = doc.line(caretLine).size; updateCaret }
   Void pageUp()   { page := visibleLines - 4; caretLine -= page; startLine -= page; updateCaret(true) }
   Void pageDown() { page := visibleLines - 4; caretLine += page; startLine += page; updateCaret(true) }
-  Void docHome()  { caretLine = 0; caretCol = 0; updateCaret(true) }
-  Void docEnd()   { caretLine = docLines-1; caretCol = doc.line(caretLine).size; updateCaret(true) }
 
-  Void home()
+  Void goto(Pos caret, Bool jump := false)
   {
-    line := doc.line(caretLine)
-    nonws := 0
-    while (nonws < line.size && line[nonws].isSpace) nonws++
-    caretCol = caretCol <= nonws ? 0 : nonws
-    updateCaret
-  }
-
-  Void prevWord()
-  {
-    if (caretCol <= 0) return
-    line := doc.line(caretLine)
-    if (caretCol >= line.size) caretCol = line.size
-    while (caretCol > 0 && !isWord(line[caretCol-1])) --caretCol
-    while (caretCol > 0 && isWord(line[caretCol-1])) --caretCol
-    updateCaret
-  }
-
-  Void nextWord()
-  {
-    line := doc.line(caretLine)
-    if (caretCol >= line.size) return
-    while (caretCol < line.size && !isWord(line[caretCol])) ++caretCol
-    while (caretCol < line.size && isWord(line[caretCol])) ++caretCol
-    updateCaret
-  }
-
-  private Bool isWord(Int char) { char.isAlphaNum || char == '_' }
-
-  Void goto(Int line, Int col, Bool jump)
-  {
-    caretLine = line
-    caretCol  = col
-    if (jump) startLine = line - visibleLines/3
+    caretLine = caret.line
+    caretCol  = caret.col
+    if (jump) startLine = caret.line - visibleLines/3
     updateCaret
   }
 
@@ -284,9 +247,9 @@ internal class Viewport
   {
     checkLayout
     paintBackground(g)
+    paintShowCols(g)
     paintLines(g)
     paintDivs(g)
-    paintShowCols(g)
     paintScroll(g)
   }
 

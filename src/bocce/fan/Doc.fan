@@ -56,6 +56,10 @@ internal class Doc
 
   const Str lineDelimiter := "\n"
 
+  const Pos homePos := Pos(0, 0)
+
+  Pos endPos() { Pos(lineCount-1, lines[lineCount-1].size) }
+
   Int lineAtOffset(Int offset)
   {
     // binary search by offset, returns '-insertationPoint-1'
@@ -542,6 +546,9 @@ internal class Line
   ** Zero based offset from start of document (this
   ** field is managed by the Doc).
   Int offset { internal set; }
+
+  ** Number of chars in line excluding newline
+  Int size() { text.size }
 
   ** Text of line (without delimiter)
   Str text := ""

@@ -72,31 +72,46 @@ internal class Controller
     editor.trapEvent(event)
     if (event.consumed) return
 
+    caret := editor.caret
+    doc := editor.doc
     key := event.key
     switch (key.toStr)
     {
-      case "Up":         event.consume; viewport.up; return
-      case "Down":       event.consume; viewport.down; return
-      case "Left":       event.consume; viewport.left; return
-      case "Right":      event.consume; viewport.right; return
-      case "Home":       event.consume; viewport.home; return
-      case "End":        event.consume; viewport.end; return
+      case "Up":         event.consume; goto(caret.up(doc)); return
+      case "Down":       event.consume; goto(caret.down(doc)); return
+      case "Left":       event.consume; goto(caret.left(doc)); return
+      case "Right":      event.consume; goto(caret.right(doc)); return
+      case "Home":       event.consume; goto(caret.home(doc)); return
+      case "End":        event.consume; goto(caret.end(doc)); return
       case "PageUp":     event.consume; viewport.pageUp; return
       case "PageDown":   event.consume; viewport.pageDown; return
-      case "Ctrl+Left":  event.consume; viewport.prevWord; return
-      case "Ctrl+Right": event.consume; viewport.nextWord; return
-      case "Ctrl+Home":  event.consume; viewport.docHome; return
-      case "Ctrl+End":   event.consume; viewport.docEnd; return
+      case "Ctrl+Left":  event.consume; goto(caret.prevWord(doc)); return
+      case "Ctrl+Right": event.consume; goto(caret.nextWord(doc)); return
+      case "Ctrl+Home":  event.consume; goto(doc.homePos); return
+      case "Ctrl+End":   event.consume; goto(doc.endPos); return
+    }
+
+    // everything else is editing functionality
+    if (editor.ro) return
+
+    switch (key.toStr)
+    {
       case "Enter":      event.consume; onEnter; return
+      case "Backspace":  event.consume; onBackspace; return
+      case "Del":        event.consume; onDel; return
     }
 
     if (event.keyChar != null && event.keyChar >= ' ')
     {
       event.consume
-      caret := editor.caret
-      editor.doc.modify(caret, caret, event.keyChar.toChar)
-      viewport.right
+      doc.modify(caret, caret, event.keyChar.toChar)
+      goto(caret.right(doc))
     }
+  }
+
+  private Void goto(Pos caret)
+  {
+    viewport.goto(caret, false)
   }
 
   private Void onEnter()
@@ -109,8 +124,19 @@ internal class Controller
     line := doc.line(caret.line)
     col := 0
     while (col < line.size && line[col].isSpace) col++
-    if (line[col] == '{') col += editor.options.tabSpacing
-    viewport.goto(caret.line+1, col, false)
+    if (line.getSafe(col) == '{') col += editor.options.tabSpacing
+    goto(Pos(caret.line+1, col))
+  }
+
+  private Void onBackspace()
+  {
+    caret := editor.caret
+    prev := caret
+    editor.doc.modify(caret, caret, "\n")
+  }
+
+  private Void onDel()
+  {
   }
 
 //////////////////////////////////////////////////////////////////////////
