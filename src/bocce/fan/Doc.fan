@@ -412,71 +412,54 @@ internal class Doc
   ** account nesting.  If a closing bracket we search backward.
   ** Return null if no match.
   **
-  /*
-  internal Int? matchBracket(Int offset)
+  Pos? matchBracket(Pos pos)
   {
-    lineIndex := lineAtOffset(offset)
-    line := lines[lineIndex]
-    offsetInLine := offset-line.offset
+    // check if bracket at given position
+    linei := pos.line
+    col := pos.col
+    Int? a := null
+    try
+      a = line(linei)[col]
+    catch {}
+    if (a == null) return null
 
-    // get matched pair
-    a := line.text[offsetInLine]
+    // check if bracket and its matching char
     b := bracketPairs[a]
     if (b == null) return null
 
     forward := a < b
     nesting := 0
+    Str? line := line(linei)
 
     while (true)
     {
-      if (line.text[offsetInLine] == a) ++nesting
-      else if (line.text[offsetInLine] == b) --nesting
-      if (nesting == 0) return offset
+      if (line[col] == a) ++nesting
+      else if (line[col] == b) --nesting
+      if (nesting == 0) return Pos(linei, col)
 
       if (forward)
       {
-        offset++; offsetInLine++
-        while (offsetInLine >= line.text.size)
+        col++
+        while (col >= line.size)
         {
-          lineIndex++; offset += delimiter.size
-          if (lineIndex >= lines.size) return null
-          line = lines[lineIndex]; offsetInLine = 0
+          line = lines.getSafe(++linei)?.text
+          if (line == null) return null
+          col = 0
         }
       }
       else
       {
-        offset--; offsetInLine--
-        while (offsetInLine < 0)
+        col--
+        while (col < 0)
         {
-          lineIndex--; offset -= delimiter.size
-          if (lineIndex < 0) return null
-          line = lines[lineIndex]; offsetInLine = line.text.size-1
+          line = lines.getSafe(--linei)?.text
+          if (line == null) return null
+          col = line.size - 1
         }
       }
     }
-
     return null
   }
-
-  **
-  ** Set the two current matching bracket positions.
-  ** These will get styled specially.  It is up to the
-  ** caller to repaint the dirty lines.
-  **
-  internal Void setBracketMatch(Int line1, Int col1, Int line2, Int col2)
-  {
-    if (line1 < line2 || col1 < col2)
-    {
-      bracketLine1 = line1; bracketCol1 = col1
-      bracketLine2 = line2; bracketCol2 = col2
-    }
-    else
-    {
-      bracketLine1 = line2; bracketCol1 = col2
-      bracketLine2 = line1; bracketCol2 = col1
-    }
-  }
-  */
 
   internal const static Int:Int bracketPairs
   static

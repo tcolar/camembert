@@ -81,6 +81,16 @@ internal class Viewport
   {
     caretLine = caret.line
     caretCol  = caret.col
+
+    // check for bracket match
+    brackets = null
+    if (caretCol > 0)
+    {
+      before := Pos(caretLine, caretCol-1)
+      match := doc.matchBracket(before)
+      if (match != null) brackets = Span(before, match)
+    }
+
     if (jump) startLine = caret.line - visibleLines/3
     updateCaret
   }
@@ -313,6 +323,16 @@ internal class Viewport
       }
     }
 
+    // bracket match higlights
+    if (brackets != null)
+    {
+      g.brush = options.highlight
+      if (brackets.start.line == linei)
+        g.fillRect(linex  + brackets.start.col*colw, liney, colw, lineh)
+      if (brackets.end.line == linei)
+        g.fillRect(linex  + brackets.end.col*colw, liney, colw, lineh)
+    }
+
     // styled text (actual line content)
     linex0   := linex
     line     := doc.line(linei)
@@ -435,6 +455,7 @@ internal class Viewport
   private Rect hthumb            // bounds for horizontal thumb
   private Duration? vbarHovering // temp display of vertical scroll
   private Int:Span[] highlights  // visible highlights
+  private Span? brackets         // matched bracket
   private Span? selection        // current selection
 
 }
