@@ -134,8 +134,11 @@ internal class Doc
     endLine        := lines[endLineIndex].text
 
     // if inserting past end of start, insert extra spaces
-    if (start.col >= startLine.size) startLine = startLine + Str.spaces(start.col - startLine.size + 1)
-    if (end.col >= endLine.size) endLine = endLine + Str.spaces(end.col - endLine.size + 1)
+    if (newText.size > 0)
+    {
+      if (start.col >= startLine.size) startLine = startLine + Str.spaces(start.col - startLine.size + 1)
+      if (end.col >= endLine.size) endLine = endLine + Str.spaces(end.col - endLine.size + 1)
+    }
 
     // sample styles before insert
 //    samplesBefore := [ lineStyling(endLineIndex+1), lineStyling(lines.size-1) ]

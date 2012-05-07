@@ -130,13 +130,19 @@ internal class Controller
 
   private Void onBackspace()
   {
+    doc := editor.doc
     caret := editor.caret
-    prev := caret
-    editor.doc.modify(caret, caret, "\n")
+    prev := caret.left(doc)
+    doc.modify(prev, caret, "")
+    goto(prev)
   }
 
   private Void onDel()
   {
+    doc := editor.doc
+    caret := editor.caret
+    next := caret.right(doc)
+    doc.modify(caret, next, "")
   }
 
 //////////////////////////////////////////////////////////////////////////
