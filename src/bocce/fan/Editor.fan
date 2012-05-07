@@ -29,6 +29,7 @@ class Editor : Canvas
     this.viewport = Viewport(this)
     this.controller = Controller(this)
     this.doc = Doc(this)
+    this.cursor = Cursor.text
   }
 
 //////////////////////////////////////////////////////////////////////////

@@ -45,7 +45,12 @@ internal class Viewport
 // Positioning
 //////////////////////////////////////////////////////////////////////////
 
-  Int posToLine(Point pt)
+  Pos pointToPos(Point pt)
+  {
+    Pos(pointToLine(pt), pointToCol(pt))
+  }
+
+  Int pointToLine(Point pt)
   {
     y := pt.y - margin.top
     line := startLine + y / lineh
@@ -54,10 +59,10 @@ internal class Viewport
     return line
   }
 
-  Int posToCol(Point pt)
+  Int pointToCol(Point pt)
   {
     x := pt.x - margin.left
-    col := startCol + x / colw
+    col := startCol + (x + 3) / colw
     if (col < startCol) return startCol
     if (col > endCol) return endCol
     return col
@@ -77,13 +82,6 @@ internal class Viewport
     caretLine = caret.line
     caretCol  = caret.col
     if (jump) startLine = caret.line - visibleLines/3
-    updateCaret
-  }
-
-  Void caretToPoint(Point pt)
-  {
-    caretLine = posToLine(pt)
-    caretCol  = posToCol(pt)
     updateCaret
   }
 
@@ -338,6 +336,7 @@ internal class Viewport
     {
       cs := selection.start.line == linei ? selection.start.col : 0
       ce := selection.end.line == linei ? selection.end.col : line.size
+      if (ce >= line.size) ce = line.size
       textx := linex0 + cs*colw
       text  := ""; try text = line[cs..<ce]; catch {}
       textw := text.size * colw

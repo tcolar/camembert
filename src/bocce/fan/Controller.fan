@@ -141,20 +141,20 @@ internal class Controller
 
   private Void onEnter()
   {
-    // insert newline
-    caret := editor.caret
-    sel := editor.selection
-    if (sel != null)
-      editor.doc.modify(sel.start, sel.end, "\n")
-    else
-      editor.doc.modify(caret, caret, "\n")
-    editor.selection = null
+    // handle selection + enter as delete selection
+    if (editor.selection != null) { delSelection; return }
 
     // find next place to indent
+    caret := editor.caret
     line := doc.line(caret.line)
     col := 0
     while (col < line.size && line[col].isSpace) col++
     if (line.getSafe(col) == '{') col += editor.options.tabSpacing
+    if (line.getSafe(caret.col) == '}') col -= editor.options.tabSpacing
+
+    // insert newline and indent spaces
+    newText := "\n" + Str.spaces(col)
+    editor.doc.modify(caret, caret, newText)
     viewport.goto(Pos(caret.line+1, col))
   }
 
@@ -203,7 +203,11 @@ internal class Controller
       if (hthumbDrag != null) return
     }
 
-    viewport.caretToPoint(event.pos)
+    if (event.count == 2) { mouseSelectWord(event); return }
+    if (event.count == 3) { mouseSelectLine(event); return }
+
+    viewport.goto(viewport.pointToPos(event.pos))
+    anchor = editor.caret
     editor.selection = null
 
     editor.trapEvent(event)
@@ -214,6 +218,7 @@ internal class Controller
   {
     vthumbDrag = null
     hthumbDrag = null
+    anchor = null
     editor.repaint()
   }
 
@@ -228,6 +233,7 @@ internal class Controller
   {
     if (vthumbDrag != null) { viewport.vthumbDrag(vthumbDrag, event.pos); return }
     if (hthumbDrag != null) { viewport.hthumbDrag(hthumbDrag, event.pos); return }
+    if (anchor != null) { mouseSelectDrag(event); return }
 
     size := editor.size
     vbar := event.pos.x > size.w - 40
@@ -241,6 +247,31 @@ internal class Controller
     if (event.delta.y != 0) editor.viewport.vscroll(event.delta.y)
   }
 
+  private Void mouseSelectDrag(Event event)
+  {
+    pos := viewport.pointToPos(event.pos)
+    editor.selection = Span(anchor, pos)
+  }
+
+  private Void mouseSelectWord(Event event)
+  {
+    pos := viewport.pointToPos(event.pos)
+    doc := editor.doc
+    start := pos.prevWord(doc)
+    end := pos.nextWord(doc)
+    editor.selection = Span(start, end)
+    viewport.goto(end)
+  }
+
+  private Void mouseSelectLine(Event event)
+  {
+    pos := viewport.pointToPos(event.pos)
+    line := editor.doc.line(pos.line)
+    end := Pos(pos.line, line.size)
+    editor.selection = Span(Pos(pos.line, 0), end)
+    viewport.goto(end)
+  }
+
 //////////////////////////////////////////////////////////////////////////
 // Fields
 //////////////////////////////////////////////////////////////////////////
@@ -248,9 +279,9 @@ internal class Controller
   private Editor editor
   private Int? vthumbDrag      // if dragging vertical thumb
   private Int? hthumbDrag      // if dragging horizontal thumb
+  private Pos? anchor          // if in selection mode
   Bool vbarVisible             // is vertical scroll visible
   Bool hbarVisible             // is horizontal scroll visible
   Bool focused                 // are we currently focused
-  Pos? anchor                  // if in selection mode
 }
 
