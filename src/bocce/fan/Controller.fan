@@ -29,6 +29,7 @@ internal class Controller
     editor.onBlur.add |e|       { onBlur(e)       }
 
     editor.onKeyDown.add |e|    { onKeyDown(e)    }
+    editor.onKeyUp.add |e|      { onKeyUp(e)      }
 
     editor.onMouseDown.add |e|  { onMouseDown(e)  }
     editor.onMouseUp.add |e|    { onMouseUp(e)    }
@@ -80,6 +81,7 @@ internal class Controller
     navKey := event.key
     if (navKey.isShift) navKey = navKey - Key.shift
 
+    // navigation
     switch (navKey.toStr)
     {
       case "Up":         goto(event, caret.up(doc)); return
@@ -94,6 +96,7 @@ internal class Controller
       case "Ctrl+End":   goto(event, doc.endPos); return
       case "PageUp":     event.consume; viewport.pageUp; return
       case "PageDown":   event.consume; viewport.pageDown; return
+      case "Ctrl+C":     event.consume; onCopy; return
     }
 
     // everything else is editing functionality
@@ -105,23 +108,23 @@ internal class Controller
       case "Enter":      event.consume; onEnter; return
       case "Backspace":  event.consume; onBackspace; return
       case "Del":        event.consume; onDel; return
+      case "Ctrl+X":     event.consume; onCut; return
+      case "Ctrl+V":     event.consume; onPaste; return
     }
 
+    // normal insert of character
     if (event.keyChar != null && event.keyChar >= ' ')
     {
-      sel := editor.selection
-      if (sel != null)
-      {
-        doc.modify(sel.start, sel.end, event.keyChar.toChar)
-        viewport.goto(sel.start.right(doc))
-      }
-      else
-      {
-        doc.modify(caret, caret, event.keyChar.toChar)
-        viewport.goto(caret.right(doc))
-      }
-      editor.selection = null
+      event.consume
+      insert(event.keyChar.toChar)
+      return
     }
+
+  }
+
+  Void onKeyUp(Event event)
+  {
+    if (event.key == Key.shift) anchor = null
   }
 
   private Void goto(Event event, Pos caret)
@@ -137,6 +140,35 @@ internal class Controller
     }
     viewport.goto(caret)
     editor.selection = anchor == null ? null : Span(anchor, caret)
+  }
+
+  private Void insert(Str newText)
+  {
+    sel := editor.selection
+    if (sel == null) sel = Span(editor.caret, editor.caret)
+    endPos := doc.modify(sel.start, sel.end, newText)
+    viewport.goto(endPos)
+    editor.selection = null
+  }
+
+  private Void onCopy()
+  {
+    if (editor.selection == null) return
+    Desktop.clipboard.setText(doc.textRange(editor.selection))
+  }
+
+  private Void onCut()
+  {
+    if (editor.selection == null) return
+    onCopy
+    delSelection
+  }
+
+  private Void onPaste()
+  {
+    text := Desktop.clipboard.getText
+    if (text == null || text.isEmpty) return
+    insert(text)
   }
 
   private Void onEnter()

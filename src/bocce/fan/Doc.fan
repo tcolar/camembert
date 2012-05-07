@@ -125,7 +125,24 @@ internal class Doc
   }
   */
 
-  Void modify(Pos start, Pos end, Str newText)
+  Str textRange(Span span)
+  {
+    s := span.start
+    e := span.end
+    if (s.line == e.line) return line(s.line)[s.col..<e.col]
+
+    buf := StrBuf()
+    buf.add(line(s.line)[s.col..-1]).add("\n")
+    for (i:=s.line+1; i<e.line; ++i)
+      buf.add(line(i)).add("\n")
+    buf.add(line(e.line)[0..<e.col])
+    return buf.toStr
+  }
+
+  ** Remove text between start and end and/or insert
+  ** new given text at that position.  Return new position
+  ** of end of inserted text.
+  Pos modify(Pos start, Pos end, Str newText)
   {
     // compute the lines being replaced
     startLineIndex := start.line
@@ -144,14 +161,16 @@ internal class Doc
     else
     {
       if (offsetInStart > startLine.size) offsetInStart = startLine.size
-      if (offsetInEnd > endLine.size-1) offsetInEnd = endLine.size-1
+      if (offsetInEnd > endLine.size) offsetInEnd = endLine.size
     }
 
     // sample styles before insert
 //    samplesBefore := [ lineStyling(endLineIndex+1), lineStyling(lines.size-1) ]
 
     // compute the new text of the lines being replaced
-    newLinesText  := startLine[0..<offsetInStart] + newText + endLine[offsetInEnd..-1]
+    prefix := startLine[0..<offsetInStart]
+    suffix := ""; try { suffix = endLine[offsetInEnd..-1] } catch {}
+    newLinesText  :=  prefix + newText + suffix
 
     // split new text into new lines
     newLines := Line[,] { capacity=32 }
@@ -188,6 +207,10 @@ internal class Doc
     }
     //onModify.fire(Event { id =EventId.modified; data = tc })
     */
+
+    lastLineIndex := startLineIndex + newLines.size -1
+    lastLine := lines[lastLineIndex]
+    return Pos(lastLineIndex, lastLine.size - (endLine.size-offsetInEnd))
   }
 
   **
