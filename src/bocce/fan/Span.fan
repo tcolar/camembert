@@ -14,11 +14,20 @@ using syntax
 **
 const class Span
 {
-  ** Construct with inclusive start and exclusive end
+  ** Construct with inclusive start and exclusive end.
+  ** If end is before start they are automatically swizzled.
   new make(Pos start, Pos end)
   {
-    this.start = start
-    this.end = end
+    if (start <= end)
+    {
+      this.start = start
+      this.end = end
+    }
+    else
+    {
+      this.start = end
+      this.end = start
+    }
   }
 
   ** Construct with inclusive start and exclusive end
@@ -43,6 +52,12 @@ const class Span
     x := that as Span
     if (x == null) return false
     return this.start == x.start && this.end == x.end
+  }
+
+  ** Does this span contain specified line
+  Bool containsLine(Int line)
+  {
+    start.line <= line && line <= end.line
   }
 
   ** Return zero based "line:col-line:col"

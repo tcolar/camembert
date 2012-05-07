@@ -45,8 +45,6 @@ internal class Viewport
 // Positioning
 //////////////////////////////////////////////////////////////////////////
 
-  Pos caret() { Pos(caretLine, caretCol) }
-
   Int posToLine(Point pt)
   {
     y := pt.y - margin.top
@@ -68,6 +66,8 @@ internal class Viewport
 //////////////////////////////////////////////////////////////////////////
 // Caret
 //////////////////////////////////////////////////////////////////////////
+
+  Pos caret() { Pos(caretLine, caretCol) }
 
   Void pageUp()   { page := visibleLines - 4; caretLine -= page; startLine -= page; updateCaret(true) }
   Void pageDown() { page := visibleLines - 4; caretLine += page; startLine += page; updateCaret(true) }
@@ -109,6 +109,18 @@ internal class Viewport
     // check caret col is visible
     if (caretCol < startCol) startCol = caretCol
     if (caretCol >= startCol + visibleCols) startCol = caretCol - visibleCols + 1
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Selection
+//////////////////////////////////////////////////////////////////////////
+
+  Span? getSelection() { selection }
+
+  Void setSelection(Span? selection)
+  {
+    this.selection = selection
+    editor.repaint
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -281,6 +293,7 @@ internal class Viewport
 
   private Void paintLine(Graphics g, Int linex, Int liney, Int linei)
   {
+    // if focus and current line highlight entire line
     focused := editor.controller.focused
     if (focused && linei == caretLine)
     {
@@ -288,6 +301,7 @@ internal class Viewport
       g.fillRect(0, liney, 10_000, lineh)
     }
 
+    // highlight spans in this line
     highlights := this.highlights[linei]
     if (highlights != null)
     {
@@ -301,21 +315,40 @@ internal class Viewport
       }
     }
 
-    linex0  := linex
-    line    := doc.line(linei)
-    styling := doc.lineStyling(linei) ?: [0, RichTextStyle()]
+    // styled text (actual line content)
+    linex0   := linex
+    line     := doc.line(linei)
+    styling  := doc.lineStyling(linei) ?: [0, RichTextStyle()]
     for (i := 0; i < styling.size; i += 2)
     {
       start := (Int)styling[i]
       style := (RichTextStyle)styling[i+1]
       end   := styling.getSafe(i+2) as Int ?: line.size
       text  := line[start..<end]
+      textw := g.font.width(text)
 
       g.brush = style.fg
       g.drawText(text, linex, liney)
-      linex += g.font.width(text)
+
+      linex += textw
     }
 
+    // not the most efficient, but just overlay selected text
+    if (selection != null && selection.containsLine(linei))
+    {
+      cs := selection.start.line == linei ? selection.start.col : 0
+      ce := selection.end.line == linei ? selection.end.col : line.size
+      textx := linex0 + cs*colw
+      text  := ""; try text = line[cs..<ce]; catch {}
+      textw := text.size * colw
+
+      g.brush = options.selectBg
+      g.fillRect(textx, liney, textw, lineh)
+      g.brush = options.selectFg
+      g.drawText(text, textx, liney)
+    }
+
+    // caret for line
     if (focused && linei == caretLine && editor.paintCaret)
     {
       caretx := linex0 + (caretCol * colw)
@@ -403,6 +436,7 @@ internal class Viewport
   private Rect hthumb            // bounds for horizontal thumb
   private Duration? vbarHovering // temp display of vertical scroll
   private Int:Span[] highlights  // visible highlights
+  private Span? selection        // current selection
 
 }
 

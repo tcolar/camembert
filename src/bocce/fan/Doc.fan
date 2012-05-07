@@ -132,20 +132,25 @@ internal class Doc
     endLineIndex   := end.line
     startLine      := lines[startLineIndex].text
     endLine        := lines[endLineIndex].text
+    offsetInStart  := start.col
+    offsetInEnd    := end.col
 
-    // if inserting past end of start, insert extra spaces
+    // if inserting/deleting past end of start/end
     if (newText.size > 0)
     {
       if (start.col >= startLine.size) startLine = startLine + Str.spaces(start.col - startLine.size + 1)
       if (end.col >= endLine.size) endLine = endLine + Str.spaces(end.col - endLine.size + 1)
+    }
+    else
+    {
+      if (offsetInStart > startLine.size) offsetInStart = startLine.size
+      if (offsetInEnd > endLine.size-1) offsetInEnd = endLine.size-1
     }
 
     // sample styles before insert
 //    samplesBefore := [ lineStyling(endLineIndex+1), lineStyling(lines.size-1) ]
 
     // compute the new text of the lines being replaced
-    offsetInStart := start.col
-    offsetInEnd   := end.col
     newLinesText  := startLine[0..<offsetInStart] + newText + endLine[offsetInEnd..-1]
 
     // split new text into new lines

@@ -50,6 +50,8 @@ const class EditorOptions
   const Color div                   := Color(0xdd_dd_dd)
   const Color scrollFg              := Color(0x70_40_40_40, true)
   const Color scrollBg              := Color(0x70_c0_c0_c0, true)
+  const Color selectBg              := Desktop.sysListSelBg
+  const Color selectFg              := Desktop.sysListSelFg
   const Int[] showCols              := [2,79]
   const Color showColColor          := Color(0xdd_dd_dd)
   const Pen showColPen              := Pen { width = 1; dash = [1,3] }

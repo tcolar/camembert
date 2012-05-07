@@ -74,27 +74,33 @@ internal class Controller
 
     caret := editor.caret
     doc := editor.doc
-    key := event.key
-    switch (key.toStr)
+
+    // shift may indicate selection so don't include
+    // that in navigation checks
+    navKey := event.key
+    if (navKey.isShift) navKey = navKey - Key.shift
+
+    switch (navKey.toStr)
     {
-      case "Up":         event.consume; goto(caret.up(doc)); return
-      case "Down":       event.consume; goto(caret.down(doc)); return
-      case "Left":       event.consume; goto(caret.left(doc)); return
-      case "Right":      event.consume; goto(caret.right(doc)); return
-      case "Home":       event.consume; goto(caret.home(doc)); return
-      case "End":        event.consume; goto(caret.end(doc)); return
+      case "Up":         goto(event, caret.up(doc)); return
+      case "Down":       goto(event, caret.down(doc)); return
+      case "Left":       goto(event, caret.left(doc)); return
+      case "Right":      goto(event, caret.right(doc)); return
+      case "Home":       goto(event, caret.home(doc)); return
+      case "End":        goto(event, caret.end(doc)); return
+      case "Ctrl+Left":  goto(event, caret.prevWord(doc)); return
+      case "Ctrl+Right": goto(event, caret.nextWord(doc)); return
+      case "Ctrl+Home":  goto(event, doc.homePos); return
+      case "Ctrl+End":   goto(event, doc.endPos); return
       case "PageUp":     event.consume; viewport.pageUp; return
       case "PageDown":   event.consume; viewport.pageDown; return
-      case "Ctrl+Left":  event.consume; goto(caret.prevWord(doc)); return
-      case "Ctrl+Right": event.consume; goto(caret.nextWord(doc)); return
-      case "Ctrl+Home":  event.consume; goto(doc.homePos); return
-      case "Ctrl+End":   event.consume; goto(doc.endPos); return
     }
 
     // everything else is editing functionality
     if (editor.ro) return
 
-    switch (key.toStr)
+    // handle special modify keys
+    switch (event.key.toStr)
     {
       case "Enter":      event.consume; onEnter; return
       case "Backspace":  event.consume; onBackspace; return
@@ -103,46 +109,80 @@ internal class Controller
 
     if (event.keyChar != null && event.keyChar >= ' ')
     {
-      event.consume
-      doc.modify(caret, caret, event.keyChar.toChar)
-      goto(caret.right(doc))
+      sel := editor.selection
+      if (sel != null)
+      {
+        doc.modify(sel.start, sel.end, event.keyChar.toChar)
+        viewport.goto(sel.start.right(doc))
+      }
+      else
+      {
+        doc.modify(caret, caret, event.keyChar.toChar)
+        viewport.goto(caret.right(doc))
+      }
+      editor.selection = null
     }
   }
 
-  private Void goto(Pos caret)
+  private Void goto(Event event, Pos caret)
   {
-    viewport.goto(caret, false)
+    event.consume
+    if (event.key != null && event.key.isShift)
+    {
+      if (anchor == null) anchor = editor.caret
+    }
+    else
+    {
+      anchor = null
+    }
+    viewport.goto(caret)
+    editor.selection = anchor == null ? null : Span(anchor, caret)
   }
 
   private Void onEnter()
   {
     // insert newline
     caret := editor.caret
-    editor.doc.modify(caret, caret, "\n")
+    sel := editor.selection
+    if (sel != null)
+      editor.doc.modify(sel.start, sel.end, "\n")
+    else
+      editor.doc.modify(caret, caret, "\n")
+    editor.selection = null
 
     // find next place to indent
     line := doc.line(caret.line)
     col := 0
     while (col < line.size && line[col].isSpace) col++
     if (line.getSafe(col) == '{') col += editor.options.tabSpacing
-    goto(Pos(caret.line+1, col))
+    viewport.goto(Pos(caret.line+1, col))
   }
 
   private Void onBackspace()
   {
+    if (editor.selection != null) { delSelection; return }
     doc := editor.doc
     caret := editor.caret
     prev := caret.left(doc)
     doc.modify(prev, caret, "")
-    goto(prev)
+    viewport.goto(prev)
   }
 
   private Void onDel()
   {
+    if (editor.selection != null) { delSelection; return }
     doc := editor.doc
     caret := editor.caret
     next := caret.right(doc)
     doc.modify(caret, next, "")
+  }
+
+  private Void delSelection()
+  {
+    sel := editor.selection
+    doc.modify(sel.start, sel.end, "")
+    editor.selection = null
+    viewport.goto(sel.start)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -164,6 +204,7 @@ internal class Controller
     }
 
     viewport.caretToPoint(event.pos)
+    editor.selection = null
 
     editor.trapEvent(event)
     if (event.consumed) return
@@ -210,5 +251,6 @@ internal class Controller
   Bool vbarVisible             // is vertical scroll visible
   Bool hbarVisible             // is horizontal scroll visible
   Bool focused                 // are we currently focused
+  Pos? anchor                  // if in selection mode
 }
 

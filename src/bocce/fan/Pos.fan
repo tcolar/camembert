@@ -38,6 +38,15 @@ const final class Pos
     return this.line == x.line && this.col == x.col
   }
 
+  ** Compare by line, then col
+  override Int compare(Obj that)
+  {
+    x := (Pos)that
+    if (this.line < x.line) return -1
+    if (this.line > x.line) return 1
+    return this.col <=> x.col
+  }
+
   ** Return zero based "line:col"
   override Str toStr() { "$line:$col" }
 

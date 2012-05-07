@@ -91,6 +91,13 @@ class Editor : Canvas
     focus
   }
 
+  ** Current selection or null for no selection
+  Span? selection
+  {
+    get { viewport.getSelection }
+    set { viewport.setSelection(it) }
+  }
+
   ** Find the specified string in the document starting the
   ** search at the document offset and looking forward.
   ** Return null is not found.  Note we don't currently
