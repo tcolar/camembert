@@ -115,6 +115,23 @@ const final class Pos
     return Pos(this.line, c)
   }
 
+  internal Pos endWord(Doc doc)
+  {
+    c := this.col
+    line := doc.line(this.line)
+    if (c >= line.size) return right(doc)
+    if (isWord(line[c]))
+    {
+      while (c < line.size && isWord(line[c])) ++c
+      while (c < line.size && line[c].isSpace) ++c
+    }
+    else
+    {
+      while (c < line.size && !isWord(line[c])) ++c
+    }
+    return Pos(this.line, c)
+  }
+
   private static Bool isWord(Int char) { char.isAlphaNum || char == '_' }
 
 }

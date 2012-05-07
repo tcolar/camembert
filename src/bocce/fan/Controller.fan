@@ -79,7 +79,8 @@ internal class Controller
 
     // shift may indicate selection so don't include
     // that in navigation checks
-    navKey := event.key
+    key := event.key
+    navKey := key
     if (navKey.isShift) navKey = navKey - Key.shift
 
     // navigation
@@ -104,18 +105,20 @@ internal class Controller
     if (editor.ro) return
 
     // handle special modify keys
-    switch (event.key.toStr)
+    switch (key.toStr)
     {
       case "Enter":      event.consume; onEnter; return
       case "Backspace":  event.consume; onBackspace; return
-      case "Del":        event.consume; onDel; return
+      case "Del":        event.consume; onDel(false); return
+      case "Ctrl+Del":   event.consume; onDel(true); return
       case "Ctrl+X":     event.consume; onCut; return
       case "Ctrl+V":     event.consume; onPaste; return
       case "Ctrl+Z":     event.consume; onUndo; return
     }
 
     // normal insert of character
-    if (event.keyChar != null && event.keyChar >= ' ')
+    if (event.keyChar != null && event.keyChar >= ' ' &&
+        !key.isCtrl && !key.isAlt && !key.isCommand)
     {
       event.consume
       insert(event.keyChar.toChar)
@@ -202,12 +205,12 @@ internal class Controller
     viewport.goto(prev)
   }
 
-  private Void onDel()
+  private Void onDel(Bool word)
   {
     if (editor.selection != null) { delSelection; return }
     doc := editor.doc
     caret := editor.caret
-    next := caret.right(doc)
+    next := word ? caret.endWord(doc) : caret.right(doc)
     modify(Span(caret, next), "")
   }
 
