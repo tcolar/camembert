@@ -41,7 +41,7 @@ internal class Doc
   Str text
   {
     get { return lines.join(delimiter) |Line line->Str| { return line.text } }
-    set { modify(Pos(0, 0), Pos(lineCount, 0), it) }
+    set { modify(Span(homePos, endPos), it) }
   }
 
   Int charCount() { return size }
@@ -60,7 +60,8 @@ internal class Doc
 
   Pos endPos() { Pos(lineCount-1, lines[lineCount-1].size) }
 
-  Int lineAtOffset(Int offset)
+  ** Given offset into entire text, get zero based line number
+  Int offsetToLine(Int offset)
   {
     // binary search by offset, returns '-insertationPoint-1'
     key := Line { it.offset = offset }
@@ -70,81 +71,41 @@ internal class Doc
     return line
   }
 
-  /*
-  Str textRange(Int start, Int len)
+  ** Convert offset into entire text into line, col position
+  Pos offsetToPos(Int offset)
   {
-    // map offsets to line, if the offset is the line's
-    // delimiter itself, then offsetInLine will be negative
-    lineIndex := lineAtOffset(start)
-    lineOffset := offsetAtLine(lineIndex)
-    lineText := line(lineIndex)
-    offsetInLine := start-lineOffset
-
-    // if this is a range within a single line, then use normal Str slice
-    if (offsetInLine+len <= lineText.size)
-    {
-      return lineText[offsetInLine..<offsetInLine+len]
-    }
-
-    // the range spans multiple lines
-    buf := StrBuf(len)
-    n := len
-
-    // if the start offset is in the delimiter, then make sure
-    // we start at next line, otherwise add the slice of the
-    // first line to our buffer
-    if (offsetInLine >= 0)
-    {
-      buf.add(lineText[offsetInLine..-1])
-      n -= buf.size
-    }
-
-    // add delimiter of first line
-    delimiter := lineDelimiter
-    if (n > 0) { buf.add(delimiter);  n -= delimiter.size }
-
-    // keep adding lines until we've gotten the full len
-    while (n > 0)
-    {
-      lineText = line(++lineIndex)
-      // full line (and maybe its delimiter)
-      if (n >= lineText.size)
-      {
-        buf.add(lineText)
-        n -= lineText.size
-        if (n > 0) { buf.add(delimiter);  n -= delimiter.size }
-      }
-      // partial line
-      else
-      {
-        buf.add(lineText[0..<n])
-        break
-      }
-    }
-    return buf.toStr
+    line := offsetToLine(offset)
+    return Pos(line, offset - lines[line].offset)
   }
-  */
 
+  ** Convert line, col position to offset into entire text
+  Int posToOffset(Pos pos)
+  {
+    lines[pos.line].offset + pos.col
+  }
+
+  ** Get the text at the given span
   Str textRange(Span span)
   {
-    s := span.start
-    e := span.end
-    if (s.line == e.line) return line(s.line)[s.col..<e.col]
+    sLine := span.start.line; sCol := span.start.col
+    eLine := span.end.line;   eCol := span.end.col
+    if (sLine == eLine) return line(sLine)[sCol..<eCol]
 
     buf := StrBuf()
-    buf.add(line(s.line)[s.col..-1]).add("\n")
-    for (i:=s.line+1; i<e.line; ++i)
+    buf.add(line(sLine)[sCol..-1]).add("\n")
+    for (i:=sLine+1; i<eLine; ++i)
       buf.add(line(i)).add("\n")
-    buf.add(line(e.line)[0..<e.col])
+    buf.add(line(eLine)[0..<eCol])
     return buf.toStr
   }
 
-  ** Remove text between start and end and/or insert
-  ** new given text at that position.  Return new position
-  ** of end of inserted text.
-  Pos modify(Pos start, Pos end, Str newText)
+  ** Remove text between span and/or insert new given text
+  ** at that position.  Return new position of end of inserted text.
+  Pos modify(Span span, Str newText)
   {
     // compute the lines being replaced
+    start := span.start
+    end   := span.end
     startLineIndex := start.line
     endLineIndex   := end.line
     startLine      := lines[startLineIndex].text
@@ -451,6 +412,7 @@ internal class Doc
   ** account nesting.  If a closing bracket we search backward.
   ** Return null if no match.
   **
+  /*
   internal Int? matchBracket(Int offset)
   {
     lineIndex := lineAtOffset(offset)
@@ -514,6 +476,7 @@ internal class Doc
       bracketLine2 = line1; bracketCol2 = col1
     }
   }
+  */
 
   internal const static Int:Int bracketPairs
   static

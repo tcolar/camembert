@@ -24,6 +24,7 @@ internal class Controller
   new make(Editor editor)
   {
     this.editor = editor
+    this.changes = Change[,]
 
     editor.onFocus.add |e|      { onFocus(e)      }
     editor.onBlur.add |e|       { onBlur(e)       }
@@ -110,6 +111,7 @@ internal class Controller
       case "Del":        event.consume; onDel; return
       case "Ctrl+X":     event.consume; onCut; return
       case "Ctrl+V":     event.consume; onPaste; return
+      case "Ctrl+Z":     event.consume; onUndo; return
     }
 
     // normal insert of character
@@ -146,7 +148,7 @@ internal class Controller
   {
     sel := editor.selection
     if (sel == null) sel = Span(editor.caret, editor.caret)
-    endPos := doc.modify(sel.start, sel.end, newText)
+    endPos := modify(sel, newText)
     viewport.goto(endPos)
     editor.selection = null
   }
@@ -186,7 +188,7 @@ internal class Controller
 
     // insert newline and indent spaces
     newText := "\n" + Str.spaces(col)
-    editor.doc.modify(caret, caret, newText)
+    modify(Span(caret, caret), newText)
     viewport.goto(Pos(caret.line+1, col))
   }
 
@@ -196,7 +198,7 @@ internal class Controller
     doc := editor.doc
     caret := editor.caret
     prev := caret.left(doc)
-    doc.modify(prev, caret, "")
+    modify(Span(prev, caret), "")
     viewport.goto(prev)
   }
 
@@ -206,15 +208,59 @@ internal class Controller
     doc := editor.doc
     caret := editor.caret
     next := caret.right(doc)
-    doc.modify(caret, next, "")
+    modify(Span(caret, next), "")
   }
 
   private Void delSelection()
   {
     sel := editor.selection
-    doc.modify(sel.start, sel.end, "")
+    modify(sel, "")
     editor.selection = null
     viewport.goto(sel.start)
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Modification / Undo
+//////////////////////////////////////////////////////////////////////////
+
+  private Pos modify(Span span, Str newText)
+  {
+    doc := editor.doc
+    oldText := doc.textRange(span)
+    pushChange(Change(span.start, oldText, newText))
+    return doc.modify(span, newText)
+  }
+
+  private Void pushChange(Change c)
+  {
+    // if appending a single char to end of last
+    // change then make it one big atomic undo change
+    top := changes.peek
+    if (isAtomicUndo(top, c))
+      changes[-1] = Change(top.pos, top.oldText, top.newText+c.newText)
+    else
+      changes.push(c)
+  }
+
+  private Bool isAtomicUndo(Change? a, Change b)
+  {
+    if (a == null) return false
+    if (b.oldText.size > 0) return false
+    if (b.newText.size > 1) return false
+    if (a.pos.line != b.pos.line) return false
+    return a.pos.col + a.newText.size == b.pos.col
+  }
+
+  private Void onUndo()
+  {
+    c := changes.pop
+    if (c == null) return
+
+    doc := editor.doc
+    start := c.pos
+    end := doc.offsetToPos(doc.posToOffset(start) + c.newText.size)
+    caret := doc.modify(Span(start, end), c.oldText)
+    viewport.goto(caret)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -312,8 +358,22 @@ internal class Controller
   private Int? vthumbDrag      // if dragging vertical thumb
   private Int? hthumbDrag      // if dragging horizontal thumb
   private Pos? anchor          // if in selection mode
+  private Change[] changes     // change stack
   Bool vbarVisible             // is vertical scroll visible
   Bool hbarVisible             // is horizontal scroll visible
   Bool focused                 // are we currently focused
+}
+
+internal const class Change
+{
+  new make(Pos pos, Str oldText, Str newText)
+  {
+    this.pos     = pos
+    this.oldText = oldText
+    this.newText = newText
+  }
+  const Pos pos
+  const Str oldText
+  const Str newText
 }
 
