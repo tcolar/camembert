@@ -126,7 +126,7 @@ class Nav : Pane
   {
     w := size.w
     h := size.h
-    levelw := w/levels.size
+    levelw := w / 3.max(levels.size)
     levelx := 0
     levels.each |level, i|
     {

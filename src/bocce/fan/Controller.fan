@@ -134,6 +134,9 @@ internal class Controller
 
   Void onKeyUp(Event event)
   {
+    editor.trapEvent(event)
+    if (event.consumed) return
+
     if (event.key == Key.shift) anchor = null
   }
 
@@ -341,6 +344,9 @@ internal class Controller
 
   Void onMouseDown(Event event)
   {
+    editor.trapEvent(event)
+    if (event.consumed) return
+
     if (vbarVisible)
     {
       vthumbDrag = viewport.vthumbDragStart(event.pos)
@@ -366,6 +372,9 @@ internal class Controller
 
   Void onMouseUp(Event event)
   {
+    editor.trapEvent(event)
+    if (event.consumed) return
+
     vthumbDrag = null
     hthumbDrag = null
     anchor = null

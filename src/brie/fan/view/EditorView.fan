@@ -66,7 +66,11 @@ class EditorView : View
 
   override Void onSave()
   {
-    editor.save(file.out)
+    out := file.out
+    try
+      editor.save(out)
+    finally
+      out.close
   }
 
   override Void onGoto(Mark mark)

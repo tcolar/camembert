@@ -23,6 +23,7 @@ class Lister : Editor
     this.items = items
     this.paintCaret = false
     this.ro = true
+    this.cursor = Cursor.defVal
     load(str.in)
   }
 
@@ -42,11 +43,11 @@ class Lister : Editor
   {
     if (event.id === EventId.keyDown)
     {
-      if (event.key.toStr == "Enter") doAction
+      if (event.key.toStr == "Enter") { event.consume; doAction; return }
     }
     else if (event.id === EventId.mouseDown)
     {
-      if (event.count >= 2) doAction
+      if (event.count >= 2) { event.consume; doAction; return }
     }
   }
 
