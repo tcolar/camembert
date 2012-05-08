@@ -67,6 +67,13 @@ class App
     }
   }
 
+  Void save()
+  {
+    if (view.dirty) view.onSave
+    view.dirty = false
+    window.title = "Brie $res.uri"
+  }
+
   Mark[] marks := Mark[,]
   {
     set { &marks = it; &curMark = -1; view.onMarks(it) }
@@ -133,17 +140,25 @@ internal class AppPane : Pane
 internal class AppController
 {
   new make(App app) { this.app = app }
+
   App app
+
   Void onKeyDown(Event event)
   {
     switch (event.key.toStr)
     {
       case "Ctrl+R":    event.consume; app.reload; return
+      case "Ctrl+S":    event.consume; app.save; return
       case "F8":        event.consume; app.curMark = app.curMark + 1; return
       case "Shift+F8":  event.consume; app.curMark = app.curMark - 1; return
       case "Esc":       event.consume; app.console.ready; return
     }
     // echo(":: $event")
+  }
+
+  Void onViewDirty()
+  {
+    app.window.title = app.window.title + "*"
   }
 }
 

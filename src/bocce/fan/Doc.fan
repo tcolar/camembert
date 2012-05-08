@@ -87,8 +87,8 @@ internal class Doc
   ** Get the text at the given span
   Str textRange(Span span)
   {
-    sLine := span.start.line; sCol := span.start.col
-    eLine := span.end.line;   eCol := span.end.col
+    sLine := span.start.line; sCol := span.start.col.min(line(sLine).size)
+    eLine := span.end.line;   eCol := span.end.col.min(line(eLine).size)
     if (sLine == eLine) return line(sLine)[sCol..<eCol]
 
     buf := StrBuf()
@@ -155,20 +155,10 @@ internal class Doc
     editor.repaint
 
     // fire modification event
-    /*
-    tc := TextChange
-    {
-      it.startOffset    = startOffset
-      it.startLine      = startLineIndex
-      it.oldText        = oldText
-      it.newText        = newText
-      it.oldNumNewlines = oldText.numNewlines
-      it.newNumNewlines = newLines.size - 1
-      it.repaintLen     = repaintToEnd ? size-startOffset : null
-    }
-    //onModify.fire(Event { id =EventId.modified; data = tc })
-    */
+    event := Event { id = EventId.modified; widget = editor }
+    editor.onModify.fire(event)
 
+    // return position of end of inserted text
     lastLineIndex := startLineIndex + newLines.size -1
     lastLine := lines[lastLineIndex]
     return Pos(lastLineIndex, lastLine.size - (endLine.size-offsetInEnd))

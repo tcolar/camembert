@@ -36,6 +36,7 @@ class EditorView : View
 
     // construct and load editor
     editor = Editor { it.rules = rules }
+    editor.onModify.add |e| { this.dirty = true }
     editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     editor.loadLines(lines)
 
@@ -61,6 +62,11 @@ class EditorView : View
   Editor editor
 
   override Void onReady() { editor.focus }
+
+  override Void onSave()
+  {
+    editor.save(file.out)
+  }
 
   override Void onGoto(Mark mark)
   {

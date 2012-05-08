@@ -54,7 +54,7 @@ abstract class View : ContentPane
     {
       if (&dirty == it) return
       &dirty = it
-      echo("dirty = $it")
+      if (it) app.controller.onViewDirty
     }
   }
 
@@ -62,6 +62,11 @@ abstract class View : ContentPane
   ** Take focus and be ready to work!
   **
   virtual Void onReady() {}
+
+  **
+  ** Save current state
+  **
+  virtual Void onSave() {}
 
   **
   ** Goto specific mark line/col within this document
