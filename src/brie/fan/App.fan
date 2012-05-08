@@ -28,7 +28,7 @@ class App
     {
       title   = "Brie"
       icon    = Image(`fan://icons/x32/blueprints.png`)
-      bounds  = Rect(0, 0, 1500, 1160)
+      bounds  = Rect(62, 0, 1700, 1080)
       content = Label { text = "initializing..." }
       onKeyDown.add |e| { controller.onKeyDown(e) }
       it->onDrop = |data| { controller.onDrop(data) }  // use back-door hook for file drop
@@ -50,6 +50,7 @@ class App
 
   Void load(Res res)
   {
+    if (!confirmClose) return
     try
     {
       this.res     = res
@@ -65,6 +66,16 @@ class App
     {
       load(ErrRes(res.uri, "Cannot load resource", e.trace))
     }
+  }
+
+  private Bool confirmClose()
+  {
+    if (!view.dirty) return true
+    r := Dialog.openQuestion(window, "Save changes to $res.dis?",
+      [Dialog.yes, Dialog.no, Dialog.cancel])
+    if (r == Dialog.cancel) return false
+    if (r == Dialog.yes) save
+    return true
   }
 
   Void save()

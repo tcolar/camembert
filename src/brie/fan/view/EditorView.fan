@@ -82,12 +82,19 @@ class EditorView : View
   private Void onFocusCheckFileTime ()
   {
     if (file.modified == fileTimeAtLoad) return
+    fileTimeAtLoad = file.modified
 
+    // prompt user to reload
+    r := Dialog.openQuestion(editor.window,
+          "Another application has updated file:
+           $file.osPath
+           Reload it?", Dialog.yesNo)
+    if (r == Dialog.yes) app.reload
   }
 
   const File file
-  const DateTime fileTimeAtLoad
   const Charset charset := Charset.utf8
+  private DateTime fileTimeAtLoad
 
 }
 
