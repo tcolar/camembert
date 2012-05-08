@@ -30,6 +30,14 @@ class Lister : Editor
 
   Obj[] items
 
+  Void addItem(Obj item)
+  {
+    str := item.toStr
+    if (!items.isEmpty) str = "\n$str"
+    items.add(item)
+    modify(docEndPos.toSpan, str)
+  }
+
   override Void trapEvent(Event event)
   {
     if (event.id === EventId.keyDown)

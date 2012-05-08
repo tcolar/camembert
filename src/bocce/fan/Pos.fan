@@ -50,6 +50,9 @@ const final class Pos
   ** Return zero based "line:col"
   override Str toStr() { "$line:$col" }
 
+  ** Convert to span with this pos as both start and end
+  Span toSpan() { Span(this, this) }
+
 //////////////////////////////////////////////////////////////////////////
 // Navigation
 //////////////////////////////////////////////////////////////////////////

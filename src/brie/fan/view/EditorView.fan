@@ -36,6 +36,7 @@ class EditorView : View
 
     // construct and load editor
     editor = Editor { it.rules = rules }
+    editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
     editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     editor.loadLines(lines)
@@ -76,6 +77,12 @@ class EditorView : View
   override Void onMarks(Mark[] marks)
   {
     editor.repaint
+  }
+
+  private Void onFocusCheckFileTime ()
+  {
+    if (file.modified == fileTimeAtLoad) return
+
   }
 
   const File file

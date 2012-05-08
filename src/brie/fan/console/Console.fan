@@ -33,6 +33,17 @@ class Console : EdgePane
     prompt.field.focus
   }
 
+  Void run(Str text)
+  {
+    space  := text.index(" ")
+    cmdStr := space == null ? text : text[0..<space]
+    argStr := space == null ? null : text[space+1..-1]
+
+    prompt.field.text = text
+    list([,])
+    commands.get(cmdStr).run(argStr)
+  }
+
   Void typing(Str text)
   {
     // reset marks
@@ -95,10 +106,25 @@ class Console : EdgePane
     lister.highlights = [Span(curMark, 0, curMark, 10_000)]
   }
 
+  Void log(Str line)
+  {
+    lister.addItem(line)
+  }
+
+  Void exec(Str[] cmd, File dir := Env.cur.homeDir)
+  {
+    ConsoleProcess(this).spawn(cmd, dir)
+  }
+
+  Void execFan(Str[] args, File fanHome := Env.cur.homeDir)
+  {
+    fan := fanHome + (Desktop.isWindows ? `bin/fan.exe` : `bin/fan`)
+    exec(args.dup.insert(0, fan.osPath), fanHome)
+  }
+
   App app
   Prompt prompt
   Commands commands
   Lister lister
 }
-
 

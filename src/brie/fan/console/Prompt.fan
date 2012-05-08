@@ -28,7 +28,7 @@ class Prompt : ContentPane
       it.onFocus.add   |e| { onTextFocus(e) }
       it.onBlur.add    |e| { onTextBlur(e) }
       it.onModify.add  |e| { onTextModify(e) }
-      it.onAction.add  |e| { onTextModify(e) }
+      it.onAction.add  |e| { onTextAction(e) }
       it.onKeyDown.add |e| { onTextKeyDown(e) }
     }
     this.content = BorderPane
@@ -59,6 +59,7 @@ class Prompt : ContentPane
 
   Void onTextAction(Event event)
   {
+    console.run(field.text)
   }
 
   Void onTextKeyDown(Event event)

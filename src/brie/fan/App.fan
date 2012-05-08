@@ -31,6 +31,7 @@ class App
       bounds  = Rect(0, 0, 1500, 1160)
       content = Label { text = "initializing..." }
       onKeyDown.add |e| { controller.onKeyDown(e) }
+      it->onDrop = |data| { controller.onDrop(data) }  // use back-door hook for file drop
     }
     load(res)
   }
@@ -49,7 +50,6 @@ class App
 
   Void load(Res res)
   {
-    Actor.locals["appController"] = controller
     try
     {
       this.res     = res
@@ -72,6 +72,12 @@ class App
     if (view.dirty) view.onSave
     view.dirty = false
     window.title = "Brie $res.uri"
+  }
+
+  Void build()
+  {
+    save
+    console.run("b")
   }
 
   Mark[] marks := Mark[,]
@@ -151,6 +157,7 @@ internal class AppController
       case "Ctrl+S":    event.consume; app.save; return
       case "F8":        event.consume; app.curMark = app.curMark + 1; return
       case "Shift+F8":  event.consume; app.curMark = app.curMark - 1; return
+      case "F9":        event.consume; app.build; return
       case "Esc":       event.consume; app.console.ready; return
     }
     // echo(":: $event")
@@ -159,6 +166,14 @@ internal class AppController
   Void onViewDirty()
   {
     app.window.title = app.window.title + "*"
+  }
+
+  Void onDrop(Obj data)
+  {
+    files := data as File[]
+    if (files == null || files.isEmpty) return
+    file := files.first
+    app.load(FileRes(file))
   }
 }
 

@@ -9,6 +9,7 @@
 using gfx
 using fwt
 using bocce
+using concurrent
 
 class Commands
 {
@@ -16,6 +17,7 @@ class Commands
   {
     this.app = app
     this.list = [
+      c("b",    "Build current pod", Build#),
       c("f",    "Find in current doc", FindCmd#),
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
     ]
@@ -29,6 +31,14 @@ class Commands
     cmd.toStr   = name.padr(4) + "  " + summary
     cmd.app     = app
     return cmd
+  }
+
+  Cmd? get(Str name, Bool checked := true)
+  {
+    x := list.find |c| { c.name == name }
+    if (x != null) return x
+    if (checked) throw Err("Command not found: $name")
+    return null
   }
 
   App app
@@ -46,6 +56,8 @@ abstract class Cmd
   Str summary := "?"
   override Str toStr := "?"
 
+  Console console() { app.console }
+
   Editor? editor()
   {
     if (app.view isnot EditorView) return null
@@ -53,6 +65,13 @@ abstract class Cmd
   }
 
   virtual Obj[] match(Str arg) { Obj#.emptyList }
+
+  virtual Void run(Str? arg) {}
+
+  Void log(Str line)
+  {
+    app.console.log(line)
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -81,12 +100,30 @@ class FindCmd : Cmd
     editor.highlights = spans
     return marks
   }
+  override Void run(Str? arg)
+  {
+    app.console.list(match(arg ?: "no-arg"))
+    app.curMark = 0
+  }
 }
 
 class FindInsensitiveCmd : FindCmd
 {
   override Bool matchCase() { false }
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Build
+//////////////////////////////////////////////////////////////////////////
+
+class Build : Cmd
+{
+  override Void run(Str? arg)
+  {
+    console.execFan(["-version"])
+  }
+}
+
 
 
 

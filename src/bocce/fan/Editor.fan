@@ -61,6 +61,10 @@ class Editor : Canvas
   ** Save the document to the given output stream
   Void save(OutStream out) { doc.save(out) }
 
+  ** Remove text between span and/or insert new given text
+  ** at that position.  Return new position of end of inserted text.
+  Pos modify(Span span, Str newText) { doc.modify(span, newText) }
+
 //////////////////////////////////////////////////////////////////////////
 // Document
 //////////////////////////////////////////////////////////////////////////
@@ -79,6 +83,9 @@ class Editor : Canvas
   {
     set { &highlights = it; viewport.relayout }
   }
+
+  ** Position of document end
+  Pos docEndPos() { doc.endPos }
 
 //////////////////////////////////////////////////////////////////////////
 // Navigation
