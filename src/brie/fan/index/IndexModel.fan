@@ -42,10 +42,10 @@ const class TypeInfo
   const Str file
   const Int line   // zero based
 
-  Mark? toMark()
+  Mark toMark()
   {
     f := pod.srcFiles.find |f| { f.name == file }
-    if (f == null) return null
+    if (f == null) throw Err("Missing srcFile: $qname $file")
     return Mark(FileRes(f), line, 0, 0, qname)
   }
 
@@ -53,6 +53,8 @@ const class TypeInfo
 
   PodInfo pod() { podRef.val }
   internal const AtomicRef podRef := AtomicRef()
+
+  SlotInfo? slot(Str name) { slots.find |s| { s.name == name } }
 
   SlotInfo[] slots() { slotsRef.val }
   internal const AtomicRef slotsRef := AtomicRef()
@@ -68,6 +70,11 @@ const class SlotInfo
     this.name = name
     this.line = line
   }
+
+  Str qname() { "${type.qname}.$name" }
+
+  Mark? toMark() { Mark(type.toMark.res, line, 0, 0, qname) }
+
   const TypeInfo type
   const Str name
   const Int line    // zero based

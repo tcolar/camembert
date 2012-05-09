@@ -22,6 +22,7 @@ class Commands
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
+      c("s",    "Show type/slot", ShowCmd#),
     ]
   }
 
@@ -70,10 +71,27 @@ abstract class Cmd
 
   virtual Void run(Str? arg) {}
 
+  virtual Void onItem(CmdItem itme) {}
+
   Void log(Str line)
   {
     app.console.log(line)
   }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CmdItem
+//////////////////////////////////////////////////////////////////////////
+
+class CmdItem
+{
+  new make(Cmd cmd, Str dis, Obj? data) { this.cmd = cmd; this.dis = dis; this.data = data }
+
+  Cmd cmd { private set }
+  const Str dis
+  const Obj? data
+
+  override Str toStr() { dis }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -129,17 +147,38 @@ class FindInsensitiveCmd : FindCmd
 
 class GotoTypeCmd : MatchCmd
 {
-  override Obj[] match(Str arg)
-  {
-    app.index.matchTypes(arg)
-  }
+  override Void run(Str? arg) { super.run(arg); console.clear }
+  override Obj[] match(Str arg) { app.index.matchTypes(arg).map |t->Mark| { t.toMark } }
 }
 
 class GotoFileCmd : MatchCmd
 {
+  override Void run(Str? arg) { super.run(arg); console.clear }
+  override Obj[] match(Str arg) { app.index.matchFiles(arg) }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// ShowCmd
+//////////////////////////////////////////////////////////////////////////
+
+class ShowCmd : MatchCmd
+{
   override Obj[] match(Str arg)
   {
-    app.index.matchFiles(arg)
+    app.index.matchTypes(arg).map |t->CmdItem| { CmdItem(this, t.qname, t) }
+  }
+
+  override Void run(Str? arg)
+  {
+    t := app.index.matchTypes(arg ?: "no-arg").first
+    if (t == null) { console.log("No types found: $arg"); return }
+    console.show(t.toMark)
+  }
+
+  override Void onItem(CmdItem item)
+  {
+    TypeInfo t := item.data
+    console.show(t.toMark)
   }
 }
 

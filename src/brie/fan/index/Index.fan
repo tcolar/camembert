@@ -73,7 +73,7 @@ const class Index
   }
 
   ** Match types
-  Mark[] matchTypes(Str pattern)
+  TypeInfo[] matchTypes(Str pattern)
   {
     cache.send(Msg("matchTypes", pattern)).get(timeout)->val
   }

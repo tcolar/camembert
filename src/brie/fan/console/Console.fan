@@ -10,6 +10,7 @@ using gfx
 using fwt
 using compiler
 using bocce
+using syntax
 
 **
 ** Console
@@ -80,17 +81,42 @@ class Console : EdgePane
       list(cmds)
   }
 
+  Void clear() { list(Obj[,]) }
+
   Void list(Obj[] items)
   {
     this.app.marks = items.findType(Mark#)
     this.lister = Lister(items)
+    this.lister.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     lister.onAction.add |e| { listOnAction(e) }
     this.center = lister
     relayout
   }
 
+  Void show(Mark mark)
+  {
+    file := mark.res.toFile
+    lines := file.readAllLines
+    rules := SyntaxRules.loadForFile(file, lines.first)
+    if (rules == null) rules = SyntaxRules {}
+    editor := Editor { it.rules = rules; it.ro = true }
+    editor.loadLines(lines)
+    editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
+    Desktop.callAsync |->| { editor.goto(mark.pos) }
+
+    this.center = editor
+    relayout
+  }
+
   Void listOnAction(Event e)
   {
+    cmdItem := e.data as CmdItem
+    if (cmdItem != null)
+    {
+      cmdItem.cmd.onItem(cmdItem)
+      return
+    }
+
     mark := e.data as Mark
     if (mark != null)
     {
@@ -154,4 +180,3 @@ class Console : EdgePane
   private ConsoleProcess? proc
   private Bool inKill
 }
-

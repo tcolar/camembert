@@ -28,6 +28,7 @@ class Nav : Pane
     // level 0 is pod names
     level0 := Lister(app.index.pods)
     level0.onAction.add |e| { navTo(e.data) }
+    level0.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     this.levels = [level0]
 
     // level 1 is pod types
@@ -51,6 +52,7 @@ class Nav : Pane
 
     lister := Lister(items)
     lister.onAction.add |e| { navTo(e.data) }
+    lister.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     return lister
   }
 
@@ -78,6 +80,7 @@ class Nav : Pane
 
     lister := Lister(items, str.toStr)
     lister.onAction.add |e| { navTo(e.data) }
+    lister.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     return lister
   }
 

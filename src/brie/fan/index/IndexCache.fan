@@ -45,20 +45,18 @@ internal class IndexCache
     return null
   }
 
-  Mark[] matchTypes(Str pattern)
+  TypeInfo[] matchTypes(Str pattern)
   {
-    exacts := Mark[,]
-    approx := Mark[,]
+    exacts := TypeInfo[,]
+    approx := TypeInfo[,]
     pods.vals.sort.each |pod|
     {
       pod.types.each |t|
       {
         m := matchType(t, pattern)
         if (m == 0) return
-        mark := t.toMark
-        if (mark == null) return
-        if (m == 2) exacts.add(mark)
-        else approx.add(mark)
+        if (m == 2) exacts.add(t)
+        else approx.add(t)
       }
     }
     return exacts.addAll(approx)
