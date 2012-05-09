@@ -33,6 +33,7 @@ class EditorView : View
 
     // get rules for ext or first line
     rules := SyntaxRules.loadForFile(file, lines.first)
+    if (rules == null) rules = SyntaxRules {}
 
     // construct and load editor
     editor = Editor { it.rules = rules }

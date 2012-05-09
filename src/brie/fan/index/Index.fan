@@ -72,6 +72,18 @@ const class Index
     crawler.send(Msg("reindexAll"))
   }
 
+  ** Match types
+  Mark[] matchTypes(Str pattern)
+  {
+    cache.send(Msg("matchTypes", pattern)).get(timeout)->val
+  }
+
+  ** Match files
+  Mark[] matchFiles(Str pattern)
+  {
+    cache.send(Msg("matchFiles", pattern)).get(timeout)->val
+  }
+
 //////////////////////////////////////////////////////////////////////////
 // Cache Actor
 //////////////////////////////////////////////////////////////////////////
@@ -85,7 +97,9 @@ const class Index
     if (id === "pods")        return Unsafe(c.listPods)
     if (id === "pod")         return c.pod(msg.a)
     if (id === "podForFile")  return c.podForFile(msg.a)
-    if (id === "addPodSrc")   return c.addPodSrc(msg.a, msg.b)
+    if (id === "matchTypes")  return Unsafe(c.matchTypes(msg.a))
+    if (id === "matchFiles")  return Unsafe(c.matchFiles(msg.a))
+    if (id === "addPodSrc")   return c.addPodSrc(msg.a, msg.b, msg.c)
     if (id === "addPodLib")   return c.addPodLib(msg.a, msg.b)
     if (id === "clearAll")    return Actor.locals["cache"] = IndexCache(this)
 

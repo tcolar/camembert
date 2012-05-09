@@ -21,14 +21,16 @@ internal const class ActorUtil
 **
 internal const class Msg
 {
-  new make(Str id, Obj? a := null, Obj? b := null)
+  new make(Str id, Obj? a := null, Obj? b := null, Obj? c := null)
   {
     this.id = id
     this.a  = a
     this.b  = b
+    this.c  = c
   }
 
   const Str id
   const Obj? a
   const Obj? b
+  const Obj? c
 }

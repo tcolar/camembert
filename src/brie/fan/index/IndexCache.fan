@@ -31,19 +31,69 @@ internal class IndexCache
     }
   }
 
-  Obj? addPodSrc(Str name, File srcDir)
+  Obj? addPodSrc(Str name, File srcDir, File[] srcFiles)
   {
-    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null)
-    pods[name] = PodInfo(name, cur.doc, cur.types, srcDir)
+    cur := pods[name] ?: PodInfo(name, TypeInfo[,], null, File#.emptyList)
+    pods[name] = PodInfo(name, cur.types, srcDir, srcFiles)
     return null
   }
 
-  Obj? addPodLib(DocPod doc, TypeInfo[] types)
+  Obj? addPodLib(Str name, TypeInfo[] types)
   {
-    name := doc.name
-    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null)
-    pods[name] = PodInfo(name, doc, types, cur.srcDir)
+    cur := pods[name] ?: PodInfo(name, TypeInfo[,], null, File#.emptyList)
+    pods[name] = PodInfo(name, types, cur.srcDir, cur.srcFiles)
     return null
+  }
+
+  Mark[] matchTypes(Str pattern)
+  {
+    exacts := Mark[,]
+    approx := Mark[,]
+    pods.vals.sort.each |pod|
+    {
+      pod.types.each |t|
+      {
+        m := matchType(t, pattern)
+        if (m == 0) return
+        mark := t.toMark
+        if (mark == null) return
+        if (m == 2) exacts.add(mark)
+        else approx.add(mark)
+      }
+    }
+    return exacts.addAll(approx)
+  }
+
+  private Int matchType(TypeInfo t, Str pattern)
+  {
+    if (t.name == pattern) return 2
+    if (t.name.startsWith(pattern)) return 1
+    return 0
+  }
+
+  Mark[] matchFiles(Str pattern)
+  {
+    exacts := Mark[,]
+    approx := Mark[,]
+    pods.vals.sort.each |pod|
+    {
+      pod.srcFiles.each |f|
+      {
+        m := matchFile(f, pattern)
+        if (m == 0) return
+        mark := Mark(FileRes(f), 0, 0, 0, "$pod.name::$f.name")
+        if (m == 2) exacts.add(mark)
+        else approx.add(mark)
+      }
+    }
+    return exacts.addAll(approx)
+  }
+
+  private Int matchFile(File f, Str pattern)
+  {
+    if (f.name == pattern) return 2
+    if (f.name.startsWith(pattern)) return 1
+    return 0
   }
 
   private Str:PodInfo pods := [:]

@@ -11,21 +11,22 @@ using concurrent
 
 const class PodInfo
 {
-  new make(Str name, DocPod? doc, TypeInfo[] types, File? srcDir)
+  new make(Str name, TypeInfo[] types, File? srcDir, File[] srcFiles)
   {
-    this.name   = name
-    this.doc    = doc
-    this.srcDir = srcDir
-    this.types  = types
+    this.name     = name
+    this.srcDir   = srcDir
+    this.srcFiles = srcFiles
+    this.types    = types
     types.each |t| { t.podRef.val = this }
   }
 
   const Str name
   override Str toStr() { name }
-  const DocPod? doc
   const File? srcDir
-
+  const File[] srcFiles
   const TypeInfo[] types
+
+  override Int compare(Obj that) { name <=> ((PodInfo)that).name }
 }
 
 const class TypeInfo
@@ -40,6 +41,15 @@ const class TypeInfo
   const Str name
   const Str file
   const Int line   // zero based
+
+  Mark? toMark()
+  {
+    f := pod.srcFiles.find |f| { f.name == file }
+    if (f == null) return null
+    return Mark(FileRes(f), line, 0, 0, qname)
+  }
+
+  Str qname() { "$pod.name::$name" }
 
   PodInfo pod() { podRef.val }
   internal const AtomicRef podRef := AtomicRef()

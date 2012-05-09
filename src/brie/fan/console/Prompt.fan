@@ -66,8 +66,9 @@ class Prompt : ContentPane
   {
     switch (event.key.toStr)
     {
-      case "Esc": app.view.onReady; event.consume; return
-      default:   app.controller.onKeyDown(event)
+      case "Esc":  event.consume; app.view.onReady; return
+      case "Down": event.consume; console.lister.focus; return
+      default:     app.controller.onKeyDown(event)
     }
   }
 

@@ -68,8 +68,20 @@ internal class IndexCrawler
 
   private Void indexPodSrcDir(File dir)
   {
-    index.cache.send(Msg("addPodSrc", dir.name, dir))
+    files := File[,]
+    indexPodSrcFiles(files, dir)
+    index.cache.send(Msg("addPodSrc", dir.name, dir, files))
   }
+
+  private Void indexPodSrcFiles(File[] acc, File dir)
+  {
+    dir.list.each |f|
+    {
+      if (f.isDir) { indexPodSrcFiles(acc, f); return }
+      if (indexExts.containsKey(f.ext ?: "")) acc.add(f)
+    }
+  }
+  private Str:Str indexExts := Str:Str[:].addList(["fan", "props", "fandoc", "css", "js", "java", "cs", "txt"])
 
   private Void indexPodLibDir(File dir)
   {
@@ -77,11 +89,13 @@ internal class IndexCrawler
     {
       if (f.ext != "pod") return
 
+      /*
       DocPod? doc := null
       try
         doc = DocPod.load(f)
       catch (Err e)
         e.trace
+      */
 
       types := TypeInfo[,]
       try
@@ -89,7 +103,7 @@ internal class IndexCrawler
       catch (Err e)
         e.trace
 
-      index.cache.send(Msg("addPodLib", doc, types))
+      index.cache.send(Msg("addPodLib", f.basename, types))
     }
   }
 

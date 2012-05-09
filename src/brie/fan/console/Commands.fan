@@ -20,6 +20,8 @@ class Commands
       c("b",    "Build current pod", Build#),
       c("f",    "Find in current doc", FindCmd#),
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
+      c("gt",   "Goto type", GotoTypeCmd#),
+      c("gf",   "Goto file", GotoFileCmd#),
     ]
   }
 
@@ -75,10 +77,24 @@ abstract class Cmd
 }
 
 //////////////////////////////////////////////////////////////////////////
+// MatchCmd
+//////////////////////////////////////////////////////////////////////////
+
+class MatchCmd : Cmd
+{
+  override Void run(Str? arg)
+  {
+    app.console.list(match(arg ?: "no-arg"))
+    app.curMark = 0
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 // FindCmd
 //////////////////////////////////////////////////////////////////////////
 
-class FindCmd : Cmd
+class FindCmd : MatchCmd
 {
   virtual Bool matchCase() { true }
   override Obj[] match(Str arg)
@@ -100,16 +116,31 @@ class FindCmd : Cmd
     editor.highlights = spans
     return marks
   }
-  override Void run(Str? arg)
-  {
-    app.console.list(match(arg ?: "no-arg"))
-    app.curMark = 0
-  }
 }
 
 class FindInsensitiveCmd : FindCmd
 {
   override Bool matchCase() { false }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Goto Cmds
+//////////////////////////////////////////////////////////////////////////
+
+class GotoTypeCmd : MatchCmd
+{
+  override Obj[] match(Str arg)
+  {
+    app.index.matchTypes(arg)
+  }
+}
+
+class GotoFileCmd : MatchCmd
+{
+  override Obj[] match(Str arg)
+  {
+    app.index.matchFiles(arg)
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -143,7 +174,6 @@ class Build : Cmd
     return null
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // KillTest

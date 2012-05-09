@@ -22,7 +22,7 @@ internal const class ConsoleProcess
 
   Void spawn(Str[] cmd, File dir)
   {
-    actor.send(ConsoleMsg("spawn", cmd, dir))
+    actor.send(Msg("spawn", cmd, dir))
   }
 
   Console console()
@@ -70,7 +70,7 @@ internal const class ConsoleProcess
     return Mark(FileRes(file), line-1, col-1, col-1, text)
   }
 
-  private Obj? receive(ConsoleMsg msg)
+  private Obj? receive(Msg msg)
   {
     if (msg.id == "spawn") return doSpawn(msg.a, msg.b)
     echo("WARNING: unknown msg: $msg")
@@ -99,23 +99,6 @@ internal const class ConsoleProcess
 
   private const Actor actor
   private const AtomicRef procRef := AtomicRef(null)
-}
-
-**************************************************************************
-** ConsoleMsg
-**************************************************************************
-
-internal const class ConsoleMsg
-{
-  new make(Str id, Obj? a := null, Obj? b := null)
-  {
-    this.id = id
-    this.a  = a
-    this.b  = b
-  }
-  const Str id
-  const Obj? a
-  const Obj? b
 }
 
 **************************************************************************
