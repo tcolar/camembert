@@ -171,6 +171,7 @@ internal class AppController
   {
     switch (event.key.toStr)
     {
+      case "Ctrl+K":    event.consume; app.console.kill; return
       case "Ctrl+R":    event.consume; app.reload; return
       case "Ctrl+S":    event.consume; app.save; return
       case "F8":        event.consume; app.curMark = app.curMark + 1; return

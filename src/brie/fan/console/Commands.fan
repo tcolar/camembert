@@ -35,8 +35,8 @@ class Commands
 
   Cmd? get(Str name, Bool checked := true)
   {
-    x := list.find |c| { c.name == name }
-    if (x != null) return x
+    x := list.findAll |c| { c.name.startsWith(name) }
+    if (x.size == 1) return x.first
     if (checked) throw Err("Command not found: $name")
     return null
   }
@@ -144,6 +144,25 @@ class Build : Cmd
   }
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+// KillTest
+//////////////////////////////////////////////////////////////////////////
+
+/*
+class KillTest : Cmd
+{
+  override Void run(Str? arg)
+  {
+    console.execFan(["brie::KillTest"], Env.cur.workDir)
+  }
+
+  static Void main()
+  {
+    while (true) { echo("Looping $Time.now "); Actor.sleep(3sec) }
+  }
+}
+*/
 
 
 

@@ -30,9 +30,10 @@ internal const class ConsoleProcess
     Actor.locals["console"] ?: throw Err("Missing 'console' actor locale")
   }
 
-  Void done()
+  Void kill()
   {
-    echo("DONE!")
+    proc := (Process)((Unsafe)procRef.val).val
+    proc.kill
   }
 
   Void writeLines(Str[] lines)
@@ -81,6 +82,7 @@ internal const class ConsoleProcess
     try
     {
       proc := Process(cmd, dir)
+      procRef.val = Unsafe(proc)
       proc.out = ConsoleOutStream(this)
       proc.run.join
     }
@@ -90,12 +92,13 @@ internal const class ConsoleProcess
     }
     finally
     {
-      Desktop.callAsync |->| { done }
+      Desktop.callAsync |->| { console.procDone }
     }
     return null
   }
 
   private const Actor actor
+  private const AtomicRef procRef := AtomicRef(null)
 }
 
 **************************************************************************

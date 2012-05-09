@@ -116,9 +116,20 @@ class Console : EdgePane
     lister.addItem(line)
   }
 
+  Void kill()
+  {
+    proc := this.proc
+    if (proc == null) return
+    this.inKill = true
+    log("killing...")
+    proc.kill
+  }
+
   Void exec(Str[] cmd, File dir)
   {
-    ConsoleProcess(this).spawn(cmd, dir)
+    this.inKill = false
+    this.proc = ConsoleProcess(this)
+    proc.spawn(cmd, dir)
   }
 
   Void execFan(Str[] args, File dir, File fanHome := Env.cur.homeDir)
@@ -128,9 +139,18 @@ class Console : EdgePane
     exec(args, dir)
   }
 
+  internal Void procDone()
+  {
+    if (inKill) log("killed")
+    proc = null
+    inKill = false
+  }
+
   App app
   Prompt prompt
   Commands commands
   Lister lister
+  private ConsoleProcess? proc
+  private Bool inKill
 }
 
