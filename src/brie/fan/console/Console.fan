@@ -39,6 +39,7 @@ class Console : EdgePane
     cmdStr := space == null ? text : text[0..<space]
     argStr := space == null ? null : text[space+1..-1]
 
+    app.marks = Mark[,]
     prompt.field.text = text
     list([,])
     commands.get(cmdStr).run(argStr)
@@ -101,9 +102,13 @@ class Console : EdgePane
     }
   }
 
-  Void onCurMark(Int curMark)
+  Void onCurMark(Mark cur)
   {
-    lister.highlights = [Span(curMark, 0, curMark, 10_000)]
+    index := lister.items.findIndex |item| { item === cur }
+    if (index == null)
+      lister.highlights = Span[,]
+    else
+      lister.highlights = [Span(index, 0, index, 10_000)]
   }
 
   Void log(Str line)
@@ -111,15 +116,16 @@ class Console : EdgePane
     lister.addItem(line)
   }
 
-  Void exec(Str[] cmd, File dir := Env.cur.homeDir)
+  Void exec(Str[] cmd, File dir)
   {
     ConsoleProcess(this).spawn(cmd, dir)
   }
 
-  Void execFan(Str[] args, File fanHome := Env.cur.homeDir)
+  Void execFan(Str[] args, File dir, File fanHome := Env.cur.homeDir)
   {
     fan := fanHome + (Desktop.isWindows ? `bin/fan.exe` : `bin/fan`)
-    exec(args.dup.insert(0, fan.osPath), fanHome)
+    args = args.dup.insert(0, fan.osPath)
+    exec(args, dir)
   }
 
   App app

@@ -28,7 +28,7 @@ class App
     {
       title   = "Brie"
       icon    = Image(`fan://icons/x32/blueprints.png`)
-      bounds  = Rect(70, 0, 1700, 1080)
+      bounds  = Rect(70, 0, 1800, 1080)
       content = Label { text = "initializing..." }
       onKeyDown.add |e| { controller.onKeyDown(e) }
       it->onDrop = |data| { controller.onDrop(data) }  // use back-door hook for file drop
@@ -103,7 +103,7 @@ class App
       if (it >= marks.size) it = marks.size - 1
       if (it < 0) it = 0
       &curMark = it
-      console.onCurMark(it)
+      console.onCurMark(marks[it])
       if (!marks.isEmpty) goto(marks[it])
     }
   }

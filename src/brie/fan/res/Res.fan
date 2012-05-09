@@ -30,6 +30,15 @@ abstract const class Res
   virtual Image icon() { Theme.iconFile }
 
   **
+  ** Get this resource as a file.
+  **
+  virtual File? toFile(Bool checked := true)
+  {
+    if (checked) throw Err("Res is not file: $dis")
+    return null
+  }
+
+  **
   ** Return `dis`.
   **
   override Str toStr() { dis }

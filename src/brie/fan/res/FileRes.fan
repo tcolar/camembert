@@ -27,7 +27,17 @@ const class FileRes : Res
   override const Str dis
   override const Image icon
 
+  override File? toFile(Bool checked := true) { file }
+
   override View makeView(App app) { EditorView(app, this) }
+
+  override Int hash() { file.hash }
+
+  override Bool equals(Obj? that)
+  {
+    if (that isnot FileRes) return false
+    return file == ((FileRes)that).file
+  }
 
   static Image fileToIcon(File f)
   {

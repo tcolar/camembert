@@ -120,7 +120,27 @@ class Build : Cmd
 {
   override Void run(Str? arg)
   {
-    console.execFan(["-version"])
+    f := findBuildFile()
+    console.execFan([f.osPath], f.parent)
+  }
+
+  File? findBuildFile()
+  {
+    // get the current resource as a file, if this file is
+    // the build.fan file itself, then we're done
+    f := app.res.toFile(false)
+    if (f == null) return null
+    if (f.name == "build.fan") return f
+
+    // lookup up directory tree until we find "build.fan"
+    if (!f.isDir) f = f.parent
+    while (f.path.size > 0)
+    {
+      buildFile := f + `build.fan`
+      if (buildFile.exists) return buildFile
+      f = f.parent
+    }
+    return null
   }
 }
 

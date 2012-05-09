@@ -37,7 +37,36 @@ internal const class ConsoleProcess
 
   Void writeLines(Str[] lines)
   {
-    lines.each |line| { console.lister.addItem(line) }
+    app := console.app
+    lines.each |line|
+    {
+      try
+      {
+        item := parseLine(line)
+        console.lister.addItem(item)
+        if (item is Mark)
+          app.marks = app.marks.dup.add(item)
+      }
+      catch (Err e)
+      {
+        console.lister.addItem(line)
+        e.trace
+      }
+    }
+  }
+
+  private Obj parseLine(Str str)
+  {
+    // look for "file(line,col): msg"
+    if (str.size < 4) return str
+    p1 := str.index("(", 4); if (p1 == null) return str
+    c  := str.index(",", p1); if (c == null) return str
+    p2 := str.index(")", p1); if (p2 == null) return str
+    file := File.os(str[0..<p1])
+    line := str[p1+1..<c].toInt(10, false) ?: 1
+    col  := str[c+1..<p2].toInt(10, false) ?: 1
+    text := file.name + str[p1..-1]
+    return Mark(FileRes(file), line-1, col-1, col-1, text)
   }
 
   private Obj? receive(ConsoleMsg msg)
