@@ -76,6 +76,7 @@ class EditorView : View
   override Void onGoto(Mark mark)
   {
     editor.goto(mark.pos)
+    editor.focus
   }
 
   override Void onMarks(Mark[] marks)

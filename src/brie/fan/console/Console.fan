@@ -39,10 +39,15 @@ class Console : EdgePane
     cmdStr := space == null ? text : text[0..<space]
     argStr := space == null ? null : text[space+1..-1]
 
+    cmd := commands.get(cmdStr, false)
+
     app.marks = Mark[,]
-    prompt.field.text = text
+    prompt.field.text = ""
     list([,])
-    commands.get(cmdStr).run(argStr)
+
+    if (cmd == null) { log("Command not found: $cmdStr"); return }
+
+    cmd.run(argStr)
   }
 
   Void typing(Str text)
@@ -64,13 +69,7 @@ class Console : EdgePane
     if (cmd != null && argStr != null)
     {
       matches := cmd.match(argStr)
-      if (!matches.isEmpty)
-      {
-        marks := matches.findType(Mark#)
-        if (!marks.isEmpty) app.marks = marks
-        list(matches)
-        return
-      }
+      if (!matches.isEmpty) { list(matches); return }
     }
 
     // show matching commands
@@ -82,6 +81,7 @@ class Console : EdgePane
 
   Void list(Obj[] items)
   {
+    this.app.marks = items.findType(Mark#)
     this.lister = Lister(items)
     lister.onAction.add |e| { listOnAction(e) }
     this.center = lister

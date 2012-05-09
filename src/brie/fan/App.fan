@@ -53,12 +53,15 @@ class App
     if (!confirmClose) return
     try
     {
-      this.res     = res
-      this.nav     = Nav(this, res)
-      this.view    = res.makeView(this)
-      this.console = Console(this)
+      this.res  = res
+      this.nav  = Nav(this, res)
+      this.view = res.makeView(this)
 
-      window.content = AppPane(this)
+      appPane?.removeAll
+      this.appPane = AppPane(this)
+
+      window.content = appPane
+      console.relayout
       window.relayout
       window.title = "Brie $res.uri"
     }
@@ -103,8 +106,11 @@ class App
       if (it >= marks.size) it = marks.size - 1
       if (it < 0) it = 0
       &curMark = it
-      console.onCurMark(marks[it])
-      if (!marks.isEmpty) goto(marks[it])
+      if (!marks.isEmpty)
+      {
+        console.onCurMark(marks[it])
+        goto(marks[it])
+      }
     }
   }
 
@@ -116,6 +122,7 @@ class App
   Nav nav { private set }
   Console console { private set }
   internal AppController controller { private set }
+  private AppPane? appPane
 }
 
 internal class AppPane : Pane
