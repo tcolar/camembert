@@ -22,6 +22,7 @@ class App
     this.res        = FileRes(`/skyspark/src/skyspark/fan/Filter.fan`.toFile)
     this.view       = res.makeView(this)
     this.nav        = Nav(this, res)
+    this.status     = StatusBar(this)
     this.console    = Console(this)
     this.controller = AppController(this)
     this.window     = Window
@@ -56,6 +57,7 @@ class App
       this.res  = res
       this.nav  = Nav(this, res)
       this.view = res.makeView(this)
+      status.refresh
 
       appPane?.removeAll
       this.appPane = AppPane(this)
@@ -121,6 +123,7 @@ class App
   Index index { private set }
   Nav nav { private set }
   Console console { private set }
+  StatusBar status { private set }
   internal AppController controller { private set }
   private AppPane? appPane
 }

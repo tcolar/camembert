@@ -40,6 +40,7 @@ class EditorView : View
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
     editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
+    editor.onCaret.add |e| { app.status.refresh }
     editor.loadLines(lines)
 
     // hidden hooks

@@ -24,6 +24,7 @@ class Console : EdgePane
     this.lister = Lister([,])
     this.top = prompt
     this.center = lister
+    this.bottom = app.status
     this.commands = Commands(app)
   }
 

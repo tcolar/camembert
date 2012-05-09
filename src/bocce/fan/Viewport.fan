@@ -79,6 +79,8 @@ internal class Viewport
 
   Void goto(Pos caret, Bool jump := false)
   {
+    if (caretLine == caret.line && caretCol == caret.col) return
+
     caretLine = caret.line
     caretCol  = caret.col
 
@@ -93,6 +95,7 @@ internal class Viewport
 
     if (jump) startLine = caret.line - visibleLines/3
     updateCaret
+    editor.onCaret.fire(Event { id = EventId.caret; widget = editor })
   }
 
   private Void updateCaret(Bool vhover := false)

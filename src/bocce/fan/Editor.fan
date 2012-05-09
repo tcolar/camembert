@@ -48,6 +48,9 @@ class Editor : Canvas
   ** Callback when the text is modified.
   once EventListeners onModify() { EventListeners() }
 
+  ** Callback when the caret position is modified.
+  once EventListeners onCaret() { EventListeners() }
+
 //////////////////////////////////////////////////////////////////////////
 // I/O
 //////////////////////////////////////////////////////////////////////////
