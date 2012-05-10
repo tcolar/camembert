@@ -20,6 +20,7 @@ class Commands
       c("b",    "Build current pod", BuildCmd#),
       c("f",    "Find in current doc", FindCmd#),
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
+      c("gl",   "Goto line", GotoLineCmd#),
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
       c("s",    "Show type/slot", ShowCmd#),
@@ -159,6 +160,47 @@ class GotoFileCmd : MatchCmd
   override Obj[] match(Str arg) { app.index.matchFiles(arg) }
 }
 
+class GotoLineCmd : MatchCmd
+{
+  override Void run(Str? arg)
+  {
+    mark := toMark(arg)
+    if (mark != null) app.goto(mark)
+    console.clear
+  }
+
+  override Obj[] match(Str arg)
+  {
+    mark := toMark(arg)
+    if (mark == null) return [,]
+    lines := Obj[,]
+    s := (mark.line - 5).max(0)
+    e := (mark.line + 5).min(editor.lineCount)
+
+    for (i := s; i<e; ++i)
+      lines.add(i == mark.line ? mark : editor.line(i))
+
+    highlight := mark.line - s
+    Desktop.callAsync |->|
+    {
+      console.lister.highlights = [Span(highlight, 0, highlight, 10_000)]
+    }
+
+    return lines
+  }
+
+  private Mark? toMark(Str? arg)
+  {
+    if (editor == null) return null
+    line := ((arg ?: "1").toInt(10, false) ?: 1) - 1
+    if (line < 0) line = 0
+    if (line >= editor.lineCount) line = editor.lineCount-1
+    text := editor.line(line)
+    if (text.isEmpty) text = " "
+    return Mark(app.res, line, 0, 0, text)
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////
 // ShowCmd
 //////////////////////////////////////////////////////////////////////////
@@ -254,26 +296,26 @@ class HelpCmd : Cmd
   override Void run(Str? arg)
   {
     s := StrBuf().add(
-     """Esc        Focus console
-        F1         Focus editor
-        Ctrl+Space Focus nav history
-        Ctrl+1     Focus nav level-1
-        Ctrl+2     Focus nav level-2
-        Ctrl+3     Focus nav level-3
-        F9         Build
-        F8         Next mark
-        Shift+F8   Prev mark
-        Ctrl+C     Copy
-        Ctrl+D     Delete cur line
-        Ctrl+K     Kill
-        Ctrl+R     Reload
-        Ctrl+S     Save
-        Ctrl+V     Paste
-        Ctrl+X     Cut
+     """Esc         Focus console
+        F1          Focus editor and clear console
+        Ctrl+Space  Focus nav history
+        Ctrl+1      Focus nav level-1
+        Ctrl+2      Focus nav level-2
+        Ctrl+3      Focus nav level-3
+        F9          Build
+        F8          Next mark
+        Shift+F8    Prev mark
+        Ctrl+C      Copy
+        Ctrl+D      Delete cur line
+        Ctrl+K      Kill console process
+        Ctrl+R      Reload
+        Ctrl+S      Save
+        Ctrl+V      Paste
+        Ctrl+X      Cut
         """)
 
     s.add("\n")
-    console.commands.list.each |c| { s.add(c.name.padr(10) + " " + c.summary + "\n") }
+    console.commands.list.each |c| { s.add(c.name.padr(11) + " " + c.summary + "\n") }
     console.showStr(s.toStr)
   }
 }
