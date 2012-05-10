@@ -221,13 +221,20 @@ internal class AppController
       case "Shift+F8":   event.consume; app.curMark = app.curMark - 1; return
       case "F9":         event.consume; app.build; return
       case "Esc":        event.consume; app.console.onReady; return
-      case "F1":         event.consume; app.console.clear; app.view.onReady; return
+      case "F1":         event.consume; onEditor; return
       case "Ctrl+Space": event.consume; app.nav.onReady(0); return
       case "Ctrl+1":     event.consume; app.nav.onReady(1); return
       case "Ctrl+2":     event.consume; app.nav.onReady(2); return
       case "Ctrl+3":     event.consume; app.nav.onReady(3); return
     }
     // echo(":: $event")
+  }
+
+  Void onEditor()
+  {
+    app.marks = Mark[,]
+    app.console.clear
+    app.view.onReady
   }
 
   Void onViewDirty()

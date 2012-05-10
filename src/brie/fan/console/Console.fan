@@ -82,7 +82,11 @@ class Console : EdgePane
     list(commands.list)
   }
 
-  Void clear() { list(Obj[,]) }
+  Void clear()
+  {
+    prompt.field.text = ""
+    list(Obj[,])
+  }
 
   Void list(Obj[] items)
   {

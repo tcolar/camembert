@@ -66,7 +66,11 @@ class EditorView : View
 
   override Pos curPos() { editor.caret }
 
-  override Void onReady() { editor.focus }
+  override Void onReady()
+  {
+    editor.highlights = Span[,]
+    editor.focus
+  }
 
   override Void onSave()
   {
