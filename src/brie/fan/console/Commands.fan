@@ -22,7 +22,6 @@ class Commands
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
-      c("h",    "History", HisCmd#),
       c("s",    "Show type/slot", ShowCmd#),
       c("ri",   "Rebuild entire index", ReindexCmd#),
       c("?",    "Help", HelpCmd#),
@@ -214,25 +213,6 @@ class BuildCmd : Cmd
       f = f.parent
     }
     return null
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////
-// HisCmd
-//////////////////////////////////////////////////////////////////////////
-
-class HisCmd : MatchCmd
-{
-  override Obj[] match(Str arg)
-  {
-    app.his.map |res->Mark|
-    {
-      text := res.dis
-      try
-        text = app.index.podForFile(res.toFile).name +"::" + text
-      catch(Err e) {}
-      return Mark(res, 0, 0, 0, text)
-    }
   }
 }
 

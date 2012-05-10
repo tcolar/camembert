@@ -67,9 +67,7 @@ class App
     if (!confirmClose) return
     try
     {
-      if (hisRef.size > 25) hisRef.removeAt(-1)
-      hisRef.remove(this.res)
-      hisRef.insert(0, this.res)
+      addHis
 
       this.res  = res
       this.nav  = Nav(this, res)
@@ -88,6 +86,26 @@ class App
     {
       load(ErrRes(res.uri, "Cannot load resource", e.trace))
     }
+  }
+
+  private Void addHis()
+  {
+    // remove current file from existing file
+    i := his.findIndex |his| { his.res == res }
+    if (i != null) hisRef.removeAt(i)
+
+    // don't add build.fan files
+    if (res.dis == "build.fan") return
+
+    // get current pod
+    text := res.dis
+    try
+      text = index.podForFile(res.toFile).name + "::" + res.dis
+    catch {}
+
+    // get current position of file
+    pos := view.curPos
+    hisRef.insert(0, Mark(res, pos.line, pos.col, 0, text))
   }
 
   private Bool confirmClose()
@@ -113,7 +131,7 @@ class App
     console.run("b")
   }
 
-  Res[] his() { hisRef.ro }
+  Mark[] his() { hisRef.ro }
 
   Mark[] marks := Mark[,]
   {
@@ -145,7 +163,7 @@ class App
   StatusBar status { private set }
   internal AppController controller { private set }
   private AppPane? appPane
-  private Res[] hisRef := Res[,]
+  private Mark[] hisRef := Mark[,]
 }
 
 internal class AppPane : Pane

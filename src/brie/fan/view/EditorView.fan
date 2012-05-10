@@ -64,6 +64,8 @@ class EditorView : View
 
   Editor editor
 
+  override Pos curPos() { editor.caret }
+
   override Void onReady() { editor.focus }
 
   override Void onSave()

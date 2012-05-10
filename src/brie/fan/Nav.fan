@@ -22,15 +22,7 @@ class Nav : Pane
     this.res = res
 
     // history items
-    str := app.his.join("\n") |r|
-    {
-      try
-        if (r.dis == "build.fan")
-          return app.index.podForFile(r.toFile).name
-      catch {}
-      return r.dis
-    }
-    this.his = makeLister(app.his, str)
+    this.his = makeLister(app.his)
 
     // if file resource, then get PodInfo for file
     file := (res as FileRes)?.file
@@ -108,6 +100,7 @@ class Nav : Pane
   Void navTo(Obj item)
   {
     if (item is Res)      { app.load(item); return }
+    if (item is Mark)     { app.goto(item); return }
     if (item is PodInfo)  { navToPod(item); return }
     if (item is PodInfo)  { navToPod(item); return }
     if (item is TypeInfo) { navToType(item); return }

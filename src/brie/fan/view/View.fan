@@ -8,6 +8,7 @@
 
 using gfx
 using fwt
+using bocce
 
 **
 ** View is a plugin designed to view or edit a Res.
@@ -57,6 +58,9 @@ abstract class View : ContentPane
       if (it) app.controller.onViewDirty
     }
   }
+
+  ** Get current position
+  virtual Pos curPos() { Pos(0, 0) }
 
   **
   ** Take focus and be ready to work!
