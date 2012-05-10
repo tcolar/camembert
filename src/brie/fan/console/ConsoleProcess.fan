@@ -58,16 +58,37 @@ internal const class ConsoleProcess
 
   private Obj parseLine(Str str)
   {
-    // look for "file(line,col): msg"
-    if (str.size < 4) return str
-    p1 := str.index("(", 4); if (p1 == null) return str
-    c  := str.index(",", p1); if (c == null) return str
-    p2 := str.index(")", p1); if (p2 == null) return str
+    // Fantom "file(line,col): msg"
+    // Javac  "file:col: msg"
+    if (str.size > 4)
+    {
+      mark := parseFan(str);  if (mark != null) return mark
+      mark  = parseJava(str); if (mark != null) return mark
+    }
+    return str
+  }
+
+  private Mark? parseFan(Str str)
+  {
+    p1 := str.index("(", 4); if (p1 == null) return null
+    c  := str.index(",", p1); if (c == null) return null
+    p2 := str.index(")", p1); if (p2 == null) return null
     file := File.os(str[0..<p1])
     line := str[p1+1..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
     text := file.name + str[p1..-1]
     return Mark(FileRes(file), line-1, col-1, col-1, text)
+  }
+
+  private Mark? parseJava(Str str)
+  {
+    c1 := str.index(":", 4); if (c1 == null) return null
+    c2 := str.index(":", c1+1); if (c2 == null) return null
+    file := File.os(str[0..<c1])
+    if (!file.exists) return null
+    line := str[c1+1..<c2].toInt(10, false) ?: 1
+    text := file.name + str[c1..-1]
+    return Mark(FileRes(file), line-1, 0, 0, text)
   }
 
   private Obj? receive(Msg msg)
