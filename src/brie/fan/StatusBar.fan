@@ -39,7 +39,11 @@ class StatusBar : Canvas
     g.drawLine(0, 0, w, 0)
     g.drawLine(0, 1, w, 1)
 
-    // charset
+    // indexing
+    if (app.index.isIndexing)
+      g.drawImage(Theme.iconIndexing, 8, 2+(h-18)/2)
+
+    // editor line:col charset
     g.font = app.options.font
     g.brush = Theme.status
     editor := app.view as EditorView

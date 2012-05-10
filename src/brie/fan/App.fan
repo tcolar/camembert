@@ -15,6 +15,9 @@ using concurrent
 **
 class App
 {
+  static App? cur() { curRef.val->val }
+  private static const AtomicRef curRef := AtomicRef(null)
+
   new make(Options options)
   {
     this.options    = options
@@ -35,9 +38,19 @@ class App
       it->onDrop = |data| { controller.onDrop(data) }  // use back-door hook for file drop
     }
     load(res)
+    curRef.val = Unsafe(this)
   }
 
-  Void reload() { load(res) }
+  Void reload()
+  {
+    // reindex current pod which is usually just 30ms
+    if (nav.curPod != null)
+    {
+      index.reindexPod(nav.curPod)
+      Actor.sleep(100ms)
+    }
+    load(res)
+  }
 
   Void goto(Mark mark)
   {

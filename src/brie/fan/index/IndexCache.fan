@@ -33,15 +33,15 @@ internal class IndexCache
 
   Obj? addPodSrc(Str name, File srcDir, File[] srcFiles)
   {
-    cur := pods[name] ?: PodInfo(name, TypeInfo[,], null, File#.emptyList)
-    pods[name] = PodInfo(name, cur.types, srcDir, srcFiles)
+    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList)
+    pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles)
     return null
   }
 
-  Obj? addPodLib(Str name, TypeInfo[] types)
+  Obj? addPodLib(Str name, File podFile, TypeInfo[] types)
   {
-    cur := pods[name] ?: PodInfo(name, TypeInfo[,], null, File#.emptyList)
-    pods[name] = PodInfo(name, types, cur.srcDir, cur.srcFiles)
+    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList)
+    pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles)
     return null
   }
 

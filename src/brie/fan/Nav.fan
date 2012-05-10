@@ -23,18 +23,18 @@ class Nav : Pane
 
     // if file resource, then get PodInfo for file
     file := (res as FileRes)?.file
-    pod := file != null ? app.index.podForFile(file) : null
+    this.curPod = file != null ? app.index.podForFile(file) : null
 
     // level 0 is pod names
     level0 := makeLister(app.index.pods)
     this.levels = [level0]
 
     // level 1 is pod types
-    level1 := makeTypesLister(pod)
+    level1 := makeTypesLister(curPod)
     if (level1 != null) levels.add(level1)
 
     // level 2 types/slots in given file
-    level2 := makeSlotsLister(pod, file)
+    level2 := makeSlotsLister(curPod, file)
     if (level2 != null) levels.add(level2)
 
     levels.eachRange(1..-1) |level| { level.paintLeftDiv = true }
@@ -146,6 +146,7 @@ class Nav : Pane
 
   App app
   Res res
+  PodInfo? curPod
   Lister[] levels
 }
 

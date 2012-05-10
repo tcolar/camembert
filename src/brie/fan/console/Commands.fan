@@ -23,6 +23,7 @@ class Commands
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
       c("s",    "Show type/slot", ShowCmd#),
+      c("ri",   "Rebuild entire index", ReindexCmd#),
       c("?",    "Help", HelpCmd#),
     ]
   }
@@ -213,6 +214,15 @@ class BuildCmd : Cmd
     }
     return null
   }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// ReindexCmd
+//////////////////////////////////////////////////////////////////////////
+
+class ReindexCmd : Cmd
+{
+  override Void run(Str? arg) { app.index.reindexAll }
 }
 
 //////////////////////////////////////////////////////////////////////////

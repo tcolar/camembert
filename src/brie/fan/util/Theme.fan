@@ -13,9 +13,10 @@ using gfx
 **
 const class Theme
 {
-  const static Image iconFile := Image(`fan://icons/x16/file.png`)
-  const static Image iconDir  := Image(`fan://icons/x16/folder.png`)
-  const static Image iconErr  := Image(`fan://icons/x16/err.png`)
+  const static Image iconFile     := Image(`fan://icons/x16/file.png`)
+  const static Image iconDir      := Image(`fan://icons/x16/folder.png`)
+  const static Image iconErr      := Image(`fan://icons/x16/err.png`)
+  const static Image iconIndexing := Image(`fan://icons/x16/sync.png`)
 
   const static Color bg       := Color(0xff_ff_ff)
   const static Color div      := Color(0xdd_dd_dd)

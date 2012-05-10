@@ -48,6 +48,16 @@ const class Index
   ** Directories to crawl and maintain synchronization
   const File[] dirs
 
+  ** Are we currently indexing
+  Bool isIndexing() { isIndexingRef.val }
+
+  ** Update indexing status
+  internal Void setIsIndexing(Bool val)
+  {
+    isIndexingRef.val = val
+    try Desktop.callAsync |->| { App.cur.status.refresh }; catch {}
+  }
+
   ** List all pods found
   PodInfo[] pods() { ((Unsafe)cache.send(Msg("pods")).get(timeout)).val }
 
@@ -70,6 +80,12 @@ const class Index
   {
     cache.send(Msg("clearAll"))
     crawler.send(Msg("reindexAll"))
+  }
+
+  ** Rebuild index for given pod
+  Future reindexPod(PodInfo pod)
+  {
+    crawler.send(Msg("reindexPod", pod))
   }
 
   ** Match types
@@ -100,7 +116,7 @@ const class Index
     if (id === "matchTypes")  return Unsafe(c.matchTypes(msg.a))
     if (id === "matchFiles")  return Unsafe(c.matchFiles(msg.a))
     if (id === "addPodSrc")   return c.addPodSrc(msg.a, msg.b, msg.c)
-    if (id === "addPodLib")   return c.addPodLib(msg.a, msg.b)
+    if (id === "addPodLib")   return c.addPodLib(msg.a, msg.b, msg.c)
     if (id === "clearAll")    return Actor.locals["cache"] = IndexCache(this)
 
     echo("ERROR: Unknown msg: $msg.id")
@@ -113,14 +129,19 @@ const class Index
 
   private Obj? receiveCrawler(Msg msg)
   {
-    c := Actor.locals["crawl"] as IndexCrawler
-    if (c == null) Actor.locals["crawl"] = c = IndexCrawler(this)
+    try
+    {
+      c := Actor.locals["crawl"] as IndexCrawler
+      if (c == null) Actor.locals["crawl"] = c = IndexCrawler(this)
 
-    id := msg.id
-    if (id === "reindexAll") return c.indexAll
+      id := msg.id
+      if (id === "reindexPod") return c.indexPod(msg.a)
+      if (id === "reindexAll") return c.indexAll
 
-    echo("ERROR: Unknown msg: $msg.id")
-    throw Err("Unknown msg: $msg.id")
+      echo("ERROR: Unknown msg: $msg.id")
+      throw Err("Unknown msg: $msg.id")
+    }
+    catch (Err e) { e.trace; throw e }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,4 +151,5 @@ const class Index
   internal const Duration timeout := 10sec
   internal const Actor cache   := Actor(ActorUtil.pool) |msg| { receiveCache(msg) }
   internal const Actor crawler := Actor(ActorUtil.pool) |msg| { receiveCrawler(msg) }
+  private const AtomicBool isIndexingRef := AtomicBool()
 }

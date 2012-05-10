@@ -21,11 +21,31 @@ internal class IndexCrawler
 
   Duration indexAll()
   {
-    t1 := Duration.now
-    index.dirs.each |dir| { indexDir(dir) }
-    t2 := Duration.now
-    echo("Index all ${(t2-t1).toLocale}")
-    return (t2-t1)
+    index.setIsIndexing(true)
+    try
+    {
+      t1 := Duration.now
+      index.dirs.each |dir| { indexDir(dir) }
+      t2 := Duration.now
+      echo("Index all ${(t2-t1).toLocale}")
+      return (t2-t1)
+    }
+    finally index.setIsIndexing(false)
+  }
+
+  Obj? indexPod(PodInfo pod)
+  {
+    index.setIsIndexing(true)
+    try
+    {
+      t1 := Duration.now
+      indexPodSrcDir(pod.srcDir)
+      indexPodLib(pod.podFile)
+      t2 := Duration.now
+      echo("Index pod '$pod.name' ${(t2-t1).toLocale}")
+      return null
+    }
+    finally index.setIsIndexing(false)
   }
 
   private Void indexDir(File dir)
@@ -85,26 +105,17 @@ internal class IndexCrawler
 
   private Void indexPodLibDir(File dir)
   {
-    dir.list.each |f|
-    {
-      if (f.ext != "pod") return
+    dir.list.each |f| { if (f.ext == "pod") indexPodLib(f) }
+  }
 
-      /*
-      DocPod? doc := null
-      try
-        doc = DocPod.load(f)
-      catch (Err e)
-        e.trace
-      */
-
-      types := TypeInfo[,]
-      try
-        types = fcodeReflect(f)
-      catch (Err e)
-        e.trace
-
-      index.cache.send(Msg("addPodLib", f.basename, types))
-    }
+  private Void indexPodLib(File podFile)
+  {
+    types := TypeInfo[,]
+    try
+      types = fcodeReflect(podFile)
+    catch (Err e)
+      e.trace
+    index.cache.send(Msg("addPodLib", podFile.basename, podFile, types))
   }
 
   private TypeInfo[] fcodeReflect(File file)

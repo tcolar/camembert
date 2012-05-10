@@ -11,20 +11,24 @@ using concurrent
 
 const class PodInfo
 {
-  new make(Str name, TypeInfo[] types, File? srcDir, File[] srcFiles)
+  new make(Str name, File? podFile, TypeInfo[] types, File? srcDir, File[] srcFiles)
   {
-    this.name     = name
-    this.srcDir   = srcDir
-    this.srcFiles = srcFiles
-    this.types    = types
+    this.name       = name
+    this.podFile    = podFile
+    this.podFileMod = podFile?.modified
+    this.types      = types
+    this.srcDir     = srcDir
+    this.srcFiles   = srcFiles
     types.each |t| { t.podRef.val = this }
   }
 
   const Str name
   override Str toStr() { name }
+  const File? podFile
+  const DateTime? podFileMod
+  const TypeInfo[] types
   const File? srcDir
   const File[] srcFiles
-  const TypeInfo[] types
 }
 
 const class TypeInfo
