@@ -21,12 +21,24 @@ class Nav : Pane
     this.app = app
     this.res = res
 
+    // history items
+    str := app.his.join("\n") |r|
+    {
+      try
+        if (r.dis == "build.fan")
+          return app.index.podForFile(r.toFile).name
+      catch {}
+      return r.dis
+    }
+    this.his = makeLister(app.his, str)
+
     // if file resource, then get PodInfo for file
     file := (res as FileRes)?.file
     this.curPod = file != null ? app.index.podForFile(file) : null
 
     // level 0 is pod names
     level0 := makeLister(app.index.pods)
+    level0.paintTopDiv = true
     this.levels = [level0]
 
     // level 1 is pod types
@@ -38,6 +50,7 @@ class Nav : Pane
     if (level2 != null) levels.add(level2)
 
     levels.eachRange(1..-1) |level| { level.paintLeftDiv = true }
+    add(his)
     levels.each |level| { add(level) }
   }
 
@@ -86,11 +99,15 @@ class Nav : Pane
 
   Void onReady(Int num)
   {
-    levels.getSafe(num-1)?.focus
+    if (num == 0)
+      his.focus
+    else
+      levels.getSafe(num-1)?.focus
   }
 
   Void navTo(Obj item)
   {
+    if (item is Res)      { app.load(item); return }
     if (item is PodInfo)  { navToPod(item); return }
     if (item is PodInfo)  { navToPod(item); return }
     if (item is TypeInfo) { navToType(item); return }
@@ -138,8 +155,16 @@ class Nav : Pane
     levelx := 0
     levels.each |level, i|
     {
+      levely := 0
+      levelh := h
       if (i == levels.size-1) levelw = w - levelx
-      level.bounds = Rect(levelx, 0, levelw, h)
+      if (i == 0)
+      {
+        his.bounds = Rect(levelx, 0, levelw, levelh/2)
+        levely += his.bounds.h
+        levelh = h - levely
+      }
+      level.bounds = Rect(levelx, levely, levelw, levelh)
       levelx += levelw
     }
   }
@@ -147,6 +172,7 @@ class Nav : Pane
   App app
   Res res
   PodInfo? curPod
+  Lister his
   Lister[] levels
 }
 

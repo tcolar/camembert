@@ -22,7 +22,7 @@ class App
   {
     this.options    = options
     this.index      = Index(options.indexDirs)
-    this.res        = FileRes(`/skyspark/src/skyspark/fan/Filter.fan`.toFile)
+    this.res        = FileRes(`/dev/ide/src/brie/fan/App.fan`.toFile)
     this.view       = res.makeView(this)
     this.nav        = Nav(this, res)
     this.status     = StatusBar(this)
@@ -67,6 +67,10 @@ class App
     if (!confirmClose) return
     try
     {
+      if (hisRef.size > 25) hisRef.removeAt(-1)
+      hisRef.remove(this.res)
+      hisRef.insert(0, this.res)
+
       this.res  = res
       this.nav  = Nav(this, res)
       this.view = res.makeView(this)
@@ -109,6 +113,8 @@ class App
     console.run("b")
   }
 
+  Res[] his() { hisRef.ro }
+
   Mark[] marks := Mark[,]
   {
     set { &marks = it; &curMark = -1; view.onMarks(it) }
@@ -139,6 +145,7 @@ class App
   StatusBar status { private set }
   internal AppController controller { private set }
   private AppPane? appPane
+  private Res[] hisRef := Res[,]
 }
 
 internal class AppPane : Pane
@@ -187,17 +194,18 @@ internal class AppController
   {
     switch (event.key.toStr)
     {
-      case "Ctrl+K":    event.consume; app.console.kill; return
-      case "Ctrl+R":    event.consume; app.reload; return
-      case "Ctrl+S":    event.consume; app.save; return
-      case "F8":        event.consume; app.curMark = app.curMark + 1; return
-      case "Shift+F8":  event.consume; app.curMark = app.curMark - 1; return
-      case "F9":        event.consume; app.build; return
-      case "Esc":       event.consume; app.console.onReady; return
-      case "F1":        event.consume; app.view.onReady; return
-      case "Ctrl+1":    event.consume; app.nav.onReady(1); return
-      case "Ctrl+2":    event.consume; app.nav.onReady(2); return
-      case "Ctrl+3":    event.consume; app.nav.onReady(3); return
+      case "Ctrl+K":     event.consume; app.console.kill; return
+      case "Ctrl+R":     event.consume; app.reload; return
+      case "Ctrl+S":     event.consume; app.save; return
+      case "F8":         event.consume; app.curMark = app.curMark + 1; return
+      case "Shift+F8":   event.consume; app.curMark = app.curMark - 1; return
+      case "F9":         event.consume; app.build; return
+      case "Esc":        event.consume; app.console.onReady; return
+      case "F1":         event.consume; app.view.onReady; return
+      case "Ctrl+Space": event.consume; app.nav.onReady(0); return
+      case "Ctrl+1":     event.consume; app.nav.onReady(1); return
+      case "Ctrl+2":     event.consume; app.nav.onReady(2); return
+      case "Ctrl+3":     event.consume; app.nav.onReady(3); return
     }
     // echo(":: $event")
   }

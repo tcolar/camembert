@@ -94,7 +94,11 @@ const final class Pos
 
   internal Pos end(Doc doc)
   {
-    Pos(line, doc.line(line).size)
+    line := doc.line(line)
+    if (line.isEmpty) return Pos(this.line, 0)
+    col := line.size-1
+    while (col >= 0 && line[col].isSpace) col--
+    return Pos(this.line, col+1)
   }
 
   internal Pos prevWord(Doc doc)

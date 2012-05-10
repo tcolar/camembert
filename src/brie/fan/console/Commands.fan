@@ -22,6 +22,7 @@ class Commands
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
+      c("h",    "History", HisCmd#),
       c("s",    "Show type/slot", ShowCmd#),
       c("ri",   "Rebuild entire index", ReindexCmd#),
       c("?",    "Help", HelpCmd#),
@@ -217,6 +218,25 @@ class BuildCmd : Cmd
 }
 
 //////////////////////////////////////////////////////////////////////////
+// HisCmd
+//////////////////////////////////////////////////////////////////////////
+
+class HisCmd : MatchCmd
+{
+  override Obj[] match(Str arg)
+  {
+    app.his.map |res->Mark|
+    {
+      text := res.dis
+      try
+        text = app.index.podForFile(res.toFile).name +"::" + text
+      catch(Err e) {}
+      return Mark(res, 0, 0, 0, text)
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
 // ReindexCmd
 //////////////////////////////////////////////////////////////////////////
 
@@ -254,24 +274,26 @@ class HelpCmd : Cmd
   override Void run(Str? arg)
   {
     s := StrBuf().add(
-     """Esc       Focus console
-        F1        Focus editor
-        Ctrl+1    Focus nav level-1
-        Ctrl+2    Focus nav level-2
-        Ctrl+3    Focus nav level-3
-        F9        Build
-        F8        Next mark
-        Shift+F8  Prev mark
-        Ctrl+C    Copy
-        Ctrl+K    Kill
-        Ctrl+R    Reload
-        Ctrl+S    Save
-        Ctrl+V    Paste
-        Ctrl+X    Cut
+     """Esc        Focus console
+        F1         Focus editor
+        Ctrl+Space Focus nav history
+        Ctrl+1     Focus nav level-1
+        Ctrl+2     Focus nav level-2
+        Ctrl+3     Focus nav level-3
+        F9         Build
+        F8         Next mark
+        Shift+F8   Prev mark
+        Ctrl+C     Copy
+        Ctrl+D     Delete cur line
+        Ctrl+K     Kill
+        Ctrl+R     Reload
+        Ctrl+S     Save
+        Ctrl+V     Paste
+        Ctrl+X     Cut
         """)
 
     s.add("\n")
-    console.commands.list.each |c| { s.add(c.name.padr(9) + " " + c.summary + "\n") }
+    console.commands.list.each |c| { s.add(c.name.padr(10) + " " + c.summary + "\n") }
     console.showStr(s.toStr)
   }
 }

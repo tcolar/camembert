@@ -382,6 +382,13 @@ internal class Viewport
   private Void paintDivs(Graphics g)
   {
     g.brush = options.div
+
+    if (editor.paintTopDiv)
+    {
+      g.drawLine(0, 0, size.w, 0)
+      g.drawLine(0, 1, size.w, 1)
+    }
+
     if (editor.paintLeftDiv)
     {
       g.drawLine(0, 0, 0, size.h)

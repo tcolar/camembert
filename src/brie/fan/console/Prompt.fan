@@ -48,6 +48,7 @@ class Prompt : ContentPane
     field.text = ""
     field.fg = Color.black
     focused = true
+    console.typing("")
   }
 
   Void onTextBlur(Event event)

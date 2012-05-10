@@ -43,14 +43,14 @@ class StatusBar : Canvas
     if (app.index.isIndexing)
       g.drawImage(Theme.iconIndexing, 8, 2+(h-18)/2)
 
-    // editor line:col charset
+    // editor charset line:col
     g.font = app.options.font
     g.brush = Theme.status
     editor := app.view as EditorView
     if (editor != null)
     {
       caret := editor.editor.caret
-      text := "" + (caret.line+1) + ":" + (caret.col+1) + "    " + editor.charset
+      text := "" + editor.charset + "  " + (caret.line+1) + ":" + (caret.col+1)
       g.drawText(text, w-g.font.width(text)-20, 5)
     }
   }

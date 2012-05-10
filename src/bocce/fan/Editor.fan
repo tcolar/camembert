@@ -99,9 +99,9 @@ class Editor : Canvas
 
   ** Move caret and scroll to the given position
   ** and ensure editor is focused
-  Void goto(Pos pos)
+  Void goto(Pos pos, Bool jump)
   {
-    viewport.goto(pos)
+    viewport.goto(pos, jump)
     focus
   }
 
@@ -134,6 +134,7 @@ class Editor : Canvas
 //////////////////////////////////////////////////////////////////////////
 
   @NoDoc Bool paintCaret    := true
+  @NoDoc Bool paintTopDiv   := false
   @NoDoc Bool paintLeftDiv  := false
   @NoDoc Bool paintRightDiv := false
   @NoDoc Bool paintShowCols := false

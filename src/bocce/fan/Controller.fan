@@ -200,7 +200,6 @@ internal class Controller
     line := doc.line(caret.line)
     col := 0
     while (col < line.size - 1 && line[col].isSpace) col++
-    if (line.getSafe(col) == '{') col += editor.options.tabSpacing
     if (line.getSafe(caret.col) == '}') col -= editor.options.tabSpacing
 
     // insert newline and indent spaces

@@ -47,7 +47,11 @@ class Console : EdgePane
     prompt.field.text = ""
     list([,])
 
-    if (cmd == null) { log("Command not found: $cmdStr"); return }
+    if (cmd == null)
+    {
+      list(commands.list)
+      return
+    }
 
     cmd.run(argStr)
   }
@@ -75,10 +79,7 @@ class Console : EdgePane
     }
 
     // show matching commands
-    if (cmds.isEmpty)
-      list(["No matching commands"])
-    else
-      list(cmds)
+    list(commands.list)
   }
 
   Void clear() { list(Obj[,]) }
@@ -102,7 +103,7 @@ class Console : EdgePane
     editor := Editor { it.rules = rules; it.ro = true }
     editor.loadLines(lines)
     editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
-    Desktop.callAsync |->| { editor.goto(mark.pos) }
+    Desktop.callAsync |->| { editor.goto(mark.pos, false) }
 
     this.center = editor
     relayout

@@ -73,11 +73,12 @@ class EditorView : View
       editor.save(out)
     finally
       out.close
+    fileTimeAtLoad = file.modified
   }
 
   override Void onGoto(Mark mark)
   {
-    editor.goto(mark.pos)
+    editor.goto(mark.pos, true)
     editor.focus
   }
 
