@@ -131,6 +131,8 @@ class App
     console.run("b")
   }
 
+  PodInfo? curPod() { nav.curPod }
+
   Mark[] his() { hisRef.ro }
 
   Mark[] marks := Mark[,]

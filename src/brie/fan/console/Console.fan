@@ -179,6 +179,7 @@ class Console : EdgePane
   internal Void procDone()
   {
     if (inKill) log("killed")
+    app.index.reindexPod(app.curPod)
     proc = null
     inKill = false
   }

@@ -47,15 +47,11 @@ class Prompt : ContentPane
   {
     field.text = ""
     field.fg = Color.black
-    focused = true
     console.typing("")
   }
 
   Void onTextBlur(Event event)
   {
-    focused = false
-    field.text = "console"
-    field.fg = Theme.div
   }
 
   Void onTextAction(Event event)
@@ -74,13 +70,12 @@ class Prompt : ContentPane
 
   Void onTextModify(Event event)
   {
-    if (focused) console.typing(field.text)
+    if (hasFocus && !event.consumed) console.typing(field.text)
   }
 
   App app
   Console console
   Text field
-  Bool focused
 }
 
 

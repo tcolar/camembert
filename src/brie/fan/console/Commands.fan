@@ -20,6 +20,7 @@ class Commands
       c("b",    "Build current pod", BuildCmd#),
       c("f",    "Find in current doc", FindCmd#),
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
+      c("fp",   "Find in current pod", FindPodCmd#),
       c("gl",   "Goto line", GotoLineCmd#),
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
@@ -112,7 +113,7 @@ class MatchCmd : Cmd
 
 
 //////////////////////////////////////////////////////////////////////////
-// FindCmd
+// FindCmd / FindInsensitiveCmd
 //////////////////////////////////////////////////////////////////////////
 
 class FindCmd : MatchCmd
@@ -142,6 +143,31 @@ class FindCmd : MatchCmd
 class FindInsensitiveCmd : FindCmd
 {
   override Bool matchCase() { false }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// FindPod
+//////////////////////////////////////////////////////////////////////////
+
+class FindPodCmd : Cmd
+{
+  override Void run(Str? arg)
+  {
+    if (arg == null || arg.trim.isEmpty || app.curPod == null) return
+
+    marks := Mark[,]
+    app.curPod.srcFiles.each |file|
+    {
+      file.readAllLines.each |line, linei|
+      {
+        col := line.index(arg)
+        if (col == null) return
+        text := "$file.name(${linei+1}): $line.trim"
+        marks.add(Mark(FileRes(file), linei, col, col+arg.size, text))
+      }
+    }
+    app.console.list(marks)
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////

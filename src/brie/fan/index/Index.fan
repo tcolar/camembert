@@ -82,9 +82,10 @@ const class Index
     crawler.send(Msg("reindexAll"))
   }
 
-  ** Rebuild index for given pod
-  Future reindexPod(PodInfo pod)
+  ** Rebuild index for given pod, if null no-op
+  Void reindexPod(PodInfo? pod)
   {
+    if (pod == null) return
     crawler.send(Msg("reindexPod", pod))
   }
 

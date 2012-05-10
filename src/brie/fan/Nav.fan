@@ -33,8 +33,8 @@ class Nav : Pane
     level0.paintTopDiv = true
     this.levels = [level0]
 
-    // level 1 is pod types
-    level1 := makeTypesLister(curPod)
+    // level 1 is pod types and files
+    level1 := makeTypesAndFilesLister(curPod)
     if (level1 != null) levels.add(level1)
 
     // level 2 types/slots in given file
@@ -46,13 +46,31 @@ class Nav : Pane
     levels.each |level| { add(level) }
   }
 
-  private Lister? makeTypesLister(PodInfo? pod)
+  private Lister? makeTypesAndFilesLister(PodInfo? pod)
   {
-    if (pod == null || pod.types.isEmpty) return null
+    if (pod == null) return null
 
+    // types
     items := Obj[,]
     pod.types.each |t| { items.add(t) }
 
+    // files organized by their directory
+    if (!items.isEmpty) items.add("")
+    dirs := Str:File[][:]
+    pod.srcFiles.each |src|
+    {
+      dirPath := src.path[pod.srcDir.path.size..-2].join("/") + "/"
+      if (dirPath.size == 1) dirPath = ""
+      dir := dirs.getOrAdd(dirPath) { File[,] }
+      dir.add(src)
+    }
+    dirs.keys.sort.each |dir|
+    {
+      if (!dir.isEmpty) items.add(dir)
+      indent := dir.isEmpty ? "" : "  "
+      files := dirs[dir].sort |a, b| { a.name <=> b.name }
+      files.each |f| { items.add(Mark(FileRes(f), 0, 0, 0, "$indent$f.name")) }
+    }
     return makeLister(items)
   }
 
