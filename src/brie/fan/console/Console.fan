@@ -29,7 +29,7 @@ class Console : EdgePane
     this.commands = Commands(app)
   }
 
-  Void ready()
+  Void onReady()
   {
     prompt.field.text = ""
     prompt.field.focus
@@ -104,6 +104,15 @@ class Console : EdgePane
     editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     Desktop.callAsync |->| { editor.goto(mark.pos) }
 
+    this.center = editor
+    relayout
+  }
+
+  Void showStr(Str str)
+  {
+    editor := Editor { it.ro = true }
+    editor.load(str.in)
+    editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     this.center = editor
     relayout
   }

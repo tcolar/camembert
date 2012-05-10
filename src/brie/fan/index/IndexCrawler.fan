@@ -219,7 +219,7 @@ internal class IndexCrawler
         {
           slots.add(SlotInfo(type, slotName, slotLines[i]-1))
         }
-        type.slotsRef.val = slots.toImmutable
+        type.slotsRef.val = slots.sort.toImmutable
         types.add(type)
       }
 

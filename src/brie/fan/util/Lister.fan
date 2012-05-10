@@ -41,6 +41,25 @@ class Lister : Editor
 
   override Void trapEvent(Event event)
   {
+    // letters are quick match
+    if (event.id === EventId.keyDown && (event.keyChar ?: ' ').isAlpha)
+    {
+      event.consume
+      quickMatch += event.keyChar.lower.toChar
+      doQuickMatch()
+      return
+    }
+
+    // these events clear quick match
+    if (event.id == EventId.focus ||
+        event.id == EventId.blur ||
+        event.id === EventId.keyDown ||
+        event.id === EventId.mouseDown)
+    {
+      quickMatch = ""
+      clearQuickMatchHighlight
+    }
+
     if (event.id === EventId.keyDown)
     {
       if (event.key.toStr == "Enter") { event.consume; doAction; return }
@@ -51,7 +70,7 @@ class Lister : Editor
     }
   }
 
-  internal Void doAction()
+  private Void doAction()
   {
     index := caret.line
     item := items.getSafe(index)
@@ -66,5 +85,36 @@ class Lister : Editor
     onAction.fire(event)
   }
 
+  private Void doQuickMatch()
+  {
+    clearQuickMatchHighlight
+    checkLine := |Int linei->Bool|
+    {
+      line := line(linei).lower
+      if (!line.trim.startsWith(quickMatch)) return false
+      col := line.lower.index(quickMatch)
+      quickMatchHighlight = Span(linei, col, linei, col+quickMatch.size)
+      highlights = highlights.add(quickMatchHighlight)
+      goto(Pos(linei, 0))
+      return true
+    }
+
+    // check forward, then back
+    startLine := caret.line
+    for (linei := startLine; linei < lineCount; ++linei)
+      if (checkLine(linei)) return
+    for (linei := startLine; linei >= 0; --linei)
+      if (checkLine(linei)) return
+  }
+
+  private Void clearQuickMatchHighlight()
+  {
+    if (quickMatchHighlight == null) return
+    highlights = highlights.dup { it.remove(quickMatchHighlight) }
+    quickMatchHighlight = null
+  }
+
+  Str quickMatch := ""
+  Span? quickMatchHighlight
 }
 

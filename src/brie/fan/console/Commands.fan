@@ -17,12 +17,13 @@ class Commands
   {
     this.app = app
     this.list = [
-      c("b",    "Build current pod", Build#),
+      c("b",    "Build current pod", BuildCmd#),
       c("f",    "Find in current doc", FindCmd#),
       c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
       c("gt",   "Goto type", GotoTypeCmd#),
       c("gf",   "Goto file", GotoFileCmd#),
       c("s",    "Show type/slot", ShowCmd#),
+      c("?",    "Help", HelpCmd#),
     ]
   }
 
@@ -183,10 +184,10 @@ class ShowCmd : MatchCmd
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Build
+// BuildCmd
 //////////////////////////////////////////////////////////////////////////
 
-class Build : Cmd
+class BuildCmd : Cmd
 {
   override Void run(Str? arg)
   {
@@ -232,6 +233,38 @@ class KillTest : Cmd
   }
 }
 */
+
+
+//////////////////////////////////////////////////////////////////////////
+// HelpCmd
+//////////////////////////////////////////////////////////////////////////
+
+class HelpCmd : Cmd
+{
+  override Void run(Str? arg)
+  {
+    s := StrBuf().add(
+     """Esc       Focus console
+        F1        Focus editor
+        Ctrl+1    Focus nav level-1
+        Ctrl+2    Focus nav level-2
+        Ctrl+3    Focus nav level-3
+        F9        Build
+        F8        Next mark
+        Shift+F8  Prev mark
+        Ctrl+C    Copy
+        Ctrl+K    Kill
+        Ctrl+R    Reload
+        Ctrl+S    Save
+        Ctrl+V    Paste
+        Ctrl+X    Cut
+        """)
+
+    s.add("\n")
+    console.commands.list.each |c| { s.add(c.name.padr(9) + " " + c.summary + "\n") }
+    console.showStr(s.toStr)
+  }
+}
 
 
 

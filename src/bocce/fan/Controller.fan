@@ -56,12 +56,18 @@ internal class Controller
 
   Void onFocus(Event event)
   {
+    editor.trapEvent(event)
+    if (event.consumed) return
+
     focused = true
     editor.repaint
   }
 
   Void onBlur(Event event)
   {
+    editor.trapEvent(event)
+    if (event.consumed) return
+
     focused = false
     vbarVisible = false
     editor.repaint

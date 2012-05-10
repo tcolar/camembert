@@ -26,9 +26,7 @@ class Nav : Pane
     pod := file != null ? app.index.podForFile(file) : null
 
     // level 0 is pod names
-    level0 := Lister(app.index.pods)
-    level0.onAction.add |e| { navTo(e.data) }
-    level0.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
+    level0 := makeLister(app.index.pods)
     this.levels = [level0]
 
     // level 1 is pod types
@@ -50,10 +48,7 @@ class Nav : Pane
     items := Obj[,]
     pod.types.each |t| { items.add(t) }
 
-    lister := Lister(items)
-    lister.onAction.add |e| { navTo(e.data) }
-    lister.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
-    return lister
+    return makeLister(items)
   }
 
   private Lister? makeSlotsLister(PodInfo? pod, File? file)
@@ -78,10 +73,20 @@ class Nav : Pane
     }
     if (items.isEmpty) return null
 
-    lister := Lister(items, str.toStr)
+    return makeLister(items, str.toStr)
+  }
+
+  private Lister makeLister(Obj[] items, Str str := items.join("\n"))
+  {
+    lister := Lister(items, str)
     lister.onAction.add |e| { navTo(e.data) }
     lister.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     return lister
+  }
+
+  Void onReady(Int num)
+  {
+    levels.getSafe(num-1)?.focus
   }
 
   Void navTo(Obj item)

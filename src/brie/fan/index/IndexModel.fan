@@ -25,8 +25,6 @@ const class PodInfo
   const File? srcDir
   const File[] srcFiles
   const TypeInfo[] types
-
-  override Int compare(Obj that) { name <=> ((PodInfo)that).name }
 }
 
 const class TypeInfo
@@ -59,6 +57,8 @@ const class TypeInfo
   SlotInfo[] slots() { slotsRef.val }
   internal const AtomicRef slotsRef := AtomicRef()
 
+  override Int compare(Obj that) { name <=> ((TypeInfo)that).name }
+
   override Str toStr() { name }
 }
 
@@ -78,6 +78,7 @@ const class SlotInfo
   const TypeInfo type
   const Str name
   const Int line    // zero based
+  override Int compare(Obj that) { name <=> ((SlotInfo)that).name }
   override Str toStr() { name }
 }
 
