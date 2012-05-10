@@ -32,7 +32,7 @@ class App
     {
       title   = "Brie"
       icon    = Image(`fan://icons/x32/blueprints.png`)
-      bounds  = Rect(70, 0, 1800, 1080)
+      bounds  = Rect(70, 0, 1750, 1080)
       content = Label { text = "initializing..." }
       onKeyDown.add |e| { controller.onKeyDown(e) }
       it->onDrop = |data| { controller.onDrop(data) }  // use back-door hook for file drop

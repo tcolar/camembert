@@ -20,7 +20,7 @@ const class Theme
 
   const static Color bg       := Color(0xff_ff_ff)
   const static Color div      := Color(0xdd_dd_dd)
-  const static Color status   := Color(0x44_44_44)
+  const static Color status   := Color.black
   const static Color scrollFg := Color(0x70_40_40_40, true)
   const static Color scrollBg := Color(0x70_c0_c0_c0, true)
 
