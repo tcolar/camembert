@@ -75,7 +75,8 @@ class Console : EdgePane
     if (cmd != null && argStr != null)
     {
       matches := cmd.match(argStr)
-      if (!matches.isEmpty) { list(matches); return }
+      list(matches)
+      return
     }
 
     // show matching commands

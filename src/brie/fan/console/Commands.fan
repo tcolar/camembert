@@ -138,6 +138,7 @@ class FindCmd : MatchCmd
       marks.add(Mark(res, pos.line, pos.col, pos.col+arg.size, line))
     }
     editor.highlights = spans
+    if (marks.isEmpty) return ["No matches"]
     return marks
   }
 }
@@ -346,6 +347,7 @@ class HelpCmd : Cmd
         F9          Build
         F8          Next mark
         Shift+F8    Prev mark
+        Ctrl+B      Back to previous file
         Ctrl+C      Copy
         Ctrl+D      Delete cur line
         Ctrl+K      Kill console process
