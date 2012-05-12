@@ -70,7 +70,7 @@ internal class Viewport
 
   Int lineToY(Int line)
   {
-    margin.top + line*lineh
+    margin.top + (line - startLine) * lineh
   }
 
 //////////////////////////////////////////////////////////////////////////
