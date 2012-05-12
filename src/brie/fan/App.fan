@@ -52,22 +52,30 @@ class App
     load(res)
   }
 
-  Void goto(Mark mark)
+  Void back()
+  {
+    curi := his.findIndex |h| { h.res == this.res }
+    if (curi == null) curi = -1
+    back := his.getSafe(curi+1)
+    if (back != null) goto(back, false)
+  }
+
+  Void goto(Mark mark, Bool addHis := true)
   {
     // check if we need to reload file
     if (mark.res != null && mark.res != res)
-      load(mark.res)
+      load(mark.res, addHis)
 
     // goto specific line, col
     Desktop.callAsync |->| { view.onGoto(mark) }
   }
 
-  Void load(Res res)
+  Void load(Res res, Bool addHis := true)
   {
     if (!confirmClose) return
     try
     {
-      addHis
+      if (addHis) this.addHis
 
       this.res  = res
       this.nav  = Nav(this, res)
@@ -217,6 +225,7 @@ internal class AppController
   {
     switch (event.key.toStr)
     {
+      case "Ctrl+B":     event.consume; app.back; return
       case "Ctrl+K":     event.consume; app.console.kill; return
       case "Ctrl+R":     event.consume; app.reload; return
       case "Ctrl+S":     event.consume; app.save; return
