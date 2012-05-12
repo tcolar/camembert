@@ -17,16 +17,17 @@ class Commands
   {
     this.app = app
     this.list = [
-      c("b",    "Build current pod", BuildCmd#),
-      c("f",    "Find in current doc", FindCmd#),
-      c("fi",   "Find case insensitive in current doc", FindInsensitiveCmd#),
-      c("fp",   "Find in current pod", FindPodCmd#),
-      c("gl",   "Goto line", GotoLineCmd#),
-      c("gt",   "Goto type", GotoTypeCmd#),
-      c("gf",   "Goto file", GotoFileCmd#),
-      c("s",    "Show type/slot", ShowCmd#),
-      c("ri",   "Rebuild entire index", ReindexCmd#),
-      c("?",    "Help", HelpCmd#),
+      c("b",     "Bookmarks", BookmarkCmd#),
+      c("build", "Build current pod", BuildCmd#),
+      c("f",     "Find in current doc", FindCmd#),
+      c("fi",    "Find case insensitive in current doc", FindInsensitiveCmd#),
+      c("fp",    "Find in current pod", FindPodCmd#),
+      c("gl",    "Goto line", GotoLineCmd#),
+      c("gt",    "Goto type", GotoTypeCmd#),
+      c("gf",    "Goto file", GotoFileCmd#),
+      c("s",     "Show type/slot", ShowCmd#),
+      c("ri",    "Rebuild entire index", ReindexCmd#),
+      c("?",     "Help", HelpCmd#),
     ]
   }
 
@@ -35,13 +36,15 @@ class Commands
     Cmd cmd := t.make
     cmd.name    = name
     cmd.summary = summary
-    cmd.toStr   = name.padr(4) + "  " + summary
+    cmd.toStr   = name.padr(5) + "  " + summary
     cmd.app     = app
     return cmd
   }
 
   Cmd? get(Str name, Bool checked := true)
   {
+    exact := list.find |c| { c.name == name }
+    if (exact != null) return exact
     x := list.findAll |c| { c.name.startsWith(name) }
     if (x.size == 1) return x.first
     if (checked) throw Err("Command not found: $name")
@@ -110,7 +113,6 @@ class MatchCmd : Cmd
     app.curMark = 0
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // FindCmd / FindInsensitiveCmd
@@ -249,6 +251,19 @@ class ShowCmd : MatchCmd
   {
     TypeInfo t := item.data
     console.show(t.toMark)
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// BookmarkCmd
+//////////////////////////////////////////////////////////////////////////
+
+class BookmarkCmd : MatchCmd
+{
+  override Void run(Str? arg)
+  {
+    console.list(Bookmark.load)
+    console.lister.focus
   }
 }
 

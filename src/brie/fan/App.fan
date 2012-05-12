@@ -131,7 +131,7 @@ class App
   Void build()
   {
     save
-    console.run("b")
+    console.run("build")
   }
 
   PodInfo? curPod() { nav.curPod }

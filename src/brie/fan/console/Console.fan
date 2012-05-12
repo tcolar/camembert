@@ -131,6 +131,14 @@ class Console : EdgePane
       return
     }
 
+    bookmark := e.data as Bookmark
+    if (bookmark != null)
+    {
+      app.goto(bookmark.toMark)
+      clear
+      return
+    }
+
     mark := e.data as Mark
     if (mark != null)
     {
