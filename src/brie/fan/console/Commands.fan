@@ -355,6 +355,7 @@ class HelpCmd : Cmd
         Ctrl+S      Save
         Ctrl+V      Paste
         Ctrl+X      Cut
+        Ctrl+=      Insert section header comment
         """)
 
     s.add("\n")

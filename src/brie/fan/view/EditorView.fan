@@ -39,9 +39,13 @@ class EditorView : View
     editor = Editor { it.rules = rules }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
-    editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
     editor.onCaret.add |e| { app.status.refresh }
     editor.loadLines(lines)
+    editor.onKeyDown.add |e|
+    {
+      if (!e.consumed) app.controller.onKeyDown(e)
+      if (!e.consumed) editorKeyDown(e)
+    }
 
     // hidden hooks
     editor->paintLeftDiv  = true
@@ -104,6 +108,42 @@ class EditorView : View
            $file.osPath
            Reload it?", Dialog.yesNo)
     if (r == Dialog.yes) app.reload
+  }
+
+
+  private Void editorKeyDown(Event event)
+  {
+    if (editor.ro) return
+    switch (event.key.toStr)
+    {
+      case "Ctrl+=": event.consume; insertSection
+    }
+  }
+
+  private Void insertSection()
+  {
+    linei := editor.caret.line
+
+    previ := linei-1
+    while (previ > 0 && editor.line(previ).trim.isEmpty) previ--
+    prev := editor.line(previ)
+
+    nexti := linei
+    while (nexti < editor.lineCount && editor.line(nexti).trim.isEmpty) nexti++
+
+    char := prev.startsWith("}") ? "*" : "/"
+
+    s := StrBuf()
+    gotoi := linei+1
+    if (previ == linei - 1) { s.add("\n"); gotoi++ }
+    74.times { s.add(char) }
+    s.add("\n").add(char).add(char).add(" ").add("\n")
+    74.times { s.add(char) }
+    s.add("\n")
+    if (nexti == linei) s.add("\n")
+
+    editor.modify(Pos(linei, 0).toSpan, s.toStr)
+    editor.goto(Pos(gotoi, 3))
   }
 
   const File file
