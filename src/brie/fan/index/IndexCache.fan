@@ -45,7 +45,7 @@ internal class IndexCache
     return null
   }
 
-  TypeInfo[] matchTypes(Str pattern)
+  TypeInfo[] matchTypes(Str pattern, Bool exact)
   {
     exacts := TypeInfo[,]
     approx := TypeInfo[,]
@@ -56,7 +56,7 @@ internal class IndexCache
         m := matchType(t, pattern)
         if (m == 0) return
         if (m == 2) exacts.add(t)
-        else approx.add(t)
+        else if (!exact) approx.add(t)
       }
     }
     return exacts.addAll(approx)
@@ -69,7 +69,7 @@ internal class IndexCache
     return 0
   }
 
-  Mark[] matchFiles(Str pattern)
+  Mark[] matchFiles(Str pattern, Bool exact)
   {
     exacts := Mark[,]
     approx := Mark[,]
@@ -81,7 +81,7 @@ internal class IndexCache
         if (m == 0) return
         mark := Mark(FileRes(f), 0, 0, 0, "$pod.name::$f.name")
         if (m == 2) exacts.add(mark)
-        else approx.add(mark)
+        else if (!exact) approx.add(mark)
       }
     }
     return exacts.addAll(approx)

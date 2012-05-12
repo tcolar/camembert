@@ -97,11 +97,14 @@ class App
     // don't add build.fan files
     if (res.dis == "build.fan") return
 
-    // get current pod
+    // if ambiguous file (dups across pods, then prefix pod)
     text := res.dis
-    try
-      text = index.podForFile(res.toFile).name + "::" + res.dis
-    catch {}
+    if (index.matchFiles(res.dis).size > 1)
+    {
+      try
+        text = index.podForFile(res.toFile).name + "::" + res.dis
+      catch {}
+    }
 
     // get current position of file
     pos := view.curPos
@@ -188,8 +191,8 @@ internal class AppPane : Pane
     w := size.w
     h := size.h
 
-    navw := 500.min(w/3)
-    conw := (w - navw)/2
+    navw := (w * 0.35f).toInt
+    conw := (w * 0.25f).toInt
 
     navx := 0
     conx := w - conw
