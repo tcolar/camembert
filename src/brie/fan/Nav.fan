@@ -80,6 +80,7 @@ class Nav : Pane
 
     types := pod.types.findAll |t| { t.file == file.name }
     if (types.isEmpty) return makeEmptyLister
+    types.sort |a, b| { a.line <=> b.line }
 
     items := Obj[,]
     multi := types.size > 1
@@ -88,7 +89,8 @@ class Nav : Pane
     {
       items.add(t)
       str.add(t.name).add("\n")
-      t.slots.each |s|
+      slots := t.slots.dup.sort |a, b| { a.line <=> b.line }
+      slots.each |s|
       {
         str.add("  ").add(s.name).add("\n")
         items.add(s)
