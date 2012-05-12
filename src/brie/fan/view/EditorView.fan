@@ -117,6 +117,29 @@ class EditorView : View
     switch (event.key.toStr)
     {
       case "Ctrl+=": event.consume; insertSection
+      case "Ctrl+Slash": event.consume; toggleCommentBlock
+    }
+  }
+
+  private Void toggleCommentBlock()
+  {
+    curLine := editor.caret.line
+    lines := curLine..curLine
+    sel := editor.selection
+    if (sel != null)
+    {
+      if (sel.end.line > sel.start.line && sel.end.col == 0)
+        lines = sel.start.line .. sel.end.line-1
+      else
+        lines = sel.start.line .. sel.end.line
+    }
+    lines.each |linei|
+    {
+      line := editor.line(linei)
+      if (line.startsWith("// "))
+        editor.modify(Span(linei, 0, linei, 3), "")
+      else
+        editor.modify(Pos(linei, 0).toSpan, "// ")
     }
   }
 
