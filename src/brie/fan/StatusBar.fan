@@ -39,9 +39,13 @@ class StatusBar : Canvas
     g.drawLine(0, 0, w, 0)
     g.drawLine(0, 1, w, 1)
 
-    // indexing
-    if (app.index.isIndexing)
-      g.drawImage(Theme.iconIndexing, 8, 2+(h-18)/2)
+    // status icons
+    icons := Image[,]
+    if (app.view.dirty) icons.add(Theme.iconDirty)
+    if (app.index.isIndexing) icons.add(Theme.iconIndexing)
+    iconx := 8
+    icony := 2+(h-18)/2
+    icons.each |icon| { g.drawImage(icon, iconx, icony); iconx += 22 }
 
     // editor charset line:col
     g.font = app.options.font

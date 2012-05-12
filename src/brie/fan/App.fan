@@ -134,6 +134,7 @@ class App
     if (view.dirty) view.onSave
     view.dirty = false
     window.title = "Brie $res.uri"
+    status.refresh
   }
 
   Void build()
@@ -199,8 +200,8 @@ internal class AppPane : Pane
     w := size.w
     h := size.h
 
-    navw := (w * 0.35f).toInt
-    conw := (w * 0.25f).toInt
+    navw := (w * 0.32f).toInt
+    conw := (w * 0.28f).toInt
 
     navx := 0
     conx := w - conw
@@ -252,6 +253,7 @@ internal class AppController
   Void onViewDirty()
   {
     app.window.title = app.window.title + "*"
+    app.status.refresh
   }
 
   Void onDrop(Obj data)

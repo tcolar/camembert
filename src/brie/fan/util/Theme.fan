@@ -17,6 +17,7 @@ const class Theme
   const static Image iconDir      := Image(`fan://icons/x16/folder.png`)
   const static Image iconErr      := Image(`fan://icons/x16/err.png`)
   const static Image iconIndexing := Image(`fan://icons/x16/sync.png`)
+  const static Image iconDirty    := Image(`fan://icons/x16/save.png`)
 
   const static Color bg       := Color(0xff_ff_ff)
   const static Color div      := Color(0xdd_dd_dd)

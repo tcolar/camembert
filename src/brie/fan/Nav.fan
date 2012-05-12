@@ -169,11 +169,12 @@ class Nav : Pane
   {
     w := size.w
     h := size.h
-    levelw := w / 3
+    levelw := w / 3 - 10
+    col0w := w - levelw*2
 
     levelx := 0
-    his.bounds    = Rect(0, 0, levelw, h/2)
-    level0.bounds = Rect(0, his.bounds.h, levelw, h-his.bounds.h)
+    his.bounds    = Rect(0, 0, col0w, h/2)
+    level0.bounds = Rect(0, his.bounds.h, col0w, h-his.bounds.h)
     level1.bounds = Rect(level0.bounds.w, 0, levelw, h)
     level2.bounds = Rect(level1.bounds.x + level1.bounds.w, 0, levelw, h)
   }
