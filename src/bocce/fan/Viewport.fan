@@ -68,6 +68,11 @@ internal class Viewport
     return col
   }
 
+  Int lineToY(Int line)
+  {
+    margin.top + line*lineh
+  }
+
 //////////////////////////////////////////////////////////////////////////
 // Caret
 //////////////////////////////////////////////////////////////////////////
@@ -266,6 +271,12 @@ internal class Viewport
 // Painting
 //////////////////////////////////////////////////////////////////////////
 
+  Void repaintLine(Int line)
+  {
+    y := lineToY(line)
+    editor.repaint(Rect(0, y, size.w, lineh))
+  }
+
   Void onPaint(Graphics g)
   {
     checkLayout
@@ -304,8 +315,12 @@ internal class Viewport
 
   private Void paintLine(Graphics g, Int linex, Int liney, Int linei)
   {
+    // skip if line not in clip bounds
+    clip := g.clipBounds
+    if (liney + lineh < clip.y || liney > clip.y + clip.h) return
+
     // if focus and current line highlight entire line
-    focused := editor.controller.focused
+    focused := editor.hasFocus
     if (focused && linei == caretLine)
     {
       g.brush = options.bgCurLine
@@ -371,7 +386,8 @@ internal class Viewport
     }
 
     // caret for line
-    if (focused && linei == caretLine && editor.paintCaret)
+    if (focused && linei == caretLine && editor.paintCaret &&
+        controller.caretVisible)
     {
       caretx := linex0 + (caretCol * colw)
       g.brush = Color.black

@@ -59,7 +59,9 @@ internal class Controller
     editor.trapEvent(event)
     if (event.consumed) return
 
-    focused = true
+    onAnimate
+    caretVisible = true
+
     editor.repaint
   }
 
@@ -68,8 +70,8 @@ internal class Controller
     editor.trapEvent(event)
     if (event.consumed) return
 
-    focused = false
     vbarVisible = false
+    caretVisible = false
     editor.repaint
   }
 
@@ -437,6 +439,18 @@ internal class Controller
   }
 
 //////////////////////////////////////////////////////////////////////////
+// Animation
+//////////////////////////////////////////////////////////////////////////
+
+  Void onAnimate()
+  {
+    if (!editor.hasFocus) return
+    caretVisible = !caretVisible
+    Desktop.callLater(500ms) |->| { onAnimate }
+    viewport.repaintLine(viewport.caret.line)
+  }
+
+//////////////////////////////////////////////////////////////////////////
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
@@ -445,9 +459,9 @@ internal class Controller
   private Int? hthumbDrag      // if dragging horizontal thumb
   private Pos? anchor          // if in selection mode
   private Change[] changes     // change stack
+  Bool caretVisible            // is caret visible or blinking off
   Bool vbarVisible             // is vertical scroll visible
   Bool hbarVisible             // is horizontal scroll visible
-  Bool focused                 // are we currently focused
 }
 
 **************************************************************************

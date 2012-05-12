@@ -45,7 +45,7 @@ const class EditorOptions
 
   const Color bg                    := Color.white
   const Font font                   := Desktop.sysFontMonospace
-  const Color bgCurLine             := Color(0xf0_f0_f0)
+  const Color bgCurLine             := Color(0xee_ee_ee) // Color(0xE6FFDA)
   const Color highlight             := Color(0xff_ff_66)
   const Color div                   := Color(0xdd_dd_dd)
   const Color scrollFg              := Color(0x70_40_40_40, true)
