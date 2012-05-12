@@ -21,34 +21,34 @@ class Nav : Pane
     this.app = app
     this.res = res
 
-    // history items
-    this.his = makeLister(app.his)
-
     // if file resource, then get PodInfo for file
     file := (res as FileRes)?.file
     this.curPod = file != null ? app.index.podForFile(file) : null
 
+    // history items
+    his = makeLister(app.his)
+    his.paintRightDiv = true
+    add(his)
+
     // level 0 is pod names
-    level0 := makeLister(app.index.pods)
+    level0 = makeLister(app.index.pods)
+    level0.paintRightDiv = true
     level0.paintTopDiv = true
-    this.levels = [level0]
+    add(level0)
 
     // level 1 is pod types and files
-    level1 := makeTypesAndFilesLister(curPod)
-    if (level1 != null) levels.add(level1)
+    level1 = makeTypesAndFilesLister(curPod)
+    level1.paintRightDiv = true
+    add(level1)
 
     // level 2 types/slots in given file
-    level2 := makeSlotsLister(curPod, file)
-    if (level2 != null) levels.add(level2)
-
-    levels.eachRange(1..-1) |level| { level.paintLeftDiv = true }
-    add(his)
-    levels.each |level| { add(level) }
+    level2 = makeSlotsLister(curPod, file)
+    add(level2)
   }
 
-  private Lister? makeTypesAndFilesLister(PodInfo? pod)
+  private Lister makeTypesAndFilesLister(PodInfo? pod)
   {
-    if (pod == null) return null
+    if (pod == null) return makeEmptyLister
 
     // types
     items := Obj[,]
@@ -74,12 +74,12 @@ class Nav : Pane
     return makeLister(items)
   }
 
-  private Lister? makeSlotsLister(PodInfo? pod, File? file)
+  private Lister makeSlotsLister(PodInfo? pod, File? file)
   {
-    if (pod == null || pod.types.isEmpty || file == null) return null
+    if (pod == null || pod.types.isEmpty || file == null) return makeEmptyLister
 
     types := pod.types.findAll |t| { t.file == file.name }
-    if (types.isEmpty) return null
+    if (types.isEmpty) return makeEmptyLister
 
     items := Obj[,]
     multi := types.size > 1
@@ -94,10 +94,12 @@ class Nav : Pane
         items.add(s)
       }
     }
-    if (items.isEmpty) return null
+    if (items.isEmpty) return makeEmptyLister
 
     return makeLister(items, str.toStr)
   }
+
+  private Lister makeEmptyLister() { makeLister([,]) }
 
   private Lister makeLister(Obj[] items, Str str := items.join("\n"))
   {
@@ -109,10 +111,13 @@ class Nav : Pane
 
   Void onReady(Int num)
   {
-    if (num == 0)
-      his.focus
-    else
-      levels.getSafe(num-1)?.focus
+    switch (num)
+    {
+      case 0: his.focus
+      case 1: level0.focus
+      case 2: level1.focus
+      case 3: level2.focus
+    }
   }
 
   Void navTo(Obj item)
@@ -162,29 +167,22 @@ class Nav : Pane
   {
     w := size.w
     h := size.h
-    levelw := w / 3.max(levels.size)
+    levelw := w / 3
+
     levelx := 0
-    levels.each |level, i|
-    {
-      levely := 0
-      levelh := h
-      if (i == levels.size-1) levelw = w - levelx
-      if (i == 0)
-      {
-        his.bounds = Rect(levelx, 0, levelw, levelh/2)
-        levely += his.bounds.h
-        levelh = h - levely
-      }
-      level.bounds = Rect(levelx, levely, levelw, levelh)
-      levelx += levelw
-    }
+    his.bounds    = Rect(0, 0, levelw, h/2)
+    level0.bounds = Rect(0, his.bounds.h, levelw, h-his.bounds.h)
+    level1.bounds = Rect(level0.bounds.w, 0, levelw, h)
+    level2.bounds = Rect(level1.bounds.x + level1.bounds.w, 0, levelw, h)
   }
 
   App app
   Res res
   PodInfo? curPod
   Lister his
-  Lister[] levels
+  Lister level0
+  Lister level1
+  Lister level2
 }
 
 
