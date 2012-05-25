@@ -87,7 +87,7 @@ internal class Viewport
   Void pageUp()   { page := visibleLines - 4; caretLine -= page; startLine -= page; updateCaret(true) }
   Void pageDown() { page := visibleLines - 4; caretLine += page; startLine += page; updateCaret(true) }
 
-  Void goto(Pos caret, Bool jump := false)
+  Void goto(Pos caret)
   {
     if (caretLine == caret.line && caretCol == caret.col) return
 
@@ -103,7 +103,6 @@ internal class Viewport
       if (match != null) brackets = Span(before, match)
     }
 
-    if (jump) startLine = caret.line - visibleLines/3
     updateCaret
     editor.onCaret.fire(Event { id = EventId.caret; widget = editor })
   }
@@ -121,7 +120,9 @@ internal class Viewport
     if (caretLine >= docLines) caretLine = docLines-1
     if (caretLine < 0) caretLine = 0
     if (caretCol < 0) caretCol = 0
-    if (caretCol >= docCols) caretCol = docCols
+
+    lineSize := doc.line(caretLine).size
+    if (caretCol >= lineSize) caretCol = lineSize
 
     // check caret line is visible
     if (caretLine < startLine) startLine = caretLine

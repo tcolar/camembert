@@ -95,7 +95,7 @@ class Lister : Editor
       col := line.lower.index(quickMatch)
       quickMatchHighlight = Span(linei, col, linei, col+quickMatch.size)
       highlights = highlights.add(quickMatchHighlight)
-      goto(Pos(linei, 0), true)
+      goto(Pos(linei, 0))
       return true
     }
 

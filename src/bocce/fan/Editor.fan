@@ -99,9 +99,9 @@ class Editor : Canvas
 
   ** Move caret and scroll to the given position
   ** and ensure editor is focused
-  Void goto(Pos pos, Bool jump := false)
+  Void goto(Pos pos)
   {
-    viewport.goto(pos, jump)
+    viewport.goto(pos)
     focus
   }
 

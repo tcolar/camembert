@@ -70,6 +70,7 @@ internal class Controller
     if (event.consumed) return
 
     vbarVisible = false
+    navCol = null
     editor.repaint
   }
 
@@ -146,7 +147,7 @@ internal class Controller
     if (event.key == Key.shift) anchor = null
   }
 
-  private Void goto(Event event, Pos caret)
+  private Void goto(Event event, Pos newCaret)
   {
     event.consume
     if (event.key != null && event.key.isShift)
@@ -157,8 +158,24 @@ internal class Controller
     {
       anchor = null
     }
-    viewport.goto(caret)
-    editor.selection = anchor == null ? null : Span(anchor, caret)
+
+    // if moving up/down then remember col position
+    // to handle ragged lines
+    oldCaret := viewport.caret
+    if (oldCaret.line != newCaret.line)
+    {
+      if (navCol == null)
+        navCol = oldCaret.col
+      else
+        newCaret = Pos(newCaret.line, navCol)
+    }
+    else
+    {
+      navCol = null
+    }
+
+    viewport.goto(newCaret)
+    editor.selection = anchor == null ? null : Span(anchor, newCaret)
   }
 
   private Void insert(Str newText)
@@ -350,6 +367,7 @@ internal class Controller
   Void onMouseDown(Event event)
   {
     isMouseDown = true
+    navCol = null
 
     editor.trapEvent(event)
     if (event.consumed) return
@@ -460,6 +478,7 @@ internal class Controller
   private Int? hthumbDrag      // if dragging horizontal thumb
   private Pos? anchor          // if in selection mode
   private Bool isMouseDown     // is mouse currently down
+  private Int? navCol          // to handle ragged col up/down
   private Change[] changes     // change stack
   Bool caretVisible            // is caret visible or blinking off
   Bool vbarVisible             // is vertical scroll visible

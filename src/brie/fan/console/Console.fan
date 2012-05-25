@@ -108,7 +108,7 @@ class Console : EdgePane
     editor := Editor { it.rules = rules; it.ro = true }
     editor.loadLines(lines)
     editor.onKeyDown.add |e| { if (!e.consumed) app.controller.onKeyDown(e) }
-    Desktop.callAsync |->| { editor.goto(mark.pos, false) }
+    Desktop.callAsync |->| { editor.goto(mark.pos) }
 
     this.center = editor
     relayout

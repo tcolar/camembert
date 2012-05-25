@@ -88,7 +88,7 @@ class EditorView : View
 
   override Void onGoto(Mark mark)
   {
-    editor.goto(mark.pos, true)
+    editor.goto(mark.pos)
     editor.focus
   }
 
