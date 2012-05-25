@@ -219,7 +219,7 @@ internal class Viewport
     this.docLines     = doc.lineCount
     this.docCols      = doc.colCount
     this.visibleLines = (((size.h-margin.toSize.h) / lineh)).min(docLines)
-    this.visibleCols  = (((size.w-margin.toSize.w) / colw)).min(docCols)
+    this.visibleCols  = (size.w-margin.toSize.w) / colw
 
     // check if startLine needs adjusting
     maxStartLine := (docLines - visibleLines + 1).max(0)
