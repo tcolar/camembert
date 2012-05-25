@@ -52,10 +52,12 @@ class Nav : Pane
 
     // types
     items := Obj[,]
+    /*
     pod.types.each |t| { items.add(t) }
 
     // files organized by their directory
     if (!items.isEmpty) items.add("")
+    */
     dirs := Str:File[][:]
     pod.srcFiles.each |src|
     {

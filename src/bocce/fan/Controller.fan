@@ -61,7 +61,6 @@ internal class Controller
 
     onAnimate
     caretVisible = true
-
     editor.repaint
   }
 
@@ -71,7 +70,6 @@ internal class Controller
     if (event.consumed) return
 
     vbarVisible = false
-    caretVisible = false
     editor.repaint
   }
 
@@ -351,6 +349,8 @@ internal class Controller
 
   Void onMouseDown(Event event)
   {
+    isMouseDown = true
+
     editor.trapEvent(event)
     if (event.consumed) return
 
@@ -379,6 +379,8 @@ internal class Controller
 
   Void onMouseUp(Event event)
   {
+    isMouseDown = false
+
     editor.trapEvent(event)
     if (event.consumed) return
 
@@ -399,7 +401,7 @@ internal class Controller
   {
     if (vthumbDrag != null) { viewport.vthumbDrag(vthumbDrag, event.pos); return }
     if (hthumbDrag != null) { viewport.hthumbDrag(hthumbDrag, event.pos); return }
-    if (anchor != null) { mouseSelectDrag(event); return }
+    if (anchor != null && isMouseDown) { mouseSelectDrag(event); return }
 
     size := editor.size
     vbar := event.pos.x > size.w - 40
@@ -444,10 +446,9 @@ internal class Controller
 
   Void onAnimate()
   {
-    if (!editor.hasFocus) return
     caretVisible = !caretVisible
-    Desktop.callLater(500ms) |->| { onAnimate }
     viewport.repaintLine(viewport.caret.line)
+    if (editor.hasFocus) Desktop.callLater(500ms) |->| { onAnimate }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -458,6 +459,7 @@ internal class Controller
   private Int? vthumbDrag      // if dragging vertical thumb
   private Int? hthumbDrag      // if dragging horizontal thumb
   private Pos? anchor          // if in selection mode
+  private Bool isMouseDown     // is mouse currently down
   private Change[] changes     // change stack
   Bool caretVisible            // is caret visible or blinking off
   Bool vbarVisible             // is vertical scroll visible

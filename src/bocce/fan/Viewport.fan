@@ -68,6 +68,11 @@ internal class Viewport
     return col
   }
 
+  Int colToX(Int col)
+  {
+    margin.left + (col - startCol) * colw
+  }
+
   Int lineToY(Int line)
   {
     margin.top + (line - startLine) * lineh
@@ -427,7 +432,7 @@ internal class Viewport
     g.pen   = options.showColPen
     options.showCols.each |col|
     {
-      x := margin.left + colw*col
+      x := colToX(col)
       g.drawLine(x, 0, x, size.h)
     }
     g.pen = oldPen
