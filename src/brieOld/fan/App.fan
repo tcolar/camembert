@@ -22,7 +22,7 @@ class App
   {
     this.options    = options
     this.index      = Index(options.indexDirs)
-    this.res        = FileRes(`/dev/ide/src/brie/fan/App.fan`.toFile)
+    this.res        = FileRes(`/dev/ide/src/build.fan`.toFile)
     this.view       = res.makeView(this)
     this.nav        = Nav(this, res)
     this.status     = StatusBar(this)

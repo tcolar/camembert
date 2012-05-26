@@ -16,7 +16,7 @@ class Build : BuildPod
 {
   new make()
   {
-    podName = "brie"
+    podName = "brieOld"
     summary = "Brian's Rocking Integrated Environment"
     depends = ["sys 1.0",
                "compiler 1.0",
