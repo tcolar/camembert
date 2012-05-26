@@ -1,0 +1,121 @@
+//
+// Copyright (c) 2012, Brian Frank
+// Licensed under the Academic Free License version 3.0
+//
+// History:
+//   25 May 12  Brian Frank  Creation
+//
+
+using gfx
+using fwt
+using concurrent
+
+**
+** ItemList
+**
+class ItemList : Canvas
+{
+
+//////////////////////////////////////////////////////////////////////////
+// Constructor
+//////////////////////////////////////////////////////////////////////////
+
+  new make(Item[] items)
+  {
+    this.doubleBuffered = true
+    this.items = items
+    onMouseDown.add |e| { doMouseDown(e) }
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Config
+//////////////////////////////////////////////////////////////////////////
+
+  const Item[] items
+
+  const Font font := Desktop.sysFontMonospace
+
+  const Insets insets := Insets(10, 10, 10, 10)
+
+  once EventListeners onAction() { EventListeners() }
+
+//////////////////////////////////////////////////////////////////////////
+// Layout
+//////////////////////////////////////////////////////////////////////////
+
+  override Size prefSize(Hints hints := Hints.defVal)
+  {
+    w := 0
+    h := 0
+    itemh := this.itemh
+    items.each |item|
+    {
+      h += itemh
+      w  = w.max(20 + font.width(item.dis))
+    }
+    w += insets.left + insets.right
+    h += insets.top + insets.bottom
+    return Size(250,h)
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Painting
+//////////////////////////////////////////////////////////////////////////
+
+  override Void onPaint(Graphics g)
+  {
+    x := insets.left
+    y := insets.top
+    w := size.w
+    h := size.h
+    itemh := this.itemh
+
+    g.brush = Theme.bg
+    g.fillRect(0, 0, w, h)
+
+    g.font = font
+    g.brush = Color.black
+    items.each |item|
+    {
+      g.drawImage(item.icon, x, y)
+      g.drawText(item.dis, x+20, y)
+      y += itemh
+    }
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Eventing
+//////////////////////////////////////////////////////////////////////////
+
+  private Int itemh() { font.height.max(20) }
+
+  private Int yToIndex(Int y) { (y - insets.top) / itemh }
+
+  private Item? yToItem(Int y) { items.getSafe(yToIndex(y)) }
+
+  private Void doMouseDown(Event event)
+  {
+    if (event.count == 2)
+    {
+      event.consume
+      fireAction(yToIndex(event.pos.y))
+      return
+    }
+  }
+
+  private Void fireAction(Int index)
+  {
+    item := items.getSafe(index)
+    if (item == null) return
+    event := Event
+    {
+      it.id     = EventId.action
+      it.widget = this
+      it.index  = index
+      it.data   = item
+    }
+    onAction.fire(event)
+  }
+
+}
+

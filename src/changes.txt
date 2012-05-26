@@ -1,7 +1,12 @@
 Change Log for Brie
 ====================
 
-Version 1.0.1 (working)
+Version 1.0.1 (10-May-2012)
 -----------------------
 - Coding started on 21-Apr-2012
+- Begin use in daily coding
 
+
+Version 1.0.1 (xx-May-2012)
+--------------------------
+- Rewrite brie from mostly scratch to use new space model
