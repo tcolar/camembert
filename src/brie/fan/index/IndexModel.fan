@@ -44,12 +44,7 @@ const class TypeInfo
   const Str file
   const Int line   // zero based
 
-  Item toItem()
-  {
-    f := pod.srcFiles.find |f| { f.name == file }
-    if (f == null) throw Err("Missing srcFile: $qname $file")
-    return Item { it.dis = qname; it.file = f }
-  }
+  File? toFile() { pod.srcFiles.find |f| { f.name == file } }
 
   Str qname() { "$pod.name::$name" }
 
@@ -66,7 +61,7 @@ const class TypeInfo
   override Str toStr() { name }
 }
 
-const class SlotInfo
+const abstract class SlotInfo
 {
   new make(TypeInfo type, Str name, Int line)
   {
@@ -77,15 +72,21 @@ const class SlotInfo
 
   Str qname() { "${type.qname}.$name" }
 
-  Item? toMark()
-  {
-    Item { it.dis = qname; it.file = this.type.toItem.file; it.line = this.line }
-  }
-
   const TypeInfo type
   const Str name
   const Int line    // zero based
   override Int compare(Obj that) { name <=> ((SlotInfo)that).name }
   override Str toStr() { name }
 }
+
+const class FieldInfo : SlotInfo
+{
+  new make(TypeInfo type, Str name, Int line) : super(type, name, line) {}
+}
+
+const class MethodInfo : SlotInfo
+{
+  new make(TypeInfo type, Str name, Int line) : super(type, name, line) {}
+}
+
 

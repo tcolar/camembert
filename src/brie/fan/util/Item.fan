@@ -16,15 +16,6 @@ using concurrent
 **
 const class Item
 {
-  new make(|This| f) { f(this) }
-
-  new makeFile(File file)
-  {
-    this.dis  = file.name + (file.isDir ? "/" : "")
-    this.icon = Theme.fileToIcon(file)
-    this.file = file
-  }
-
   static Item[] makeFiles(File[] files)
   {
     acc := Item[,]
@@ -34,15 +25,47 @@ const class Item
     return acc
   }
 
+  new makeFile(File file, |This|? f := null)
+  {
+    this.dis  = file.name + (file.isDir ? "/" : "")
+    this.icon = Theme.fileToIcon(file)
+    this.file = file
+    if (f != null) f(this)
+  }
+
+  new makeType(TypeInfo t, |This|? f := null)
+  {
+    this.dis  = t.qname
+    this.icon = Theme.iconType
+    this.file = t.toFile
+    this.line = t.line
+    if (f != null) f(this)
+  }
+
+  new makeSlot(SlotInfo s, |This|? f := null)
+  {
+    this.dis  = s.qname
+    this.icon = s is FieldInfo ? Theme.iconField : Theme.iconMethod
+    this.file = s.type.toFile
+    this.line = s.line
+    if (f != null) f(this)
+  }
+
+  new make(|This| f) { f(this) }
+
   const Str dis
 
-  const Image icon
+  const Image? icon
 
   const File? file
 
   const Int line
 
   const TypeInfo? type
+
+  const Bool isHeading
+
+  const Int indent
 
   override Str toStr() { dis }
 

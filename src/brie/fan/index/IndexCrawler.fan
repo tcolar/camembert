@@ -184,6 +184,7 @@ internal class IndexCrawler
           slotNames.add(slotName)
           slotLines.add(slotLine)
         }
+        methodStartIndex := slotNames.size
 
         // methods
         num = in.readU2
@@ -228,7 +229,10 @@ internal class IndexCrawler
         slots := SlotInfo[,] { capacity = slotNames.size }
         slotNames.each |slotName, i|
         {
-          slots.add(SlotInfo(type, slotName, slotLines[i]-1))
+          if (i >= methodStartIndex)
+            slots.add(MethodInfo(type, slotName, slotLines[i]-1))
+          else
+            slots.add(FieldInfo(type, slotName, slotLines[i]-1))
         }
         type.slotsRef.val = slots.sort.toImmutable
         types.add(type)

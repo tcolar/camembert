@@ -18,12 +18,15 @@ const class Theme
   static const Image iconDir       := Image(`fan://icons/x16/folder.png`)
   static const Image iconFan       := Image(`fan://icons/x16/fileFan.png`)
   static const Image iconErr       := Image(`fan://icons/x16/err.png`)
-  static const Image iconOk        := Image(`fan://icons/x16/check.png`)
+  static const Image iconOk        := Image(`fan://brie/res/ok.png`)
   static const Image iconIndexing  := Image(`fan://icons/x16/sync.png`)
   static const Image iconSlideUp   := Image(`fan://brie/res/slideUp.png`)
   static const Image iconSlideDown := Image(`fan://brie/res/slideDown.png`)
   static const Image iconDirty     := Image(`fan://brie/res/dirty.png`)
   static const Image iconNotDirty  := Image(`fan://brie/res/notDirty.png`)
+  static const Image iconType      := Image(`fan://brie/res/type.png`)
+  static const Image iconField     := Image(`fan://brie/res/field.png`)
+  static const Image iconMethod    := Image(`fan://brie/res/method.png`)
 
   static Image fileToIcon(File f)
   {
@@ -33,4 +36,5 @@ const class Theme
   }
 
   static const Color bg := Color(0xff_ff_ff)
+  static const Color itemHeadingBg := Color(0xcc_cc_cc)
 }

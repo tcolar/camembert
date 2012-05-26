@@ -74,20 +74,31 @@ class ItemList : Canvas
     g.fillRect(0, 0, w, h)
 
     g.font = font
-    g.brush = Color.black
     items.each |item|
     {
-      g.drawImage(item.icon, x, y)
-      g.drawText(item.dis, x+20, y)
+      paintItem(g, item, x, y, w, itemh)
       y += itemh
     }
+  }
+
+  private Void paintItem(Graphics g, Item item, Int x, Int y, Int w, Int h)
+  {
+    if (item.isHeading)
+    {
+      g.brush = Theme.itemHeadingBg
+      g.fillRect(0, y, size.w, h-2)
+    }
+    x += item.indent*20
+    g.brush = Color.black
+    if (item.icon != null) g.drawImage(item.icon, x, y)
+    g.drawText(item.dis, x+20, y)
   }
 
 //////////////////////////////////////////////////////////////////////////
 // Eventing
 //////////////////////////////////////////////////////////////////////////
 
-  private Int itemh() { font.height.max(20) }
+  private Int itemh() { font.height.max(18) }
 
   private Int yToIndex(Int y) { (y - insets.top) / itemh }
 
