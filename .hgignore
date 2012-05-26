@@ -13,6 +13,9 @@ syntax: regexp
 # lib/
 ^lib/
 
+# etc/
+^etc/brie/session.props
+
 # temp/
 ^temp/
 

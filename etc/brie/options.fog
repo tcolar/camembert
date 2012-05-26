@@ -1,0 +1,15 @@
+using brie2
+
+Options
+{
+  ** Absolute paths for directories to index
+  indexDirs =
+  [
+    `/fan/`,
+    `/sidewalk/`,
+    `/skyspark/`,
+    `/dev/`,
+    `/dev/haystack/src`,
+    `/stuff/play`,
+  ]
+}
