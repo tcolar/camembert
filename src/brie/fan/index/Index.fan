@@ -58,7 +58,16 @@ const class Index
   internal Void setIsIndexing(Bool val)
   {
     isIndexingRef.val = val
-    try Desktop.callAsync |->| { sys.frame.updateStatus }; catch {}
+    try
+    {
+      Desktop.callAsync |->|
+      {
+        frame := sys.frame
+        if (frame.space is HomeSpace) frame.reload
+        else frame.updateStatus
+      }
+    }
+    catch {}
   }
 
   ** List all pods found
