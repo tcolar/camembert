@@ -34,5 +34,10 @@ const abstract class Space
   ** Load the space and return its content widget
   abstract Widget onLoad(Frame frame)
 
+  ** If this space can goto the given item, then update the
+  ** application and return true.  If this space cannot handle
+  ** the given item, return false.
+  abstract Bool goto(Item item)
+
 }
 

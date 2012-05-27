@@ -79,6 +79,39 @@ class Frame : Window
     load(space, spaceIndex(space))
   }
 
+  ** Route to best open space or open new one for given item.
+  Void goto(Item item)
+  {
+    // check if current view is on item
+    if (view?.file == item.file) { view.onGoto(item); return }
+
+    // find best space to handle item
+    gotoSpace(item)
+
+    // now check if we have view to handle line/col
+    if (view != null) view.onGoto(item)
+  }
+
+  private Void gotoSpace(Item item)
+  {
+    // check if current space can handle it
+    if (this.space.goto(item)) return
+
+    // try to map to a pod space if this is under a pod
+    pod := item.file != null ? sys.index.podForFile(item.file) : null
+    if (pod != null)
+    {
+      podSpace := this.spaces.find |s| { s is PodSpace && ((PodSpace)s).name == pod.name }
+      if (podSpace != null) { podSpace.goto(item); return }
+    }
+
+    // follow back to any matching space
+    for (i := 0; i<spaces.size; ++i)
+      if (spaces[i].goto(item)) return
+
+echo("==> goto new $item.dis : $item.file")
+  }
+
   ** Load current space
   private Void load(Space space, Int? index)
   {

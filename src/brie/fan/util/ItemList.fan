@@ -20,8 +20,9 @@ class ItemList : Canvas
 // Constructor
 //////////////////////////////////////////////////////////////////////////
 
-  new make(Item[] items)
+  new make(Frame frame, Item[] items)
   {
+    this.frame = frame
     this.doubleBuffered = true
     this.items = items
     onMouseDown.add |e| { doMouseDown(e) }
@@ -31,13 +32,13 @@ class ItemList : Canvas
 // Config
 //////////////////////////////////////////////////////////////////////////
 
+  Frame frame { private set }
+
   const Item[] items
 
   const Font font := Desktop.sysFontMonospace
 
   const Insets insets := Insets(10, 10, 10, 10)
-
-  once EventListeners onAction() { EventListeners() }
 
 //////////////////////////////////////////////////////////////////////////
 // Layout
@@ -106,7 +107,7 @@ class ItemList : Canvas
 
   private Void doMouseDown(Event event)
   {
-    if (event.count == 2)
+    if (event.count == 1 && event.button == 1)
     {
       event.consume
       fireAction(yToIndex(event.pos.y))
@@ -118,14 +119,7 @@ class ItemList : Canvas
   {
     item := items.getSafe(index)
     if (item == null) return
-    event := Event
-    {
-      it.id     = EventId.action
-      it.widget = this
-      it.index  = index
-      it.data   = item
-    }
-    onAction.fire(event)
+    frame.goto(item)
   }
 
 }

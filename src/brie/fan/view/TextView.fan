@@ -67,6 +67,12 @@ class TextView : View
 
   Editor editor
 
+  override Void onGoto(Item item)
+  {
+    editor.goto(item.pos)
+    editor.focus
+  }
+
   /*
   override Pos curPos() { editor.caret }
 
@@ -74,17 +80,6 @@ class TextView : View
   {
     editor.highlights = Span[,]
     editor.focus
-  }
-
-  override Void onGoto(Mark mark)
-  {
-    editor.goto(mark.pos)
-    editor.focus
-  }
-
-  override Void onMarks(Mark[] marks)
-  {
-    editor.repaint
   }
   */
 

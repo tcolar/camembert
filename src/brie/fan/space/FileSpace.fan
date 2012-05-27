@@ -42,9 +42,20 @@ const class FileSpace : Space
   static Space loadSession(Sys sys, Str:Str props)
   {
     make(sys,
-         props.getOrThrow("dir").toUri.toFile,
+         File(props.getOrThrow("dir").toUri, false),
          props.getOrThrow("dis"),
          props.get("path", "").toUri)
+  }
+
+  override Bool goto(Item item)
+  {
+    file := item.file?.normalize
+    if (file == null) return false
+    if (!file.uri.toStr.startsWith(this.dir.uri.toStr)) return false
+    newPath := file.uri.toStr[this.dir.uri.toStr.size..-1].toUri
+    space := FileSpace(sys, dir, dis, newPath)
+    sys.frame.reload(space)
+    return true
   }
 
   override Widget onLoad(Frame frame)
@@ -55,21 +66,16 @@ const class FileSpace : Space
       numCols = path.path.size + 1
     }
     x := this.dir
-    pathBar.add(makePathButton(x))
+    pathBar.add(makePathButton(frame, x))
     path.path.each |name|
     {
       x = File(x.uri.plusName(name), false)
-      pathBar.add(makePathButton(x))
+      pathBar.add(makePathButton(frame, x))
     }
 
     // build dir listing
     lastDir := x.isDir ? x : x.parent
-    lister := ItemList(Item.makeFiles(lastDir.list))
-    lister.onAction.add |e|
-    {
-      item := (Item)e.data
-      pathInto(item.file)
-    }
+    lister := ItemList(frame, Item.makeFiles(lastDir.list))
 
     // if path is file, make view for it
     Widget? view := null
@@ -83,7 +89,7 @@ const class FileSpace : Space
     }
   }
 
-  private Button makePathButton(File file)
+  private Button makePathButton(Frame frame, File file)
   {
     dis := file.name
     if (file === this.dir)
@@ -96,15 +102,8 @@ const class FileSpace : Space
     {
       text  = dis
       image = Theme.fileToIcon(file)
-      onAction.add |e| { pathInto(file) }
+      onAction.add |e| { frame.goto(Item(file)) }
     }
-  }
-
-  Void pathInto(File file)
-  {
-    newPath := file.normalize.uri.toStr[this.dir.uri.toStr.size..-1].toUri
-    space := FileSpace(sys, dir, dis, newPath)
-    sys.frame.reload(space)
   }
 
 }

@@ -36,6 +36,12 @@ abstract class View : ContentPane
   const File file
 
   **
+  ** If a space loads a view from a goto event, then this
+  ** callback is made after the space has finished loading
+  **
+  virtual Void onGoto(Item item) {}
+
+  **
   ** Callback to cleanup resources
   **
   virtual Void onUnload() {}

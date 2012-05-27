@@ -9,6 +9,7 @@
 using gfx
 using fwt
 using concurrent
+using bocce
 
 **
 ** Item represents an active item such as file or type
@@ -61,6 +62,8 @@ const class Item
 
   const Int line
 
+  const Int col
+
   const TypeInfo? type
 
   const Bool isHeading
@@ -68,6 +71,8 @@ const class Item
   const Int indent
 
   override Str toStr() { dis }
+
+  Pos pos() { Pos(line, col) }
 
 }
 

@@ -48,6 +48,12 @@ const class PodSpace : Space
          props.get("file")?.toUri?.toFile)
   }
 
+  override Bool goto(Item item)
+  {
+    sys.frame.reload(PodSpace(sys, name, dir, item.file))
+    return true
+  }
+
   override Widget onLoad(Frame frame)
   {
     return EdgePane
@@ -90,7 +96,7 @@ const class PodSpace : Space
       bucket.each |f| { items.add(Item(f) { it.indent = indent }) }
     }
 
-    return ItemList(items)
+    return ItemList(frame, items)
   }
 
   private Widget? makeSlotNav(Frame frame)
@@ -115,7 +121,7 @@ const class PodSpace : Space
       }
     }
 
-    return ItemList(items)
+    return ItemList(frame, items)
   }
 }
 

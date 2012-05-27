@@ -20,11 +20,6 @@ const class HomeSpace : Space
   override Str dis() { "home" }
   override Image icon() { Theme.iconHome }
 
-  override Widget onLoad(Frame frame)
-  {
-    Label { text = "Home Space!" }
-  }
-
   override Str:Str saveSession()
   {
     Str:Str[:]
@@ -33,6 +28,13 @@ const class HomeSpace : Space
   static Space loadSession(Sys sys, Str:Str props)
   {
     make(sys)
+  }
+
+  override Bool goto(Item item) { false }
+
+  override Widget onLoad(Frame frame)
+  {
+    Label { text = "Home Space!" }
   }
 }
 
