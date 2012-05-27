@@ -34,12 +34,23 @@ const class Item
     if (f != null) f(this)
   }
 
+  new makePod(PodInfo p, |This|? f := null)
+  {
+    this.dis  = p.name
+    this.icon = Theme.iconPod
+    this.file = p.srcDir + `build.fan`
+    this.pod  = p
+    if (f != null) f(this)
+  }
+
   new makeType(TypeInfo t, |This|? f := null)
   {
     this.dis  = t.qname
     this.icon = Theme.iconType
     this.file = t.toFile
     this.line = t.line
+    this.pod  = t.pod
+    this.type = t
     if (f != null) f(this)
   }
 
@@ -49,6 +60,10 @@ const class Item
     this.icon = s is FieldInfo ? Theme.iconField : Theme.iconMethod
     this.file = s.type.toFile
     this.line = s.line
+    this.col  = 2
+    this.pod  = s.type.pod
+    this.type = s.type
+    this.slot = s
     if (f != null) f(this)
   }
 
@@ -64,7 +79,11 @@ const class Item
 
   const Int col
 
+  const PodInfo? pod
+
   const TypeInfo? type
+
+  const SlotInfo? slot
 
   const Bool isHeading
 

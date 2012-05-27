@@ -31,13 +31,15 @@ const abstract class Space
   ** must also declare a static 'loadSession(Sys, Str:Str)' method.
   abstract Str:Str saveSession()
 
+  ** If this space can handle view of the given item, then return
+  ** is match priority or zero if it cannot handle the item.
+  abstract Int match(Item item)
+
+  ** Construct new space state to goto the given item.
+  abstract This goto(Item item)
+
   ** Load the space and return its content widget
   abstract Widget onLoad(Frame frame)
-
-  ** If this space can goto the given item, then update the
-  ** application and return true.  If this space cannot handle
-  ** the given item, return false.
-  abstract Bool goto(Item item)
 
 }
 

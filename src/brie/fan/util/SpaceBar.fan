@@ -24,6 +24,7 @@ internal class SpaceBar : ContentPane
       button := Button
       {
         text = space.dis
+        if (space === frame.space) text = "[$text]"
         image = space.icon
         onAction.add |event| { frame.select(space) }
       }

@@ -24,6 +24,7 @@ const class Theme
   static const Image iconSlideDown := Image(`fan://brie/res/slideDown.png`)
   static const Image iconDirty     := Image(`fan://brie/res/dirty.png`)
   static const Image iconNotDirty  := Image(`fan://brie/res/notDirty.png`)
+  static const Image iconPod       := Image(`fan://icons/x16/database.png`)
   static const Image iconType      := Image(`fan://brie/res/type.png`)
   static const Image iconField     := Image(`fan://brie/res/field.png`)
   static const Image iconMethod    := Image(`fan://brie/res/method.png`)

@@ -15,7 +15,7 @@ using fwt
 @Serializable
 const class PodSpace : Space
 {
-  new make(Sys sys, Str name, File dir, File? file) : super(sys)
+  new make(Sys sys, Str name, File dir, File? file := null) : super(sys)
   {
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
     if (!dir.isDir) throw Err("Not a dir: $dir")
@@ -48,10 +48,15 @@ const class PodSpace : Space
          props.get("file")?.toUri?.toFile)
   }
 
-  override Bool goto(Item item)
+  override Int match(Item item)
   {
-    sys.frame.reload(PodSpace(sys, name, dir, item.file))
-    return true
+    if (!FileUtil.contains(this.dir, item.file)) return 0
+    return 100
+  }
+
+  override This goto(Item item)
+  {
+    make(sys, name, dir, item.file)
   }
 
   override Widget onLoad(Frame frame)

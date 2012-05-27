@@ -30,11 +30,38 @@ const class HomeSpace : Space
     make(sys)
   }
 
-  override Bool goto(Item item) { false }
+  override Int match(Item item) { 0 }
+
+  override This goto(Item item) { this }
 
   override Widget onLoad(Frame frame)
   {
-    Label { text = "Home Space!" }
+    podGroups := ItemList[,]
+    pods := sys.index.pods.dup
+    sys.index.dirs.each |indexDir|
+    {
+      items := Item[,]
+      items.add(Item(indexDir) { it.dis = FileUtil.pathDis(indexDir) })
+      podsInDir := pods.findAll |p|
+      {
+        p.srcDir != null && FileUtil.contains(indexDir, p.srcDir)
+      }
+      podsInDir.each |p|
+      {
+        pods.removeSame(p)
+        items.add(Item(p))
+      }
+      podGroups.add(ItemList(frame, items))
+    }
+
+    grid := GridPane
+    {
+      numCols = podGroups.size
+      valignCells = Valign.fill
+      expandRow = 0
+    }
+    podGroups.each |g| { grid.add(ScrollPane { g, }) }
+    return grid
   }
 }
 

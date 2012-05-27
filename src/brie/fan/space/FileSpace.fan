@@ -15,7 +15,8 @@ using fwt
 @Serializable
 const class FileSpace : Space
 {
-  new make(Sys sys, File dir, Str dis:= dir.name, Uri path := ``) : super(sys)
+  new make(Sys sys, File dir, Str dis:= FileUtil.pathDis(dir), Uri path := ``)
+    : super(sys)
   {
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
     if (!dir.isDir) throw Err("Not a dir: $dir")
@@ -47,15 +48,16 @@ const class FileSpace : Space
          props.get("path", "").toUri)
   }
 
-  override Bool goto(Item item)
+  override Int match(Item item)
   {
-    file := item.file?.normalize
-    if (file == null) return false
-    if (!file.uri.toStr.startsWith(this.dir.uri.toStr)) return false
-    newPath := file.uri.toStr[this.dir.uri.toStr.size..-1].toUri
-    space := FileSpace(sys, dir, dis, newPath)
-    sys.frame.reload(space)
-    return true
+    if (!FileUtil.contains(this.dir, item.file)) return 0
+    if (item.pod != null) return 0
+    return this.dir.path.size
+  }
+
+  override This goto(Item item)
+  {
+    make(sys, dir, dis, FileUtil.pathIn(dir, item.file))
   }
 
   override Widget onLoad(Frame frame)
@@ -91,13 +93,7 @@ const class FileSpace : Space
 
   private Button makePathButton(Frame frame, File file)
   {
-    dis := file.name
-    if (file === this.dir)
-    {
-      names := file.path.dup
-      if (names.first.endsWith(":")) names.removeAt(0)
-      dis = "/" + names.join("/")
-    }
+    dis := file === this.dir ? FileUtil.pathDis(file) : file.name
     return Button
     {
       text  = dis

@@ -44,7 +44,7 @@ class Frame : Window
     // load session and home space
     loadSession
     space = spaces.first
-    reload(space)
+    load(space, 0)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -67,17 +67,14 @@ class Frame : Window
 // Space Lifecycle
 //////////////////////////////////////////////////////////////////////////
 
-  ** Reload curent space
-  Void reload(Space space := this.space)
-  {
-    load(space, spaceIndex(this.space))
-  }
-
   ** Select given space
   Void select(Space space)
   {
     load(space, spaceIndex(space))
   }
+
+  ** Reload current space
+  Void reload() { load(this.space, spaceIndex(space)) }
 
   ** Route to best open space or open new one for given item.
   Void goto(Item item)
@@ -85,31 +82,50 @@ class Frame : Window
     // check if current view is on item
     if (view?.file == item.file) { view.onGoto(item); return }
 
-    // find best space to handle item
-    gotoSpace(item)
-
-    // now check if we have view to handle line/col
-    if (view != null) view.onGoto(item)
-  }
-
-  private Void gotoSpace(Item item)
-  {
-    // check if current space can handle it
-    if (this.space.goto(item)) return
-
-    // try to map to a pod space if this is under a pod
-    pod := item.file != null ? sys.index.podForFile(item.file) : null
-    if (pod != null)
+    // find best space to handle item, or create new one
+    best := matchSpace(item)
+    if (best != null)
     {
-      podSpace := this.spaces.find |s| { s is PodSpace && ((PodSpace)s).name == pod.name }
-      if (podSpace != null) { podSpace.goto(item); return }
+      load(best.goto(item), spaceIndex(best))
+    }
+    else
+    {
+      c := create(item)
+      if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
+      load(c, null)
     }
 
-    // follow back to any matching space
-    for (i := 0; i<spaces.size; ++i)
-      if (spaces[i].goto(item)) return
+    // now check if we have view to handle line/col
+    if (view != null) Desktop.callAsync |->| { view.onGoto(item) }
+  }
 
-echo("==> goto new $item.dis : $item.file")
+  private Space? matchSpace(Item item)
+  {
+    // current always trumps others
+    if (this.space.match(item) > 0) return this.space
+
+    // find best match
+    Space? bestSpace := null
+    Int bestPriority := 0
+    this.spaces.each |s|
+    {
+      priority := s.match(item)
+      if (priority == 0) return
+      if (priority > bestPriority) { bestSpace = s; bestPriority = priority }
+    }
+    return bestSpace
+  }
+
+  private Space? create(Item item)
+  {
+    file := item.file
+    if (file == null) return null
+
+    pod := sys.index.podForFile(file)
+    if (pod != null) return PodSpace(sys, pod.name, pod.srcDir)
+
+    dir := file.isDir ? file : file.parent
+    return FileSpace(sys, dir)
   }
 
   ** Load current space
