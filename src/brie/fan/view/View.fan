@@ -42,6 +42,9 @@ abstract class View : ContentPane
   ** Current status string for status bar
   virtual Str curStatus() { "" }
 
+  ** Current selected string or empty
+  virtual Str curSelection() { "" }
+
   **
   ** If a space loads a view from a goto event, then this
   ** callback is made after the space has finished loading

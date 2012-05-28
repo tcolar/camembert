@@ -68,6 +68,9 @@ class Editor : Canvas
   ** at that position.  Return new position of end of inserted text.
   Pos modify(Span span, Str newText) { doc.modify(span, newText) }
 
+  ** Get text for the given span
+  Str textForSpan(Span span) { doc.textRange(span) }
+
 //////////////////////////////////////////////////////////////////////////
 // Document
 //////////////////////////////////////////////////////////////////////////

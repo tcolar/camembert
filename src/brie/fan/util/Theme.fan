@@ -43,5 +43,5 @@ const class Theme
   }
 
   static const Color bg := Color(0xff_ff_ff)
-  static const Color itemHeadingBg := Color(0xcc_cc_cc)
+  static const Color itemHeadingBg := Color(0xdd_dd_dd)
 }

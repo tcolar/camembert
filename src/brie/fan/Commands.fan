@@ -37,6 +37,7 @@ const class Commands
   const Cmd save     := SaveCmd()
   const Cmd prevMark := PrevMarkCmd()
   const Cmd nextMark := NextMarkCmd()
+  const Cmd find     := FindCmd()
   const Cmd goto     := GotoCmd()
   const Cmd build    := BuildCmd()
 }
@@ -132,6 +133,10 @@ internal const class GotoCmd : Cmd
       it.model = matches
     }
 
+    // check for current selection to initialize
+    selection := frame.curView?.curSelection ?: ""
+    prompt.text = selection
+
     // build dialog
     Item? selected
     ok := Dialog.ok
@@ -226,6 +231,64 @@ internal class GotoMatchModel : TableModel
   override Image? image(Int col, Int row) { items[row].icon }
   override Font? font(Int col, Int row) { itemFont }
   override Int? prefWidth(Int col) { width }
+}
+
+**************************************************************************
+** FindCmd
+**************************************************************************
+
+internal const class FindCmd : Cmd
+{
+  override const Str name := "Find"
+  override const Key? key := Key("Ctrl+F")
+  override Void invoke(Event event)
+  {
+    f := frame.curFile
+    if (f != null) find(f)
+  }
+
+  Void find(File file)
+  {
+    prompt := Text { }
+    path   := Text { text = FileUtil.pathDis(file) }
+    match  := Button { mode = ButtonMode.check; text = "Match case" }
+
+    selection := frame.curView?.curSelection ?: ""
+    if (!selection.isEmpty && !selection.contains("\n"))
+      prompt.text = selection.trim
+    else
+      prompt.text = last.val
+
+    pane := GridPane
+    {
+      numCols = 2
+      expandCol = 1
+      halignCells = Halign.fill
+      Label { text="Find" },
+      ConstraintPane { minw=300; maxw=300; add(prompt) },
+      Label { text="File" },
+      ConstraintPane { minw=300; maxw=300; add(path) },
+      Label {}, // spacer
+      match,
+    }
+    dlg := Dialog(frame)
+    {
+      title = "Find"
+      body  = pane
+      commands = [Dialog.ok, Dialog.cancel]
+    }
+    prompt.onAction.add |->| { dlg.close(Dialog.ok) }
+    if (Dialog.ok != dlg.open) return
+
+    // get and save text to search for
+    str := prompt.text
+    last.val = str
+
+    // TODO
+    Dialog.openInfo(frame, "Find: $str.toCode")
+  }
+
+  const AtomicRef last := AtomicRef("")
 }
 
 **************************************************************************

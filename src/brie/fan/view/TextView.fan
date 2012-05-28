@@ -67,6 +67,14 @@ class TextView : View
 
   Editor editor
 
+  ** Current selected string or empty
+  override Str curSelection()
+  {
+    span := editor.selection
+    if (span == null) return ""
+    return editor.textForSpan(span)
+  }
+
   override Pos curPos() { editor.caret }
 
   override Str curStatus()

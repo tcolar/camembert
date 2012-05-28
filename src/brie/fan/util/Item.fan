@@ -87,13 +87,27 @@ const class Item
 
   const SlotInfo? slot
 
-  const Bool isHeading
+  const Bool header
 
   const Int indent
 
   override Str toStr() { dis }
 
   Pos pos() { Pos(line, col) }
+
+  Menu? popup(Frame frame)
+  {
+    if (file == null) return null
+    FindCmd findCmd := frame.sys.commands.find
+    return Menu
+    {
+      MenuItem
+      {
+        it.text = "Find in \"$dis\""
+        it.onAction.add |e| { findCmd.find(file) }
+      },
+    }
+  }
 
 }
 

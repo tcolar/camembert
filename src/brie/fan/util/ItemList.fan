@@ -96,7 +96,7 @@ class ItemList : Canvas
     g.fillRect(0, 0, w, h)
 
     g.font = font
-    items.each |item|
+    items.each |item, i|
     {
       paintItem(g, item, x, y, w, itemh)
       y += itemh
@@ -105,11 +105,15 @@ class ItemList : Canvas
 
   private Void paintItem(Graphics g, Item item, Int x, Int y, Int w, Int h)
   {
-    if (item.isHeading)
+    if (item.header)
     {
       g.brush = Theme.itemHeadingBg
-      g.fillRect(0, y, size.w, h-2)
+      if (item === items.first)
+        g.fillRect(0, 0, size.w, y+h-2)
+      else
+        g.fillRect(0, y, size.w, h-2)
     }
+
     if (item === this.highlight)
     {
       g.brush = Color.yellow
@@ -133,19 +137,21 @@ class ItemList : Canvas
 
   private Void doMouseUp(Event event)
   {
+    item := items.getSafe(yToIndex(event.pos.y))
     if (event.count == 1 && event.button == 1)
     {
       event.consume
-      fireAction(yToIndex(event.pos.y))
+      if (item != null) frame.goto(item)
       return
     }
-  }
 
-  private Void fireAction(Int index)
-  {
-    item := items.getSafe(index)
-    if (item == null) return
-    frame.goto(item)
+    if (event.isPopupTrigger)
+    {
+      event.consume
+      menu := item?.popup(frame)
+      if (menu != null) menu.open(event.widget, event.pos)
+      return
+    }
   }
 
 }

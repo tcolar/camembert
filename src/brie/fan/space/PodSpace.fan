@@ -108,6 +108,7 @@ const class PodSpace : Space
 
     // now map to items
     items := Item[,]
+    items.add(Item(dir) { it.dis = FileUtil.pathDis(dir); it.header=true })
     byDir.keys.sort.each |d|
     {
       indent := 0
