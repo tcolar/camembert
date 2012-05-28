@@ -110,7 +110,7 @@ internal const class BuildCmd : Cmd
   {
     // get the current resource as a file, if this file is
     // the build.fan file itself, then we're done
-    f := frame.space.curFile
+    f := frame.curFile
     if (f == null) return null
     if (f.name == "build.fan") return f
 

@@ -63,7 +63,7 @@ const class Index
       Desktop.callAsync |->|
       {
         frame := sys.frame
-        if (frame.space is HomeSpace) frame.reload
+        if (frame.curSpace is HomeSpace) frame.reload
         else frame.updateStatus
       }
     }

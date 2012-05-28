@@ -25,7 +25,7 @@ internal class SpaceBar : ContentPane
       button := Button
       {
         dis := space.dis
-        if (space === frame.space) dis = "[$dis]"
+        if (space === frame.curSpace) dis = "[$dis]"
         it.text = dis
         it.image = space.icon
         it.onAction.add |e| { frame.select(space) }

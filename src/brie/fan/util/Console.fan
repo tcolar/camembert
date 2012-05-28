@@ -24,11 +24,12 @@ class Console : EdgePane
     this.sys = frame.sys
     this.list = ItemList(frame, Item[,])
     this.center = ScrollPane { this.list, }
+    this.visible = false
   }
 
   Bool isBusy() { proc != null }
 
-  Bool isOpen := true { private set }
+  Bool isOpen := false { private set }
 
   Void toggle() { if (isOpen) close; else open }
 

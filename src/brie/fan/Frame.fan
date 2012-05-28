@@ -50,8 +50,8 @@ class Frame : Window
 
     // load session and home space
     loadSession
-    space = spaces.first
-    load(space, 0)
+    curSpace = spaces.first
+    load(curSpace, 0)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,13 @@ class Frame : Window
   const Sys sys
 
   ** Current space
-  Space space
+  Space curSpace
+
+  ** Current space file
+  File? curFile() { curSpace.curFile }
+
+  ** Current space pod
+  PodInfo? curPod() { curSpace.curPod }
 
   ** If current space has loaded a view
   View? view { private set }
@@ -84,7 +90,7 @@ class Frame : Window
   }
 
   ** Reload current space
-  Void reload() { load(this.space, spaceIndex(space)) }
+  Void reload() { load(curSpace, spaceIndex(curSpace)) }
 
   ** Route to best open space or open new one for given item.
   Void goto(Item item)
@@ -114,15 +120,15 @@ class Frame : Window
     i := spaceIndex(space)
     if (i == 0) return
     spaces = spaces.dup { removeAt(i) }.toImmutable
-    if (this.space == space)
-      this.space = spaces.getSafe(i) ?: spaces.last
+    if (curSpace == space)
+      curSpace = spaces.getSafe(i) ?: spaces.last
     reload
   }
 
   private Space? matchSpace(Item item)
   {
     // current always trumps others
-    if (this.space.match(item) > 0) return this.space
+    if (curSpace.match(item) > 0) return curSpace
 
     // find best match
     Space? bestSpace := null
@@ -162,8 +168,8 @@ class Frame : Window
     view = null
 
     // update space references
-    oldSpace := this.space
-    this.space = space
+    oldSpace := curSpace
+    this.curSpace = space
     if (index == null)
       this.spaces = spaces.add(space)
     else
