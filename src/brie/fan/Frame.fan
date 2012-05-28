@@ -9,6 +9,7 @@
 using gfx
 using fwt
 using concurrent
+using bocce
 
 **
 ** Top-level frame
@@ -52,7 +53,7 @@ class Frame : Window
     // load session and home space
     loadSession
     curSpace = spaces.first
-    load(curSpace, 0)
+    load(curSpace, 0, null)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -87,11 +88,11 @@ class Frame : Window
   ** Select given space
   Void select(Space space)
   {
-    load(space, spaceIndex(space))
+    load(space, spaceIndex(space), null)
   }
 
   ** Reload current space
-  Void reload() { load(curSpace, spaceIndex(curSpace)) }
+  Void reload() { load(curSpace, spaceIndex(curSpace), null) }
 
   ** Route to best open space or open new one for given item.
   Void goto(Item item)
@@ -105,23 +106,20 @@ class Frame : Window
     }
 
     // check if current view is on item
-    if (curView?.file == item.file) { curView.onGoto(item); return }
+    if (curView?.file == item.file) { curView.onGoto(item.pos); return }
 
     // find best space to handle item, or create new one
     best := matchSpace(item)
     if (best != null)
     {
-      load(best.goto(item), spaceIndex(best))
+      load(best.goto(item), spaceIndex(best), item)
     }
     else
     {
       c := create(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
-      load(c, null)
+      load(c, null, item)
     }
-
-    // now check if we have view to handle line/col
-    if (curView != null) Desktop.callAsync |->| { curView.onGoto(item) }
   }
 
   Void closeSpace(Space space)
@@ -164,10 +162,14 @@ class Frame : Window
   }
 
   ** Load current space
-  private Void load(Space space, Int? index)
+  private Void load(Space space, Int? index, Item? item)
   {
     // confirm if we should close
     if (!confirmClose) return
+
+    // save current file line number
+    if (curView != null)
+      filePosHis[curView.file] = curView.curPos
 
     // unload current view
     try
@@ -196,6 +198,14 @@ class Frame : Window
     spaceBar.relayout
     spacePane.relayout
     relayout
+
+    // now check if we have view to handle line/col
+    if (curView != null) Desktop.callAsync |->|
+    {
+      pos := filePosHis[curView.file]
+      if (item != null && item.line != 0) pos  = item.pos
+      if (pos != null) curView.onGoto(pos)
+    }
   }
 
   private static View? findView(Widget w)
@@ -360,5 +370,6 @@ class Frame : Window
   private SpaceBar spaceBar
   private ContentPane spacePane
   private StatusBar statusBar
+  private File:Pos filePosHis := [:]
 }
 

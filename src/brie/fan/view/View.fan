@@ -46,7 +46,7 @@ abstract class View : ContentPane
   ** If a space loads a view from a goto event, then this
   ** callback is made after the space has finished loading
   **
-  virtual Void onGoto(Item item) {}
+  virtual Void onGoto(Pos pos) {}
 
   **
   ** Callback to cleanup resources

@@ -67,18 +67,19 @@ class TextView : View
 
   Editor editor
 
-  override Void onGoto(Item item)
-  {
-    editor.goto(item.pos)
-    editor.focus
-  }
-
   override Pos curPos() { editor.caret }
 
   override Str curStatus()
   {
     pos := curPos
     return "$charset   ${pos.line+1}:${pos.col+1}"
+  }
+
+
+  override Void onGoto(Pos pos)
+  {
+    editor.goto(pos)
+    editor.focus
   }
 
   override Void onSave()

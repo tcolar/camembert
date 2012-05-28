@@ -124,9 +124,22 @@ internal class Viewport
     lineSize := doc.line(caretLine).size
     if (caretCol >= lineSize) caretCol = lineSize
 
-    // check caret line is visible
-    if (caretLine < startLine) startLine = caretLine
-    if (caretLine >= startLine + visibleLines) startLine = caretLine - visibleLines + 1
+    // check caret line is visible, if big jump then
+    // center caret 1/3 down from top of viewport
+    if (caretLine < startLine)
+    {
+      if (caretLine < startLine - 2)
+        startLine = caretLine - visibleLines/3
+      else
+        startLine = caretLine
+    }
+    if (caretLine >= startLine + visibleLines)
+    {
+      if (caretLine > startLine + visibleLines + 2)
+        startLine = caretLine - visibleLines/3
+      else
+        startLine = caretLine - visibleLines + 1
+    }
 
     // check caret col is visible
     if (caretCol < startCol) startCol = caretCol
