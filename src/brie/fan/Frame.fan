@@ -29,15 +29,22 @@ class Frame : Window
 
     // eventing
     onClose.add |Event e| { e.consume; sys.commands.exit.invoke(e) }
+    onKeyDown.add |e| { trapKeyDown(e) }
 
     // build UI
     this.spaceBar = SpaceBar(this)
     this.spacePane = ContentPane()
     this.statusBar = StatusBar(this)
+    this.console   = Console(this)
     this.content = EdgePane
     {
       it.top = spaceBar
-      it.center = spacePane
+      it.center = SashPane
+      {
+        orientation = Orientation.vertical
+        spacePane,
+        console,
+      }
       it.bottom = statusBar
     }
 
@@ -62,6 +69,9 @@ class Frame : Window
 
   ** Currently open spaces
   Space[] spaces := [,] { private set }
+
+  ** Console
+  Console console { private set }
 
 //////////////////////////////////////////////////////////////////////////
 // Space Lifecycle

@@ -33,8 +33,9 @@ const class Commands
 
   const Sys sys
   const Cmd[] list
-  const Cmd exit := ExitCmd()
-  const Cmd save := SaveCmd()
+  const Cmd exit  := ExitCmd()
+  const Cmd save  := SaveCmd()
+  const Cmd build := BuildCmd()
 }
 
 **************************************************************************
@@ -54,6 +55,7 @@ const abstract class Cmd
 
   Options options() { sys.options }
   Frame frame() { sys.frame }
+  Console console() { frame.console }
 }
 
 **************************************************************************
@@ -84,5 +86,44 @@ internal const class SaveCmd : Cmd
   override Void invoke(Event event) { frame.save }
 }
 
+**************************************************************************
+** BuildCmd
+**************************************************************************
+
+internal const class BuildCmd : Cmd
+{
+  override const Str name := "Build"
+  override const Key? key := Key("F9")
+  override Void invoke(Event event)
+  {
+    f := findBuildFile
+    if (f == null)
+    {
+      Dialog.openErr(frame, "No build.fan file found")
+      return
+    }
+
+    console.execFan([f.osPath], f.parent)
+  }
+
+  File? findBuildFile()
+  {
+    // get the current resource as a file, if this file is
+    // the build.fan file itself, then we're done
+    f := frame.space.curFile
+    if (f == null) return null
+    if (f.name == "build.fan") return f
+
+    // lookup up directory tree until we find "build.fan"
+    if (!f.isDir) f = f.parent
+    while (f.path.size > 0)
+    {
+      buildFile := f + `build.fan`
+      if (buildFile.exists) return buildFile
+      f = f.parent
+    }
+    return null
+  }
+}
 
 

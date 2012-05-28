@@ -79,7 +79,7 @@ internal class IndexCache
       {
         m := matchFile(f, pattern)
         if (m == 0) return
-        item := Item { dis="$pod.name::$f.name"; file=f }
+        item := Item(f) { dis="$pod.name::$f.name" }
         if (m == 2) exacts.add(item )
         else if (!exact) approx.add(item)
       }

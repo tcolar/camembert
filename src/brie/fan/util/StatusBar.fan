@@ -74,7 +74,7 @@ internal class StatusBar : ContentPane
   Void update()
   {
     // console up/down
-    console.image = consoleOpen ? Theme.iconSlideDown : Theme.iconSlideUp
+    console.image = frame.console.isOpen ? Theme.iconSlideDown : Theme.iconSlideUp
 
     // indexing
     index.image = sys.index.isIndexing ? Theme.iconIndexing : Theme.iconOk
@@ -100,19 +100,31 @@ internal class StatusBar : ContentPane
 // Eventing
 //////////////////////////////////////////////////////////////////////////
 
-  Void onConsoleToggle()  { consoleOpen = !consoleOpen }
+  Void onConsoleToggle()  { frame.console.toggle  }
 
   Void onConsolePopup(Event event)
   {
     menu := Menu
     {
-      MenuItem { text="Open Console";  onAction.add |e| { consoleOpen=true } },
-      MenuItem { text="Close Console"; onAction.add |e| { consoleOpen=false } },
+      MenuItem
+      {
+        it.text = "Open Console"
+        it.onAction.add |e| { frame.console.open }
+      },
+      MenuItem
+      {
+        it.text = "Close Console"
+        it.onAction.add |e| { frame.console.close }
+      },
+      MenuItem
+      {
+        it.text = "Kill"
+        it.enabled = frame.console.isBusy
+        it.onAction.add |e| { frame.console.kill }
+      },
     }
     menu.open(console, event.pos)
   }
-
-Bool consoleOpen { set { &consoleOpen = it; update } }
 
   Void onIndexPopup(Event event)
   {

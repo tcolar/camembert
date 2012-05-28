@@ -67,6 +67,8 @@ const class Item
     if (f != null) f(this)
   }
 
+  new makeStr(Str dis) { this.dis = dis }
+
   new make(|This| f) { f(this) }
 
   const Str dis

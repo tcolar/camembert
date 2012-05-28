@@ -33,8 +33,14 @@ const class PodSpace : Space
   ** Active file
   const File file
 
+
   override Str dis() { name }
+
   override Image icon() { Theme.iconPod }
+
+  override File? curFile() { file }
+
+  override PodInfo? curPod() { sys.index.pod(name, false) }
 
   override Str:Str saveSession()
   {

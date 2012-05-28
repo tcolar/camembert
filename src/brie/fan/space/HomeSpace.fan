@@ -30,6 +30,10 @@ const class HomeSpace : Space
     make(sys)
   }
 
+  override File? curFile() { null }
+
+  override PodInfo? curPod() { null }
+
   override Int match(Item item) { 0 }
 
   override This goto(Item item) { this }

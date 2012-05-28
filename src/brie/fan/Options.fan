@@ -26,9 +26,19 @@ const class Options
   }
 
   ** Default constructor with it-block
-  new make(|This|? f := null) { if (f != null) f(this) }
+  new make(|This|? f := null)
+  {
+    if (f != null) f(this)
+    fanHome = fanHomeUri.toFile.normalize
+  }
 
   ** Directories to crawl looking for for pod, file navigation
   const Uri[] indexDirs := [,]
+
+  ** Home directory to use for fan/build commands
+  const Uri fanHomeUri := Env.cur.homeDir.uri
+
+  ** File of `fanHomeUri`
+  const File fanHome
 }
 

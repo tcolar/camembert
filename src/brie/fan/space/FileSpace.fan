@@ -23,6 +23,7 @@ const class FileSpace : Space
     this.dir = dir.normalize
     this.dis = dis
     this.path = path
+    this.curFile = dir + path
   }
 
   const File dir
@@ -47,6 +48,10 @@ const class FileSpace : Space
          props.getOrThrow("dis"),
          props.get("path", "").toUri)
   }
+
+  override const File? curFile
+
+  override PodInfo? curPod() { sys.index.podForFile(curFile) }
 
   override Int match(Item item)
   {

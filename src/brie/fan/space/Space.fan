@@ -31,6 +31,12 @@ const abstract class Space
   ** must also declare a static 'loadSession(Sys, Str:Str)' method.
   abstract Str:Str saveSession()
 
+  ** Return active file for this space
+  abstract File? curFile()
+
+  ** Return active pod for this space
+  abstract PodInfo? curPod()
+
   ** If this space can handle view of the given item, then return
   ** is match priority or zero if it cannot handle the item.
   abstract Int match(Item item)

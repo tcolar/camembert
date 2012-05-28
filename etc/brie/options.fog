@@ -11,4 +11,7 @@ Options
     `/dev/`,
     `/stuff/play`,
   ]
+  
+  ** Home to use for fan commands/build
+  fanHomeUri = `/fan/`
 }

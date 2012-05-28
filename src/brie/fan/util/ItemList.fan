@@ -24,7 +24,7 @@ class ItemList : Canvas
   {
     this.frame = frame
     this.doubleBuffered = true
-    this.items = items
+    this.items = items.ro
     onMouseUp.add |e| { doMouseUp(e) }
   }
 
@@ -34,11 +34,29 @@ class ItemList : Canvas
 
   Frame frame { private set }
 
-  const Item[] items
+  Item[] items { private set  }
 
   const Font font := Desktop.sysFontMonospace
 
   const Insets insets := Insets(10, 10, 10, 10)
+
+//////////////////////////////////////////////////////////////////////////
+// Items
+//////////////////////////////////////////////////////////////////////////
+
+  Void addItem(Item item)
+  {
+    this.items = this.items.rw.add(item).ro
+    relayout
+    repaint
+  }
+
+  Void clear()
+  {
+    this.items = Item[,].ro
+    relayout
+    repaint
+  }
 
 //////////////////////////////////////////////////////////////////////////
 // Layout
