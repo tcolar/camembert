@@ -25,7 +25,7 @@ class ItemList : Canvas
     this.frame = frame
     this.doubleBuffered = true
     this.items = items
-    onMouseDown.add |e| { doMouseDown(e) }
+    onMouseUp.add |e| { doMouseUp(e) }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ class ItemList : Canvas
 
   private Item? yToItem(Int y) { items.getSafe(yToIndex(y)) }
 
-  private Void doMouseDown(Event event)
+  private Void doMouseUp(Event event)
   {
     if (event.count == 1 && event.button == 1)
     {

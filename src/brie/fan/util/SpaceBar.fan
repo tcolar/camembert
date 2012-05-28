@@ -15,6 +15,7 @@ using fwt
 internal class SpaceBar : ContentPane
 {
   new make(Frame frame) { this.frame = frame }
+
   Void onLoad()
   {
     spaces := frame.spaces
@@ -23,15 +24,28 @@ internal class SpaceBar : ContentPane
     {
       button := Button
       {
-        text = space.dis
-        if (space === frame.space) text = "[$text]"
-        image = space.icon
-        onAction.add |event| { frame.select(space) }
+        dis := space.dis
+        if (space === frame.space) dis = "[$dis]"
+        it.text = dis
+        it.image = space.icon
+        it.onAction.add |e| { frame.select(space) }
+        it.onMouseUp.add |e| { if (e.isPopupTrigger) onPopup(e, space) }
       }
       grid.add(button)
     }
     content = InsetPane(2) { grid, }
   }
+
+  private Void onPopup(Event e, Space s)
+  {
+    if (s is HomeSpace) return
+    menu := Menu
+    {
+      MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },
+    }
+    menu.open(e.widget, e.pos)
+  }
+
   private Frame frame
 }
 

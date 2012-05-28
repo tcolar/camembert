@@ -34,7 +34,7 @@ const class PodSpace : Space
   const File file
 
   override Str dis() { name }
-  override Image icon() { Theme.iconFan }
+  override Image icon() { Theme.iconPod }
 
   override Str:Str saveSession()
   {

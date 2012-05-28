@@ -99,6 +99,16 @@ class Frame : Window
     if (view != null) Desktop.callAsync |->| { view.onGoto(item) }
   }
 
+  Void closeSpace(Space space)
+  {
+    i := spaceIndex(space)
+    if (i == 0) return
+    spaces = spaces.dup { removeAt(i) }.toImmutable
+    if (this.space == space)
+      this.space = spaces.getSafe(i) ?: spaces.last
+    reload
+  }
+
   private Space? matchSpace(Item item)
   {
     // current always trumps others
