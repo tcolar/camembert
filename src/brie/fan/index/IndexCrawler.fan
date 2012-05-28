@@ -98,10 +98,11 @@ internal class IndexCrawler
     dir.list.each |f|
     {
       if (f.isDir) { indexPodSrcFiles(acc, f); return }
-      if (indexExts.containsKey(f.ext ?: "")) acc.add(f)
+      if (indexSkipExts.containsKey(f.ext ?: "")) return
+      acc.add(f)
     }
   }
-  private Str:Str indexExts := Str:Str[:].addList(["fan", "props", "fandoc", "css", "js", "java", "cs", "txt"])
+  private Str:Str indexSkipExts := Str:Str[:].addList(["class"])
 
   private Void indexPodLibDir(File dir)
   {

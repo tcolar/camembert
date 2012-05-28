@@ -72,7 +72,7 @@ class Frame : Window
   PodInfo? curPod() { curSpace.curPod }
 
   ** If current space has loaded a view
-  View? view { private set }
+  View? curView { private set }
 
   ** Currently open spaces
   Space[] spaces := [,] { private set }
@@ -105,7 +105,7 @@ class Frame : Window
     }
 
     // check if current view is on item
-    if (view?.file == item.file) { view.onGoto(item); return }
+    if (curView?.file == item.file) { curView.onGoto(item); return }
 
     // find best space to handle item, or create new one
     best := matchSpace(item)
@@ -121,7 +121,7 @@ class Frame : Window
     }
 
     // now check if we have view to handle line/col
-    if (view != null) Desktop.callAsync |->| { view.onGoto(item) }
+    if (curView != null) Desktop.callAsync |->| { curView.onGoto(item) }
   }
 
   Void closeSpace(Space space)
@@ -171,10 +171,10 @@ class Frame : Window
 
     // unload current view
     try
-      view?.onUnload
+      curView?.onUnload
     catch (Err e)
       sys.log.err("View.onUnload", e)
-    view = null
+    curView = null
 
     // update space references
     oldSpace := curSpace
@@ -189,7 +189,7 @@ class Frame : Window
     spacePane.content = space.onLoad(this)
 
     // see if current space content has view
-    this.view = findView(spacePane.content)
+    this.curView = findView(spacePane.content)
     updateStatus
 
     // relayout
@@ -215,7 +215,7 @@ class Frame : Window
 
   Item[] marks := Item[,]
   {
-    set { &marks = it; &curMark = -1; view?.onMarks(it) }
+    set { &marks = it; &curMark = -1; curView?.onMarks(it) }
   }
 
   internal Int curMark
@@ -235,8 +235,8 @@ class Frame : Window
 
   private Bool confirmClose()
   {
-    if (view == null || !view.dirty) return true
-    r := Dialog.openQuestion(this, "Save changes to $view.file.name?",
+    if (curView == null || !curView.dirty) return true
+    r := Dialog.openQuestion(this, "Save changes to $curView.file.name?",
       [Dialog.yes, Dialog.no, Dialog.cancel])
     if (r == Dialog.cancel) return false
     if (r == Dialog.yes) save
@@ -245,19 +245,19 @@ class Frame : Window
 
   Void save()
   {
-    if (view == null) return
-    if (view.dirty) view.onSave
-    view.dirty = false
+    if (curView == null) return
+    if (curView.dirty) curView.onSave
+    curView.dirty = false
     updateStatus
   }
 
   internal Void updateStatus()
   {
     title := "Brie"
-    if (view != null)
+    if (curView != null)
     {
-      title += " $view.file.name"
-      if (view.dirty) title += "*"
+      title += " $curView.file.name"
+      if (curView.dirty) title += "*"
     }
     this.title = title
     this.statusBar.update

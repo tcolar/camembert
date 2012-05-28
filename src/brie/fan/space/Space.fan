@@ -37,6 +37,9 @@ const abstract class Space
   ** Return active pod for this space
   abstract PodInfo? curPod()
 
+  ** Current type being view/edited
+  virtual TypeInfo? curType() { null }
+
   ** If this space can handle view of the given item, then return
   ** is match priority or zero if it cannot handle the item.
   abstract Int match(Item item)

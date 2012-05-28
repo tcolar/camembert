@@ -73,15 +73,7 @@ class TextView : View
     editor.focus
   }
 
-  /*
   override Pos curPos() { editor.caret }
-
-  override Void onReady()
-  {
-    editor.highlights = Span[,]
-    editor.focus
-  }
-  */
 
   override Void onSave()
   {

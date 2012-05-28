@@ -80,7 +80,7 @@ internal class StatusBar : ContentPane
     index.image = sys.index.isIndexing ? Theme.iconIndexing : Theme.iconOk
 
     // view file
-    view := frame.view
+    view := frame.curView
     if (view != null)
     {
       file.text = view.file.name
@@ -137,7 +137,7 @@ internal class StatusBar : ContentPane
 
   Void onFilePopup(Event event)
   {
-    view := frame.view
+    view := frame.curView
     if (view == null) return
     menu := Menu
     {

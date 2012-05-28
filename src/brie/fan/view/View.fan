@@ -8,6 +8,7 @@
 
 using gfx
 using fwt
+using bocce
 
 **
 ** View is used to view/edit a file
@@ -34,6 +35,9 @@ abstract class View : ContentPane
   const Sys sys
 
   const File file
+
+  ** Current caret position of view
+  virtual Pos curPos() { Pos(0, 0) }
 
   **
   ** If a space loads a view from a goto event, then this

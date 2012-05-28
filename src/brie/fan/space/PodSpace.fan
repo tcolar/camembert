@@ -42,6 +42,20 @@ const class PodSpace : Space
 
   override PodInfo? curPod() { sys.index.pod(name, false) }
 
+  override TypeInfo? curType()
+  {
+    pod := curPod
+    if (pod == null) return null
+    types := pod.types.findAll |t| { t.file == file.name }
+    if (types.size == 0) return null
+    if (types.size == 1) return types.first
+    types.sort |a, b| { a.line <=> b.line }
+    curLine := sys.frame.curView?.curPos?.line ?: 0
+    for (i := 1; i<types.size; ++i)
+      if (types[i].line > curLine) return types[i-1]
+    return types.first
+  }
+
   override Str:Str saveSession()
   {
     ["pod":name, "dir":dir.uri.toStr, "file":file.uri.toStr]
