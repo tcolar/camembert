@@ -49,6 +49,13 @@ internal class StatusBar : ContentPane
       it.onMouseUp.add |e| { if (e.isPopupTrigger) onFilePopup(e) }
     }
 
+    // view (line/col status, etc)
+    this.view = Label
+    {
+      it.text = "View"
+      it.halign = Halign.right
+    }
+
     // put it all together
     this.content = InsetPane(4, 5, 0, 5)
     {
@@ -63,6 +70,7 @@ internal class StatusBar : ContentPane
           InsetPane(0, 20, 0, 0)
         }
         it.center = file
+        it.right = ConstraintPane { minw = 150; view, }
       }
     }
   }
@@ -80,20 +88,23 @@ internal class StatusBar : ContentPane
     index.image = sys.index.isIndexing ? Theme.iconIndexing : Theme.iconOk
 
     // view file
-    view := frame.curView
-    if (view != null)
+    v := frame.curView
+    if (v != null)
     {
-      file.text = view.file.name
-      file.image = view.dirty ? Theme.iconDirty : Theme.iconNotDirty
+      file.text = v.file.name
+      file.image = v.dirty ? Theme.iconDirty : Theme.iconNotDirty
+      view.text = v.curStatus
     }
     else
     {
       file.text = ""
       file.image = null
+      view.text = ""
     }
 
     // relayout
     file.relayout
+    view.relayout
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -155,5 +166,6 @@ internal class StatusBar : ContentPane
   private Label index
   private Label console
   private Label file
+  private Label view
 }
 

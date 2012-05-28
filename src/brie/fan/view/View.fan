@@ -39,6 +39,9 @@ abstract class View : ContentPane
   ** Current caret position of view
   virtual Pos curPos() { Pos(0, 0) }
 
+  ** Current status string for status bar
+  virtual Str curStatus() { "" }
+
   **
   ** If a space loads a view from a goto event, then this
   ** callback is made after the space has finished loading

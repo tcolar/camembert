@@ -38,7 +38,7 @@ class TextView : View
     editor = Editor { it.rules = rules }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
-//    editor.onCaret.add |e| { app.status.refresh }
+    editor.onCaret.add |e| { frame.updateStatus }
     editor.loadLines(lines)
     editor.onKeyDown.add |e|
     {
@@ -74,6 +74,12 @@ class TextView : View
   }
 
   override Pos curPos() { editor.caret }
+
+  override Str curStatus()
+  {
+    pos := curPos
+    return "$charset   ${pos.line+1}:${pos.col+1}"
+  }
 
   override Void onSave()
   {
