@@ -65,5 +65,10 @@ abstract class View : ContentPane
   ** Save current state
   **
   virtual Void onSave() {}
+
+  **
+  ** Highlight marks
+  **
+  virtual Void onMarks(Item[] marks) {}
 }
 

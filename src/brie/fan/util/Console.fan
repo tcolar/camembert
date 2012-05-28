@@ -49,6 +49,8 @@ class Console : EdgePane
     parent.relayout
   }
 
+  Void highlight(Item? item) { list.highlight = item }
+
   Void log(Str line)
   {
     list.addItem(Item(line))
@@ -63,20 +65,22 @@ class Console : EdgePane
     proc.kill
   }
 
-  Void exec(Str[] cmd, File dir)
-  {
-    this.inKill = false
-    this.proc = ConsoleProcess(this)
-    list.clear
-    proc.spawn(cmd, dir)
-  }
-
   Void execFan(Str[] args, File dir)
   {
     fanHome := sys.options.fanHome
     fan := fanHome + (Desktop.isWindows ? `bin/fan.exe` : `bin/fan`)
     args = args.dup.insert(0, fan.osPath)
     exec(args, dir)
+  }
+
+  Void exec(Str[] cmd, File dir)
+  {
+    open
+    frame.marks = Item[,]
+    this.inKill = false
+    this.proc = ConsoleProcess(this)
+    list.clear
+    proc.spawn(cmd, dir)
   }
 
   internal Void procDone()
@@ -130,8 +134,8 @@ internal const class ConsoleProcess
       {
         item := parseLine(line)
         console.list.addItem(item)
-//        if (item is Item)
-//          app.marks = app.items.dup.add(item)
+        if (item.file != null)
+          frame.marks = frame.marks.dup.add(item)
       }
       catch (Err e)
       {
@@ -162,7 +166,13 @@ internal const class ConsoleProcess
     line := str[p1+1..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
     text := file.name + str[p1..-1]
-    return Item(file) { it.line = line-1; it.col = col-1; it.dis = text }
+    return Item(file)
+    {
+      it.dis  = text
+      it.line = line-1
+      it.col  = col-1
+      it.icon = Theme.iconErr
+    }
   }
 
   private Item? parseJava(Str str)
@@ -173,7 +183,12 @@ internal const class ConsoleProcess
     if (!file.exists) return null
     line := str[c1+1..<c2].toInt(10, false) ?: 1
     text := file.name + str[c1..-1]
-    return Item(file) { it.line = line-1; it.dis = text }
+    return Item(file)
+    {
+      it.dis  = text
+      it.line = line-1
+      it.icon = Theme.iconErr
+    }
   }
 
   private Obj? receive(Msg msg)

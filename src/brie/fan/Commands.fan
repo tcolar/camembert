@@ -33,9 +33,11 @@ const class Commands
 
   const Sys sys
   const Cmd[] list
-  const Cmd exit  := ExitCmd()
-  const Cmd save  := SaveCmd()
-  const Cmd build := BuildCmd()
+  const Cmd exit     := ExitCmd()
+  const Cmd save     := SaveCmd()
+  const Cmd prevMark := PrevMarkCmd()
+  const Cmd nextMark := NextMarkCmd()
+  const Cmd build    := BuildCmd()
 }
 
 **************************************************************************
@@ -87,6 +89,24 @@ internal const class SaveCmd : Cmd
 }
 
 **************************************************************************
+** Prev/Next Mark
+**************************************************************************
+
+internal const class PrevMarkCmd : Cmd
+{
+  override const Str name := "Prev Mark"
+  override const Key? key := Key("Shift+F8")
+  override Void invoke(Event event) { frame.curMark-- }
+}
+
+internal const class NextMarkCmd : Cmd
+{
+  override const Str name := "Next Mark"
+  override const Key? key := Key("F8")
+  override Void invoke(Event event) { frame.curMark++ }
+}
+
+**************************************************************************
 ** BuildCmd
 **************************************************************************
 
@@ -108,6 +128,9 @@ internal const class BuildCmd : Cmd
 
   File? findBuildFile()
   {
+    // save current file
+    frame.save
+
     // get the current resource as a file, if this file is
     // the build.fan file itself, then we're done
     f := frame.curFile

@@ -42,6 +42,7 @@ class Frame : Window
       it.center = SashPane
       {
         orientation = Orientation.vertical
+        weights = [70, 30]
         spacePane,
         console,
       }
@@ -95,6 +96,14 @@ class Frame : Window
   ** Route to best open space or open new one for given item.
   Void goto(Item item)
   {
+    // if this item is one of our marks, let console know
+    markIndex := marks.indexSame(item)
+    if (markIndex != null)
+    {
+      &curMark = markIndex
+      console.highlight(item)
+    }
+
     // check if current view is on item
     if (view?.file == item.file) { view.onGoto(item); return }
 
@@ -198,6 +207,26 @@ class Frame : Window
   private Int spaceIndex(Space space)
   {
     spaces.indexSame(space) ?: throw Err("Space not open: $space.typeof")
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Marks (build errors/finds)
+//////////////////////////////////////////////////////////////////////////
+
+  Item[] marks := Item[,]
+  {
+    set { &marks = it; &curMark = -1; view?.onMarks(it) }
+  }
+
+  internal Int curMark
+  {
+    set
+    {
+      if (it >= marks.size) it = marks.size - 1
+      if (it < 0) it = 0
+      &curMark = it
+      if (!marks.isEmpty) goto(marks[it])
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////

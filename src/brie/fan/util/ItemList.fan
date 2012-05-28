@@ -40,6 +40,8 @@ class ItemList : Canvas
 
   const Insets insets := Insets(10, 10, 10, 10)
 
+  Item? highlight { set { &highlight = it; repaint } }
+
 //////////////////////////////////////////////////////////////////////////
 // Items
 //////////////////////////////////////////////////////////////////////////
@@ -54,6 +56,7 @@ class ItemList : Canvas
   Void clear()
   {
     this.items = Item[,].ro
+    &highlight = null
     relayout
     repaint
   }
@@ -105,6 +108,11 @@ class ItemList : Canvas
     if (item.isHeading)
     {
       g.brush = Theme.itemHeadingBg
+      g.fillRect(0, y, size.w, h-2)
+    }
+    if (item === this.highlight)
+    {
+      g.brush = Color.yellow
       g.fillRect(0, y, size.w, h-2)
     }
     x += item.indent*20
