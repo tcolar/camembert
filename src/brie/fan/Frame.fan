@@ -26,11 +26,13 @@ class Frame : Window
   {
     // initialize
     this.sys = sys
+    this.icon = Image(`fan://icons/x32/blueprints.png`)
     Actor.locals["frame"] = this
 
     // eventing
     onClose.add |Event e| { e.consume; sys.commands.exit.invoke(e) }
     onKeyDown.add |e| { trapKeyDown(e) }
+    onDrop = |data| { doDrop(data) }
 
     // build UI
     this.spaceBar = SpaceBar(this)
@@ -284,6 +286,14 @@ class Frame : Window
   {
     cmd := sys.commands.findByKey(event.key)
     if (cmd != null) cmd.invoke(event)
+  }
+
+  private Void doDrop(Obj data)
+  {
+    files := data as File[]
+    if (files == null || files.isEmpty) return
+    file := files.first
+    goto(Item(file))
   }
 
 //////////////////////////////////////////////////////////////////////////
