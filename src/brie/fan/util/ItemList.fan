@@ -53,6 +53,14 @@ class ItemList : Canvas
     repaint
   }
 
+  Void update(Item[] item)
+  {
+    this.items = item.ro
+    &highlight = null
+    relayout
+    repaint
+  }
+
   Void clear()
   {
     this.items = Item[,].ro

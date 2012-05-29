@@ -84,9 +84,10 @@ class TextView : View
   }
 
 
-  override Void onGoto(Pos pos)
+  override Void onGoto(Item item)
   {
-    editor.goto(pos)
+    editor.selection = item.span
+    editor.goto(item.pos)
     editor.focus
   }
 

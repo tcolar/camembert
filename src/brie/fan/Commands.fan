@@ -9,6 +9,7 @@
 using gfx
 using fwt
 using concurrent
+using bocce
 
 **
 ** Application level commands
@@ -33,13 +34,14 @@ const class Commands
 
   const Sys sys
   const Cmd[] list
-  const Cmd exit     := ExitCmd()
-  const Cmd save     := SaveCmd()
-  const Cmd prevMark := PrevMarkCmd()
-  const Cmd nextMark := NextMarkCmd()
-  const Cmd find     := FindCmd()
-  const Cmd goto     := GotoCmd()
-  const Cmd build    := BuildCmd()
+  const Cmd exit        := ExitCmd()
+  const Cmd save        := SaveCmd()
+  const Cmd prevMark    := PrevMarkCmd()
+  const Cmd nextMark    := NextMarkCmd()
+  const Cmd find        := FindCmd()
+  const Cmd findInSpace := FindInSpaceCmd()
+  const Cmd goto        := GotoCmd()
+  const Cmd build       := BuildCmd()
 }
 
 **************************************************************************
@@ -175,7 +177,6 @@ internal const class GotoCmd : Cmd
       }
     }
 
-
     // open dialog
     if (dialog.open != Dialog.ok) return
 
@@ -250,14 +251,14 @@ internal const class FindCmd : Cmd
   Void find(File file)
   {
     prompt := Text { }
-    path   := Text { text = FileUtil.pathDis(file) }
-    match  := Button { mode = ButtonMode.check; text = "Match case" }
+    path := Text { text = FileUtil.pathDis(file) }
+    matchCase := Button { mode = ButtonMode.check; text = "Match case"; selected = lastMatchCase.val }
 
     selection := frame.curView?.curSelection ?: ""
     if (!selection.isEmpty && !selection.contains("\n"))
       prompt.text = selection.trim
     else
-      prompt.text = last.val
+      prompt.text = lastStr.val
 
     pane := GridPane
     {
@@ -269,7 +270,7 @@ internal const class FindCmd : Cmd
       Label { text="File" },
       ConstraintPane { minw=300; maxw=300; add(path) },
       Label {}, // spacer
-      match,
+      matchCase,
     }
     dlg := Dialog(frame)
     {
@@ -282,13 +283,75 @@ internal const class FindCmd : Cmd
 
     // get and save text to search for
     str := prompt.text
-    last.val = str
+    lastStr.val = str
+    lastMatchCase.val = matchCase.selected
 
-    // TODO
-    Dialog.openInfo(frame, "Find: $str.toCode")
+    // find all matches
+    matches := Item[,]
+    if (!matchCase.selected) str = str.lower
+    findMatches(matches, file, str, matchCase.selected)
+    if (matches.isEmpty) { Dialog.openInfo(frame, "No matches: $str.toCode"); return }
+
+    // open in console
+    console.show(matches)
+    frame.goto(matches.first)
   }
 
-  const AtomicRef last := AtomicRef("")
+  Void findMatches(Item[] matches, File f, Str str, Bool matchCase)
+  {
+    // recurse dirs
+    if (f.isDir)
+    {
+      if (f.name.startsWith(".")) return
+      if (f.name == "tmp" || f.name == "temp") return
+      f.list.each |x| { findMatches(matches, x, str, matchCase) }
+      return
+    }
+
+    // skip non-text files
+    if (f.mimeType?.mediaType != "text") return
+
+    f.readAllLines.each |line, linei|
+    {
+      chars := matchCase ? line : line.lower
+      col := chars.index(str)
+      while (col != null)
+      {
+        dis := "$f.name(${linei+1}): $line.trim"
+        span := Span(linei, col, linei, col+str.size)
+        matches.add(Item(f)
+        {
+          it.line = linei
+          it.col  = col
+          it.span = span
+          it.dis  = dis
+          it.icon = Theme.iconMark
+        })
+        col = chars.index(str, col+str.size)
+      }
+    }
+  }
+
+  const AtomicRef lastStr := AtomicRef("")
+  const AtomicBool lastMatchCase:= AtomicBool(true)
+}
+
+**************************************************************************
+** FindInSpaceCmd
+**************************************************************************
+
+internal const class FindInSpaceCmd : Cmd
+{
+  override const Str name := "Find in Space"
+  override const Key? key := Key("Shift+Ctrl+F")
+  override Void invoke(Event event)
+  {
+    File? dir
+    cs := frame.curSpace
+    if (cs is PodSpace)  dir = ((PodSpace)cs).dir
+    if (cs is FileSpace) dir = ((FileSpace)cs).dir
+    if (dir != null) ((FindCmd)sys.commands.find).find(dir)
+  }
 }
 
 **************************************************************************

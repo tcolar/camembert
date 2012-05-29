@@ -31,6 +31,7 @@ const class Theme
   static const Image iconType      := Image(`fan://brie/res/type.png`)
   static const Image iconField     := Image(`fan://brie/res/field.png`)
   static const Image iconMethod    := Image(`fan://brie/res/method.png`)
+  static const Image iconMark      := Image(`fan://icons/x16/tag.png`)
 
   static Image fileToIcon(File f)
   {

@@ -81,6 +81,8 @@ const class Item
 
   const Int col
 
+  const Span? span
+
   const PodInfo? pod
 
   const TypeInfo? type

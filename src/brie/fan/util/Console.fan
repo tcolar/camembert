@@ -41,6 +41,13 @@ class Console : EdgePane
     parent.relayout
   }
 
+  Void show(Item[] marks)
+  {
+    frame.marks = marks
+    list.update(marks)
+    open
+  }
+
   Void close()
   {
     isOpen = false
