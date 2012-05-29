@@ -120,7 +120,7 @@ internal class Controller
       case "Backspace":  event.consume; onBackspace; return
       case "Del":        event.consume; onDel(false); return
       case "Ctrl+Del":   event.consume; onDel(true); return
-      case "Ctrl+D":     event.consume; onDelLine; return
+      case "Ctrl+D":     event.consume; onCutLine; return
       case "Ctrl+X":     event.consume; onCut; return
       case "Ctrl+V":     event.consume; onPaste; return
       case "Ctrl+Z":     event.consume; onUndo; return
@@ -244,14 +244,17 @@ internal class Controller
     modify(Span(caret, next), "")
   }
 
-  private Void onDelLine()
+  private Void onCutLine()
   {
     if (editor.selection != null) { delSelection; return }
     doc := editor.doc
     caret := editor.caret
     start := Pos(caret.line, 0)
     end := caret.line >= doc.lineCount-1 ? doc.endPos : Pos(caret.line+1, 0)
-    x := modify(Span(start, end), "")
+    span := Span(start, end)
+    text := doc.textRange(span)
+    Desktop.clipboard.setText(text)
+    x := modify(span, "")
     viewport.goto(x)
   }
 
