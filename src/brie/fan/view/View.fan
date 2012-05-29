@@ -45,22 +45,16 @@ abstract class View : ContentPane
   ** Current selected string or empty
   virtual Str curSelection() { "" }
 
-  **
   ** If a space loads a view from a goto event, then this
   ** callback is made after the space has finished loading
-  **
   virtual Void onGoto(Item item) {}
 
-  **
   ** Callback to cleanup resources
-  **
   virtual Void onUnload() {}
 
-  **
   ** The dirty state indicates if unsaved changes have been
   ** made to the view.  Views should set dirty to true on
   ** modification.  Dirty is automatically cleared `onSave`.
-  **
   Bool dirty := false
   {
     set
@@ -71,14 +65,13 @@ abstract class View : ContentPane
     }
   }
 
-  **
+  ** Focus and ready for editing
+  virtual Void onReady() {}
+
   ** Save current state
-  **
   virtual Void onSave() {}
 
-  **
   ** Highlight marks
-  **
   virtual Void onMarks(Item[] marks) {}
 }
 

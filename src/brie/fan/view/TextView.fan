@@ -77,6 +77,8 @@ class TextView : View
 
   override Pos curPos() { editor.caret }
 
+  override Void onReady() { editor.focus }
+
   override Str curStatus()
   {
     pos := curPos

@@ -36,6 +36,7 @@ const class Commands
   const Cmd[] list
   const Cmd exit        := ExitCmd()
   const Cmd save        := SaveCmd()
+  const Cmd esc         := EscCmd()
   const Cmd prevMark    := PrevMarkCmd()
   const Cmd nextMark    := NextMarkCmd()
   const Cmd find        := FindCmd()
@@ -90,6 +91,22 @@ internal const class SaveCmd : Cmd
   override const Str name := "Save"
   override const Key? key := Key("Ctrl+S")
   override Void invoke(Event event) { frame.save }
+}
+
+**************************************************************************
+** EscCmd
+**************************************************************************
+
+internal const class EscCmd : Cmd
+{
+  override const Str name := "Esc"
+  override const Key? key := Key("Esc")
+  override Void invoke(Event event)
+  {
+    frame.marks = Item[,]
+    frame.console.close
+    frame.curView?.onReady
+  }
 }
 
 **************************************************************************
