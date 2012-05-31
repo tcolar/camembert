@@ -125,6 +125,7 @@ internal class StatusBar : ContentPane
       MenuItem
       {
         it.text = "Close Console"
+        it.accelerator = sys.commands.esc.key
         it.onAction.add |e| { frame.console.close }
       },
       MenuItem
@@ -152,9 +153,20 @@ internal class StatusBar : ContentPane
     if (view == null) return
     menu := Menu
     {
-      MenuItem { text="Save";  it.enabled = view.dirty; onAction.add |e| { frame.save } },
+      toMenuItem(sys.commands.save) { it.enabled = view.dirty },
+      toMenuItem(sys.commands.reload),
     }
     menu.open(file, event.pos)
+  }
+
+  private MenuItem toMenuItem(Cmd cmd)
+  {
+    MenuItem
+    {
+      text = cmd.name
+      accelerator = cmd.key
+      onAction.add |e| { cmd.invoke(e) }
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////

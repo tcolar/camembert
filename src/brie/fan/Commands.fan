@@ -35,6 +35,7 @@ const class Commands
   const Sys sys
   const Cmd[] list
   const Cmd exit        := ExitCmd()
+  const Cmd reload      := ReloadCmd()
   const Cmd save        := SaveCmd()
   const Cmd esc         := EscCmd()
   const Cmd prevMark    := PrevMarkCmd()
@@ -80,6 +81,16 @@ internal const class ExitCmd : Cmd
     frame.saveSession
     Env.cur.exit(0)
   }
+}
+**************************************************************************
+** ReloadCmd
+**************************************************************************
+
+internal const class ReloadCmd : Cmd
+{
+  override const Str name := "Reload"
+  override const Key? key := Key("Ctrl+R")
+  override Void invoke(Event event) { frame.reload }
 }
 
 **************************************************************************
