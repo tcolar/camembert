@@ -57,12 +57,12 @@ internal class SpaceBar : Canvas
     tabs.each |tab|
     {
       g.brush = tab.cur ? bgCur : bgTab
-      g.fillRoundRect(tab.x, 4, tab.w, h-8, 12, 12)
+      g.fillRoundRect(tab.x, 4, tab.w, h-9, 12, 12)
       g.brush = fgTab
-      g.drawRoundRect(tab.x, 4, tab.w, h-8, 12, 12)
-      g.drawImage(tab.space.icon, tab.x+6, 8)
+      g.drawRoundRect(tab.x, 4, tab.w, h-9, 12, 12)
+      g.drawImage(tab.space.icon, tab.x+6, 7)
       g.brush = Color.black
-      g.drawText(tab.space.dis, tab.x+24, 8)
+      g.drawText(tab.space.dis, tab.x+24, 7)
     }
   }
 
