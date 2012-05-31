@@ -71,9 +71,19 @@ const class Item
 
   new make(|This| f) { f(this) }
 
+  static Item makeDupSpace(Item orig, Space space)
+  {
+    map := Field:Obj?[:]
+    orig.typeof.fields.each |f| { if (!f.isStatic) map[f] = f.get(orig) }
+    map[#space] = space
+    return make(Field.makeSetFunc(map))
+  }
+
   const Str dis
 
   const Image? icon
+
+  const Space? space
 
   const File? file
 

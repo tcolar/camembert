@@ -38,6 +38,7 @@ const class Commands
   const Cmd reload      := ReloadCmd()
   const Cmd save        := SaveCmd()
   const Cmd esc         := EscCmd()
+  const Cmd recent      := RecentCmd()
   const Cmd prevMark    := PrevMarkCmd()
   const Cmd nextMark    := NextMarkCmd()
   const Cmd find        := FindCmd()
@@ -117,6 +118,28 @@ internal const class EscCmd : Cmd
     frame.marks = Item[,]
     frame.console.close
     frame.curView?.onReady
+  }
+}
+
+**************************************************************************
+** Recent
+**************************************************************************
+
+internal const class RecentCmd : Cmd
+{
+  override const Str name := "Recent"
+  override const Key? key := Key("Ctrl+Space")
+  override Void invoke(Event event)
+  {
+    Dialog? dlg
+    picker := HistoryPicker(frame.history.items) |item, e|
+    {
+      frame.goto(item)
+      dlg.close
+    }
+    pane := ConstraintPane { minw = 300; maxh = 300; add(picker) }
+    dlg = Dialog(frame) { title="Recent"; body=pane; commands=[Dialog.ok, Dialog.cancel] }
+    dlg.open
   }
 }
 

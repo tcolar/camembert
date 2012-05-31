@@ -68,6 +68,9 @@ class Frame : Window
   ** Current space
   Space curSpace
 
+  ** Current item
+  Item? curItem
+
   ** Current space file
   File? curFile() { curSpace.curFile }
 
@@ -82,6 +85,9 @@ class Frame : Window
 
   ** Console
   Console console { private set }
+
+  ** Navigation history
+  History history := History() { private set }
 
 //////////////////////////////////////////////////////////////////////////
 // Space Lifecycle
@@ -191,6 +197,10 @@ class Frame : Window
     // load space
     spaceBar.onLoad
     spacePane.content = space.onLoad(this)
+
+    // save curItem and push into history
+    this.curItem = item == null ? null : Item.makeDupSpace(item, space)
+    if (curItem != null) history.push(curItem)
 
     // see if current space content has view
     this.curView = findView(spacePane.content)
