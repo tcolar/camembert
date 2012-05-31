@@ -190,9 +190,9 @@ class Frame : Window
     oldSpace := curSpace
     this.curSpace = space
     if (index == null)
-      this.spaces = spaces.add(space)
+      this.spaces = spaces.add(space).sort
     else
-      this.spaces = spaces.dup.set(index, space)
+      this.spaces = spaces.dup.set(index, space).sort
 
     // load space
     spaceBar.onLoad

@@ -50,5 +50,14 @@ const abstract class Space
   ** Load the space and return its content widget
   abstract Widget onLoad(Frame frame)
 
+  override Int compare(Obj obj)
+  {
+    that := (Space)obj
+    if (this is HomeSpace) return -1
+    if (that is HomeSpace) return 1
+    if (this.typeof != that.typeof) return this.typeof.name <=> that.typeof.name
+    return dis <=> that.dis
+  }
+
 }
 
