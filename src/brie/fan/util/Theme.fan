@@ -43,6 +43,7 @@ const class Theme
     return iconFile
   }
 
+  static const Color wallpaper := Color(0xdd_dd_dd)
   static const Color bg := Color(0xff_ff_ff)
   static const Color itemHeadingBg := Color(0xdd_dd_dd)
 }
