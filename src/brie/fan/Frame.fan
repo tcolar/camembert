@@ -118,7 +118,7 @@ class Frame : Window
     }
     else
     {
-      c := create(item)
+      c := create(item).goto(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
       load(c, null, item)
     }
