@@ -399,7 +399,12 @@ internal const class BuildCmd : Cmd
       return
     }
 
-    console.execFan([f.osPath], f.parent)
+
+    console.execFan([f.osPath], f.parent) |c|
+    {
+      pod := sys.index.podForFile(f)
+      if (pod != null) sys.index.reindexPod(pod)
+    }
   }
 
   File? findBuildFile()

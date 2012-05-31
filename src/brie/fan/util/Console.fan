@@ -72,20 +72,21 @@ class Console : EdgePane
     proc.kill
   }
 
-  Void execFan(Str[] args, File dir)
+  Void execFan(Str[] args, File dir, |Console|? onDone := null)
   {
     fanHome := sys.options.fanHome
     fan := fanHome + (Desktop.isWindows ? `bin/fan.exe` : `bin/fan`)
     args = args.dup.insert(0, fan.osPath)
-    exec(args, dir)
+    exec(args, dir, onDone)
   }
 
-  Void exec(Str[] cmd, File dir)
+  Void exec(Str[] cmd, File dir, |Console|? onDone := null)
   {
     open
     frame.marks = Item[,]
     this.inKill = false
     this.proc = ConsoleProcess(this)
+    this.onDone = onDone
     list.clear
     proc.spawn(cmd, dir)
   }
@@ -93,8 +94,16 @@ class Console : EdgePane
   internal Void procDone()
   {
     if (inKill) log("killed")
+    if (onDone != null)
+    {
+      try
+        onDone(this)
+      catch (Err e)
+        e.trace
+    }
     proc = null
     inKill = false
+    onDone = null
   }
 
   Frame frame { private set }
@@ -102,6 +111,7 @@ class Console : EdgePane
   const Sys sys
   private ConsoleProcess? proc
   private Bool inKill
+  private |Console|? onDone
 }
 
 **************************************************************************
