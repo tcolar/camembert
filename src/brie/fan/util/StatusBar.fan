@@ -91,7 +91,7 @@ internal class StatusBar : ContentPane
     v := frame.curView
     if (v != null)
     {
-      file.text = v.file.name
+      file.text = FileUtil.pathDis(v.file)
       file.image = v.dirty ? Theme.iconDirty : Theme.iconNotDirty
       view.text = v.curStatus
     }
