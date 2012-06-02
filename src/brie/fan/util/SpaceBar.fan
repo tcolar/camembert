@@ -50,6 +50,8 @@ internal class SpaceBar : Canvas
   override Void onPaint(Graphics g)
   {
     w := size.w; h := size.h
+    g.push
+    g.antialias = true
     g.font = font
     g.brush = bgBar
     g.fillRect(0, 0, w, h)
@@ -64,6 +66,7 @@ internal class SpaceBar : Canvas
       g.brush = Color.black
       g.drawText(tab.space.dis, tab.x+24, 7)
     }
+    g.pop
   }
 
   SpaceTab? posToTab(Point p)

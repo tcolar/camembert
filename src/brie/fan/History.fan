@@ -21,8 +21,17 @@ class History
   ** Log navigation to the specified resource
   ** into the history.  Return this.
   **
-  This push(Item item)
+  This push(Space space, Item link)
   {
+    // create history item
+    item := Item
+    {
+      it.space = space
+      it.file  = link.file
+      it.dis   = link.file.name
+      it.icon  = Theme.fileToIcon(link.file)
+    }
+
     // remove any item that matches space + file
     dup := items.findIndex |x|
     {

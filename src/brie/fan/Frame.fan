@@ -68,9 +68,6 @@ class Frame : Window
   ** Current space
   Space curSpace
 
-  ** Current item
-  Item? curItem
-
   ** Current space file
   File? curFile() { curSpace.curFile }
 
@@ -159,6 +156,8 @@ class Frame : Window
 
   private Space? create(Item item)
   {
+    if (item.space != null) return item.space
+
     file := item.file
     if (file == null) return null
 
@@ -198,13 +197,12 @@ class Frame : Window
     spaceBar.onLoad
     spacePane.content = space.onLoad(this)
 
-    // save curItem and push into history
-    this.curItem = item == null ? null : Item.makeDupSpace(item, space)
-    if (curItem != null) history.push(curItem)
-
     // see if current space content has view
     this.curView = findView(spacePane.content)
     updateStatus
+
+    // save curItem and push into history
+    if (item != null) history.push(space, item)
 
     // relayout
     spaceBar.relayout

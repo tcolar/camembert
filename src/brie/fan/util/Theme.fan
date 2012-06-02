@@ -16,6 +16,7 @@ const class Theme
   static const Image iconHome      := Image(`fan://brie/res/home.png`)
   static const Image iconFile      := Image(`fan://icons/x16/file.png`)
   static const Image iconDir       := Image(`fan://icons/x16/folder.png`)
+  static const Image iconImage     := Image(`fan://icons/x16/fileImage.png`)
   static const Image iconFan       := Image(`fan://icons/x16/fileFan.png`)
   static const Image iconJava      := Image(`fan://icons/x16/fileJava.png`)
   static const Image iconJs        := Image(`fan://icons/x16/fileJs.png`)
@@ -36,6 +37,7 @@ const class Theme
   static Image fileToIcon(File f)
   {
     if (f.isDir) return iconDir
+    if (f.mimeType?.mediaType == "image") return iconImage
     if (f.ext == "fan")  return iconFan
     if (f.ext == "java") return iconJava
     if (f.ext == "js")   return iconJs
