@@ -18,7 +18,7 @@ using concurrent
 class Console : InsetPane
 {
 
-  new make(Frame frame) : super(2, 5, 5, 5)
+  new make(Frame frame) : super(3, 5, 0, 5)
   {
     this.frame = frame
     this.sys = frame.sys
