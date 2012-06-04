@@ -14,7 +14,7 @@ using syntax
 ** Editor is the canvas used to display and edit syntax
 ** color coded text.
 **
-class Editor : Canvas
+class Editor : Panel
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,8 @@ class Editor : Canvas
     this.controller = Controller(this)
     this.doc = Doc(this)
     this.cursor = Cursor.text
+    this.lineh = options.font.height
+    this.colw  = options.font.width("w")
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,10 +78,16 @@ class Editor : Canvas
 //////////////////////////////////////////////////////////////////////////
 
   ** Number of columns
-  Int colCount() { doc.colCount }
+  override Int colCount() { doc.colCount }
 
   ** Number of lines
-  Int lineCount() { doc.lineCount }
+  override Int lineCount() { doc.lineCount }
+
+  ** Height of each line
+  override const Int lineh
+
+  ** Width of each column
+  override const Int colw
 
   ** Get line string for given zero based line number
   Str line(Int lineNum) { doc.line(lineNum) }
@@ -87,7 +95,7 @@ class Editor : Canvas
   ** List of spans to highligh in the document
   Span[] highlights := Span[,]
   {
-    set { &highlights = it; viewport.relayout }
+    set { &highlights = it; repaint }
   }
 
   ** Position of document end
@@ -129,8 +137,9 @@ class Editor : Canvas
   ** consume if handled by a subclass
   @NoDoc virtual Void trapEvent(Event event) {}
 
-  ** Paint current document state
-  override Void onPaint(Graphics g) { viewport.onPaint(g) }
+  override Void onPaintBackground(Graphics g) { viewport.onPaintBackground(g) }
+
+  override Void onPaintLines(Graphics g, Range lines) { viewport.onPaintLines(g, lines) }
 
 //////////////////////////////////////////////////////////////////////////
 // Fields

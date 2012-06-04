@@ -36,8 +36,6 @@ internal class Controller
     editor.onMouseUp.add |e|    { onMouseUp(e)    }
     editor.onMouseMove.add |e|  { onMouseMove(e)  }
     editor.onMouseEnter.add |e| { onMouseMove(e)  }
-    editor.onMouseExit.add |e|  { onMouseExit(e)  }
-    editor.onMouseWheel.add |e| { onMouseWheel(e) }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,7 +67,6 @@ internal class Controller
     editor.trapEvent(event)
     if (event.consumed) return
 
-    vbarVisible = false
     navCol = null
     editor.repaint
   }
@@ -375,18 +372,6 @@ internal class Controller
     editor.trapEvent(event)
     if (event.consumed) return
 
-    if (vbarVisible)
-    {
-      vthumbDrag = viewport.vthumbDragStart(event.pos)
-      if (vthumbDrag != null) return
-    }
-
-    if (hbarVisible)
-    {
-      hthumbDrag = viewport.hthumbDragStart(event.pos)
-      if (hthumbDrag != null) return
-    }
-
     if (event.count == 2) { mouseSelectWord(event); return }
     if (event.count == 3) { mouseSelectLine(event); return }
 
@@ -405,35 +390,13 @@ internal class Controller
     editor.trapEvent(event)
     if (event.consumed) return
 
-    vthumbDrag = null
-    hthumbDrag = null
     anchor = null
-    editor.repaint()
-  }
-
-  Void onMouseExit(Event event)
-  {
-    hbarVisible = false
-    vbarVisible = false
     editor.repaint()
   }
 
   Void onMouseMove(Event event)
   {
-    if (vthumbDrag != null) { viewport.vthumbDrag(vthumbDrag, event.pos); return }
-    if (hthumbDrag != null) { viewport.hthumbDrag(hthumbDrag, event.pos); return }
     if (anchor != null && isMouseDown) { mouseSelectDrag(event); return }
-
-    size := editor.size
-    vbar := event.pos.x > size.w - 40
-    if (vbar != vbarVisible) { vbarVisible = vbar; editor.repaint; return }
-    hbar := event.pos.y > size.h - 40
-    if (hbar != hbarVisible) { hbarVisible = hbar; editor.repaint; return }
-  }
-
-  Void onMouseWheel(Event event)
-  {
-    if (event.delta.y != 0) editor.viewport.vscroll(event.delta.y)
   }
 
   private Void mouseSelectDrag(Event event)
@@ -477,15 +440,11 @@ internal class Controller
 //////////////////////////////////////////////////////////////////////////
 
   private Editor editor
-  private Int? vthumbDrag      // if dragging vertical thumb
-  private Int? hthumbDrag      // if dragging horizontal thumb
   private Pos? anchor          // if in selection mode
   private Bool isMouseDown     // is mouse currently down
   private Int? navCol          // to handle ragged col up/down
   private Change[] changes     // change stack
   Bool caretVisible            // is caret visible or blinking off
-  Bool vbarVisible             // is vertical scroll visible
-  Bool hbarVisible             // is horizontal scroll visible
 }
 
 **************************************************************************

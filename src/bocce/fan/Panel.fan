@@ -73,11 +73,21 @@ abstract class Panel : Canvas
     repaint
   }
 
+//////////////////////////////////////////////////////////////////////////
+// Point <-> Position
+//////////////////////////////////////////////////////////////////////////
+
   ** Point position to logical line
   Int yToLine(Int y) { startLine + (y-margin.top)/lineh }
 
   ** Point position to logical columns
-  Int xToCol(Int x) { startLine + (x-margin.left)/colw}
+  Int xToCol(Int x) { startCol + (x-margin.left)/colw}
+
+  ** Convert logical column to x coordinate
+  Int colToX(Int col) { margin.left + (col - startCol) * colw }
+
+  ** Convert logical line to y coordinate
+  Int lineToY(Int line) { margin.top + (line - startLine) * lineh }
 
 //////////////////////////////////////////////////////////////////////////
 // Layout
@@ -154,15 +164,14 @@ abstract class Panel : Canvas
       doLayout
     }
 
-    // wallpaper background
+    // background
     g.antialias = true
     w := size.w; h := size.h
     g.brush = wallpaperColor
     g.fillRect(0, 0, w, h)
-
-    // rounded background
     g.brush = viewportColor
     g.fillRoundRect(0, 0, w-1, h-1, 10, 10)
+    onPaintBackground(g)
 
     // viewport
     if (lineCount > 0)
@@ -210,6 +219,11 @@ abstract class Panel : Canvas
       g.fillRoundRect(hthumb.x, hthumb.y, hthumb.w, hthumb.h, 10, 10)
     }
   }
+
+  **
+  ** Paint the background
+  **
+  virtual Void onPaintBackground(Graphics g) {}
 
   **
   ** Paint the viewport's given range of lines.  The viewport
