@@ -212,7 +212,7 @@ class Frame : Window
     // now check if we have view to handle line/col
     if (curView != null) Desktop.callAsync |->|
     {
-      if (item == null)
+      if (item == null || item.line <= 0)
       {
         pos := filePosHis[curView.file]
         if (pos != null) item = Item { it.dis = pos.toStr; it.line = pos.line; it.col = pos.col }

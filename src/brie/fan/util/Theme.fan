@@ -7,6 +7,7 @@
 //
 
 using gfx
+using bocce
 
 **
 ** Theme constants
@@ -45,7 +46,7 @@ const class Theme
     return iconFile
   }
 
-  static const Color wallpaper := Color(0xdd_dd_dd)
+  static const Color wallpaper := Panel.wallpaperColor
   static const Color bg := Color(0xff_ff_ff)
   static const Color itemHeadingBg := Color(0xdd_dd_dd)
 }

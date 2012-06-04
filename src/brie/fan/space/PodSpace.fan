@@ -85,8 +85,8 @@ const class PodSpace : Space
     {
       left = EdgePane
       {
-        left = ScrollPane { makeFileNav(frame), }
-        right = ScrollPane { makeSlotNav(frame), }
+        left = InsetPane(0, 5, 0, 5) { makeFileNav(frame), }
+        right = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
       }
       center = View.makeBest(frame, file)
     }

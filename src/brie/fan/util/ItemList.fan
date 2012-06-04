@@ -9,11 +9,12 @@
 using gfx
 using fwt
 using concurrent
+using bocce
 
 **
 ** ItemList
 **
-class ItemList : Canvas
+class ItemList : Panel
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,6 @@ class ItemList : Canvas
   new make(Frame frame, Item[] items)
   {
     this.frame = frame
-    this.doubleBuffered = true
     this.items = items.ro
     onMouseUp.add |e| { doMouseUp(e) }
   }
@@ -32,15 +32,25 @@ class ItemList : Canvas
 // Config
 //////////////////////////////////////////////////////////////////////////
 
-  Frame frame { private set }
+  Frame? frame { private set }
 
   Item[] items { private set  }
 
   const Font font := Desktop.sysFontMonospace
 
-  const Insets insets := Insets(10, 10, 10, 10)
+  const Insets insets := Insets(5, 5, 5, 5)
 
   Item? highlight { set { &highlight = it; repaint } }
+
+//////////////////////////////////////////////////////////////////////////
+// Panel
+//////////////////////////////////////////////////////////////////////////
+
+  override Int numLines() { items.size }
+
+  override Int lineh() { itemh }
+
+  private Int itemh() { font.height.max(18) }
 
 //////////////////////////////////////////////////////////////////////////
 // Items
@@ -92,19 +102,14 @@ class ItemList : Canvas
 // Painting
 //////////////////////////////////////////////////////////////////////////
 
-  override Void onPaint(Graphics g)
+  override Void onPaintViewport(Graphics g, Int w, Int h)
   {
     x := insets.left
     y := insets.top
-    w := size.w
-    h := size.h
     itemh := this.itemh
 
-    g.brush = Theme.bg
-    g.fillRect(0, 0, w, h)
-
     g.font = font
-    items.each |item, i|
+    items.eachRange(viewportLines) |item|
     {
       paintItem(g, item, x, y, w, itemh)
       y += itemh
@@ -113,6 +118,7 @@ class ItemList : Canvas
 
   private Void paintItem(Graphics g, Item item, Int x, Int y, Int w, Int h)
   {
+    /*
     if (item.header)
     {
       g.brush = Theme.itemHeadingBg
@@ -121,6 +127,7 @@ class ItemList : Canvas
       else
         g.fillRect(0, y, size.w, h-2)
     }
+    */
 
     if (item === this.highlight)
     {
@@ -137,15 +144,11 @@ class ItemList : Canvas
 // Eventing
 //////////////////////////////////////////////////////////////////////////
 
-  private Int itemh() { font.height.max(18) }
-
-  private Int yToIndex(Int y) { (y - insets.top) / itemh }
-
-  private Item? yToItem(Int y) { items.getSafe(yToIndex(y)) }
+  private Item? yToItem(Int y) { items.getSafe(yToLine(y)) }
 
   private Void doMouseUp(Event event)
   {
-    item := items.getSafe(yToIndex(event.pos.y))
+    item := items.getSafe(yToLine(event.pos.y))
     if (event.count == 1 && event.button == 1)
     {
       event.consume

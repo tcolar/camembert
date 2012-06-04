@@ -15,15 +15,15 @@ using concurrent
 **
 ** Console
 **
-class Console : EdgePane
+class Console : InsetPane
 {
 
-  new make(Frame frame)
+  new make(Frame frame) : super(2, 5, 5, 5)
   {
     this.frame = frame
     this.sys = frame.sys
     this.list = ItemList(frame, Item[,])
-    this.center = ScrollPane { this.list, }
+    this.content = this.list
     this.visible = false
   }
 

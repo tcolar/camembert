@@ -44,7 +44,7 @@ internal class SpaceBar : Canvas
 
   override Size prefSize(Hints hints := Hints.defVal)
   {
-    Size(300, 30)
+    Size(300, 32)
   }
 
   override Void onPaint(Graphics g)
@@ -59,9 +59,9 @@ internal class SpaceBar : Canvas
     tabs.each |tab|
     {
       g.brush = tab.cur ? bgCur : bgTab
-      g.fillRoundRect(tab.x, 4, tab.w, h-9, 12, 12)
+      g.fillRoundRect(tab.x, 4, tab.w, h-11, 12, 12)
       g.brush = fgTab
-      g.drawRoundRect(tab.x, 4, tab.w, h-9, 12, 12)
+      g.drawRoundRect(tab.x, 4, tab.w, h-11, 12, 12)
       g.drawImage(tab.space.icon, tab.x+6, 7)
       g.brush = Color.black
       g.drawText(tab.space.dis, tab.x+24, 7)
@@ -89,7 +89,7 @@ internal class SpaceBar : Canvas
   static const Color bgBar := Theme.wallpaper
   static const Color bgTab := Color(0xee_ee_ee)
   static const Color bgCur := Color.green
-  static const Color fgTab := Color(0x44_44_44)
+  static const Color fgTab := Color(0x66_66_66)
 
   private Frame frame
   private SpaceTab[] tabs := [,]

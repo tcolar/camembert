@@ -64,8 +64,8 @@ const class HomeSpace : Space
       valignCells = Valign.fill
       expandRow = 0
     }
-    podGroups.each |g| { grid.add(ScrollPane { g, }) }
-    return grid
+    podGroups.each |g| { grid.add(g) }
+    return InsetPane(0, 5, 5, 5) { grid, }
   }
 }
 
