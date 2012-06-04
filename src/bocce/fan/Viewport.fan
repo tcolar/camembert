@@ -302,7 +302,6 @@ internal class Viewport
     paintBackground(g)
     paintShowCols(g)
     paintLines(g)
-    paintDivs(g)
     paintScroll(g)
   }
 
@@ -405,8 +404,7 @@ internal class Viewport
     }
 
     // caret for line
-    if (focused && linei == caretLine && editor.paintCaret &&
-        controller.caretVisible)
+    if (focused && linei == caretLine && controller.caretVisible)
     {
       caretx := linex0 + (caretCol * colw)
       g.brush = Color.black
@@ -414,32 +412,9 @@ internal class Viewport
     }
   }
 
-  private Void paintDivs(Graphics g)
-  {
-    g.brush = options.div
-
-    if (editor.paintTopDiv)
-    {
-      g.drawLine(0, 0, size.w, 0)
-      g.drawLine(0, 1, size.w, 1)
-    }
-
-    if (editor.paintLeftDiv)
-    {
-      g.drawLine(0, 0, 0, size.h)
-      g.drawLine(1, 0, 1, size.h)
-    }
-
-    if (editor.paintRightDiv)
-    {
-      g.drawLine(size.w-1, 0, size.w-1, size.h)
-      g.drawLine(size.w-2, 0, size.w-2, size.h)
-    }
-  }
-
   private Void paintShowCols(Graphics g)
   {
-    if (!editor.paintShowCols || options.showCols.isEmpty) return
+    if (options.showCols.isEmpty) return
 
     oldPen := g.pen
     g.brush = options.showColColor

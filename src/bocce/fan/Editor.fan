@@ -136,12 +136,6 @@ class Editor : Canvas
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
-  @NoDoc Bool paintCaret    := true
-  @NoDoc Bool paintTopDiv   := false
-  @NoDoc Bool paintLeftDiv  := false
-  @NoDoc Bool paintRightDiv := false
-  @NoDoc Bool paintShowCols := false
-
   internal Doc doc
   internal Viewport viewport
   internal Controller controller

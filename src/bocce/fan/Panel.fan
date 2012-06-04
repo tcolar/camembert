@@ -34,15 +34,27 @@ abstract class Panel : Canvas
 //////////////////////////////////////////////////////////////////////////
 
   ** Total number of lines
-  abstract Int numLines()
+  abstract Int lineCount()
 
   ** Height of each line
   abstract Int lineh()
 
+  ** Total number of columns
+  abstract Int colCount()
+
+  ** Width of each column
+  abstract Int colw()
+
   ** Get inclusive range of lines current in viewport
   Range viewportLines()
   {
-    startLine .. startLine.plus(visibleLines).min(numLines-1)
+    startLine .. startLine.plus(visibleLines).min(lineCount-1)
+  }
+
+  ** Get inclusive range of columns current in viewport
+  Range viewportCols()
+  {
+    startCol .. startCol.plus(visibleCols).min(colCount-1)
   }
 
   ** Scroll so given line is top of viewport
@@ -53,8 +65,19 @@ abstract class Panel : Canvas
     repaint
   }
 
+  ** Scroll so given column is top of viewport
+  Void scrollToCol(Int startCol)
+  {
+    this.startCol = startCol
+    lastSize = Size.defVal
+    repaint
+  }
+
   ** Point position to logical line
-  Int yToLine(Int y) { startLine + y/lineh }
+  Int yToLine(Int y) { startLine + (y-margin.top)/lineh }
+
+  ** Point position to logical columns
+  Int xToCol(Int x) { startLine + (x-margin.left)/colw}
 
 //////////////////////////////////////////////////////////////////////////
 // Layout
@@ -68,9 +91,10 @@ abstract class Panel : Canvas
   private Void doLayout()
   {
     // compute easy stuff
-    numLines := this.numLines
-    this.visibleLines = (((size.h-margin.toSize.h) / lineh)).min(numLines)
-//    this.visibleCols  = (w-margin.toSize.w) / colw
+    numLines := this.lineCount
+    numCols := this.colCount
+    this.visibleLines = (((size.h - margin.toSize.h) / lineh)).min(numLines)
+    this.visibleCols  = (size.w - margin.toSize.w) / colw
 
     // check if startLine needs adjusting
     maxStartLine := (numLines - visibleLines).max(0)
@@ -84,15 +108,13 @@ abstract class Panel : Canvas
     if (endLine >= numLines) endLine = numLines - 1
 
     // check if startCol needs adjusting
-/*
-    maxStartCol := (docCols - visibleCols + 1).max(0)
+    maxStartCol := (numCols - visibleCols + 1).max(0)
     if (startCol >= maxStartCol) this.startCol = maxStartCol
     if (startCol < 0) startCol = 0
 
     // now we know end col
     this.endCol = startCol + visibleCols
-    if (endCol >= docCols) endCol = docCols - 1
-*/
+    if (endCol >= numCols) endCol = numCols - 1
 
     // compute/limit size of vertical thumb
     if (visibleLines >= numLines) this.vthumb = null
@@ -101,22 +123,22 @@ abstract class Panel : Canvas
       vthumb1 := (startLine.toFloat / numLines.toFloat * size.h).toInt
       vthumb2 := ((startLine + visibleLines).toFloat   / numLines.toFloat * size.h).toInt
       vthumbh := vthumb2 - vthumb1
-      if (vthumbh < vthumbMin) vthumbh = vthumbMin
+      if (vthumbh < thumbMin) vthumbh = thumbMin
       if (vthumb1 + vthumbh >= size.h) vthumb1 = size.h - vthumbh - 1
       this.vthumb = Rect(size.w - vthumbw-1, vthumb1, vthumbw, vthumbh)
     }
 
     // compute/limit size of horizontal thumb
-    /*
-    hthumb1 := (startCol.toFloat / docCols.toFloat * size.w).toInt
-    hthumb2 := (endCol.toFloat   / docCols.toFloat * size.w).toInt
-    hthumbw := hthumb2 - hthumb1
-    if (hthumbw < thumbMin) hthumbw = thumbMin
-    if (hthumb1 + hthumbw > size.w) hthumb1 = size.w - hthumbw
-    this.hthumb = Rect(hthumb1, size.h - thumbSize, hthumbw, thumbSize)
-    */
-
-    viewport = Rect(2, 2, size.w-12, size.h-4)
+    if (visibleCols >= numCols) this.hthumb = null
+    else
+    {
+      hthumb1 := (startCol.toFloat / numCols.toFloat * size.w).toInt
+      hthumb2 := (endCol.toFloat   / numCols.toFloat * size.w).toInt
+      hthumbw := hthumb2 - hthumb1
+      if (hthumbw < thumbMin) hthumbw = thumbMin
+      if (hthumb1 + hthumbw >= size.w) hthumb1 = size.w - hthumbw - 1
+      this.hthumb = Rect(hthumb1, size.h - hthumbh, hthumbw, hthumbh)
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -125,9 +147,9 @@ abstract class Panel : Canvas
 
   override final Void onPaint(Graphics g)
   {
-    if (lastSize != this.size || lastNumLines != this.numLines)
+    if (lastSize != this.size || lastLineCount != this.lineCount)
     {
-      lastNumLines = numLines
+      lastLineCount = lineCount
       lastSize = size
       doLayout
     }
@@ -143,16 +165,15 @@ abstract class Panel : Canvas
     g.fillRoundRect(0, 0, w-1, h-1, 10, 10)
 
     // viewport
-    if (numLines > 0)
+    if (lineCount > 0)
     {
       g.push
-      g.clip(viewport)
-      g.translate(viewport.x, viewport.y)
-      onPaintViewport(g, viewport.w+10, viewport.h)
+      g.translate(margin.left - startCol*colw, margin.top)
+      onPaintLines(g, viewportLines)
       g.pop
     }
 
-    // scrollbar gutters
+    // vertical scrollbar gutters
     if (vthumb != null)
     {
       g.brush = gutterColor
@@ -160,6 +181,15 @@ abstract class Panel : Canvas
       g.fillRect(vthumb.x, 0, 5, size.h-1)
       g.brush = gutterBorder
       g.drawLine(vthumb.x, 0, vthumb.x, size.h)
+    }
+
+    // horizontal scrollbar gutter
+    if (hthumb != null)
+    {
+      g.brush = gutterColor
+      g.fillRect(1, hthumb.y, size.w-2, hthumb.h)
+      g.brush = gutterBorder
+      g.drawLine(1, hthumb.y, size.w-2, hthumb.y)
     }
 
     // border corners
@@ -172,9 +202,21 @@ abstract class Panel : Canvas
       g.brush = thumbColor
       g.fillRoundRect(vthumb.x, vthumb.y, vthumb.w, vthumb.h, 10, 10)
     }
+
+    // hozitonal thumb
+    if (hthumb != null)
+    {
+      g.brush = thumbColor
+      g.fillRoundRect(hthumb.x, hthumb.y, hthumb.w, hthumb.h, 10, 10)
+    }
   }
 
-  abstract Void onPaintViewport(Graphics g, Int w, Int h)
+  **
+  ** Paint the viewport's given range of lines.  The viewport
+  ** is already translated for scroll position so that 0,0 represents
+  ** the top, left corner of current scroll line/col.
+  **
+  abstract Void onPaintLines(Graphics g, Range lines)
 
 //////////////////////////////////////////////////////////////////////////
 // Eventing
@@ -189,6 +231,12 @@ abstract class Panel : Canvas
       vdrag = pos.y - vthumb.y
       return
     }
+    if (hthumb != null && hthumb.contains(pos.x, pos.y))
+    {
+      e.consume
+      hdrag = pos.x - hthumb.x
+      return
+    }
   }
 
   private Void mouseMove(Event e)
@@ -198,14 +246,22 @@ abstract class Panel : Canvas
     {
       e.consume
       thumby := pos.y - vdrag
-      line := ((thumby.toFloat / size.h.toFloat) * numLines.toFloat).toInt
+      line := ((thumby.toFloat / size.h.toFloat) * lineCount.toFloat).toInt
       scrollToLine(line)
+    }
+    if (hdrag != null)
+    {
+      e.consume
+      thumbx := pos.x - hdrag
+      col := ((thumbx.toFloat / size.w.toFloat) * colCount.toFloat).toInt
+      scrollToCol(col)
     }
   }
 
   private Void mouseUp(Event e)
   {
     if (vdrag != null) { e.consume; vdrag = null }
+    if (hdrag != null) { e.consume; hdrag = null }
   }
 
   internal Void mouseWheel(Event e)
@@ -229,16 +285,21 @@ abstract class Panel : Canvas
   static const Color gutterBorder   := Color(0xdd_dd_dd)
   static const Color thumbColor     := Color(0xbb_bb_bb)
 
-  static const Insets margin := Insets(2, 10, 2, 2)
+  static const Insets margin := Insets(6, 6, 6, 6)
   static const Int vthumbw   := 9
-  static const Int vthumbMin := 30
+  static const Int hthumbh   := 9
+  static const Int thumbMin  := 30
 
   private Size lastSize := Size.defVal // check for layout
-  private Int lastNumLines             // last number of lines
-  private Rect viewport := Rect.defVal // bounds of subclass region
+  private Int lastLineCount            // last number of lines
   private Int startLine                // line at top of viewport
   private Int endLine                  // line at bottom of viewport
+  private Int startCol                 // column at left of viewport
+  private Int endCol                   // column at right of viewport
   private Int visibleLines             // num viewable lines
+  private Int visibleCols              // num viewable columns
   private Rect? vthumb                 // vertical thumb
+  private Rect? hthumb                 // horizontal thumb
   private Int? vdrag                   // if drag in progress
+  private Int? hdrag                   // if drag in progress
 }

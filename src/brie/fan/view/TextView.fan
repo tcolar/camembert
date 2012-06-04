@@ -46,11 +46,6 @@ class TextView : View
       if (!e.consumed) editorKeyDown(e)
     }
 
-    // hidden hooks
-    editor->paintLeftDiv  = true
-    editor->paintRightDiv = true
-    editor->paintShowCols = true
-
     this.content = editor
   }
 

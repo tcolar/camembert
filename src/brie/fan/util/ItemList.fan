@@ -24,7 +24,7 @@ class ItemList : Panel
   new make(Frame frame, Item[] items)
   {
     this.frame = frame
-    this.items = items.ro
+    update(items)
     onMouseUp.add |e| { doMouseUp(e) }
   }
 
@@ -34,11 +34,9 @@ class ItemList : Panel
 
   Frame? frame { private set }
 
-  Item[] items { private set  }
+  Item[] items := [,] { private set  }
 
   const Font font := Desktop.sysFontMonospace
-
-  const Insets insets := Insets(5, 5, 5, 5)
 
   Item? highlight { set { &highlight = it; repaint } }
 
@@ -46,9 +44,13 @@ class ItemList : Panel
 // Panel
 //////////////////////////////////////////////////////////////////////////
 
-  override Int numLines() { items.size }
+  override Int lineCount() { items.size }
 
   override Int lineh() { itemh }
+
+  override Int colCount := 5 { private set }
+
+  override const Int colw := font.width("m")
 
   private Int itemh() { font.height.max(18) }
 
@@ -58,26 +60,23 @@ class ItemList : Panel
 
   Void addItem(Item item)
   {
-    this.items = this.items.rw.add(item).ro
+    update(this.items.rw.add(item))
     relayout
     repaint
   }
 
-  Void update(Item[] item)
+  Void update(Item[] newItems)
   {
-    this.items = item.ro
+    max := 5
+    newItems.each |x| { max = x.dis.size.max(max) }
+    this.items = newItems.ro
+    this.colCount = max + 2 // leave 2 for icon
     &highlight = null
     relayout
     repaint
   }
 
-  Void clear()
-  {
-    this.items = Item[,].ro
-    &highlight = null
-    relayout
-    repaint
-  }
+  Void clear() { update(Item[,]) }
 
 //////////////////////////////////////////////////////////////////////////
 // Layout
@@ -85,54 +84,32 @@ class ItemList : Panel
 
   override Size prefSize(Hints hints := Hints.defVal)
   {
-    w := 0
-    h := 0
-    itemh := this.itemh
-    items.each |item|
-    {
-      h += itemh
-      w  = w.max(20 + font.width(item.dis))
-    }
-    w += insets.left + insets.right
-    h += insets.top + insets.bottom
-    return Size(250,h)
+    Size(200,200)
   }
 
 //////////////////////////////////////////////////////////////////////////
 // Painting
 //////////////////////////////////////////////////////////////////////////
 
-  override Void onPaintViewport(Graphics g, Int w, Int h)
+  override Void onPaintLines(Graphics g, Range lines)
   {
-    x := insets.left
-    y := insets.top
+    x := 0
+    y := 0
     itemh := this.itemh
-
     g.font = font
-    items.eachRange(viewportLines) |item|
+    items.eachRange(lines) |item|
     {
-      paintItem(g, item, x, y, w, itemh)
+      paintItem(g, item, x, y)
       y += itemh
     }
   }
 
-  private Void paintItem(Graphics g, Item item, Int x, Int y, Int w, Int h)
+  private Void paintItem(Graphics g, Item item, Int x, Int y)
   {
-    /*
-    if (item.header)
-    {
-      g.brush = Theme.itemHeadingBg
-      if (item === items.first)
-        g.fillRect(0, 0, size.w, y+h-2)
-      else
-        g.fillRect(0, y, size.w, h-2)
-    }
-    */
-
     if (item === this.highlight)
     {
       g.brush = Color.yellow
-      g.fillRect(0, y, size.w, h-2)
+      g.fillRect(0, y, size.w, itemh)
     }
     x += item.indent*20
     g.brush = Color.black
