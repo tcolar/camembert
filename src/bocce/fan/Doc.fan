@@ -234,80 +234,12 @@ internal class Doc
       // get configured styling
       line := lines[lineIndex]
       styling := line.stylingOverride ?: line.styling
-
-      // apply bracket styling if current line is matched brackets
-      if (lineIndex == bracketLine1 || lineIndex == bracketLine2)
-      {
-        styling = styling.dup
-        lineLen := line.text.size
-        if (lineIndex == bracketLine1) insertBracketMatch(styling, bracketCol1, lineLen)
-        if (lineIndex == bracketLine2) insertBracketMatch(styling, bracketCol2, lineLen)
-      }
-
       return styling
     }
     catch
     {
       return null
     }
-  }
-
-  **
-  ** Insert a bracket match style run of one character
-  ** at the specified offset.  There are four cases where
-  ** "xxx" is run, and "^" is insertion point:
-  **
-  **     x      a) replace single char run
-  **   xxx      b) insert at end
-  **     xxx    c) move run to right one char, insert
-  **   xxxxx    d) breaking middle of run
-  **     ^
-  **
-  private Void insertBracketMatch(Obj[] styling, Int offset, Int lineLen)
-  {
-    // find insert point in styling list;
-    i := 0; Int iOffset := 0; RichTextStyle iStyle := styling[1]
-    for (; i<styling.size; i+=2)
-    {
-      if (styling[i] >= offset) break
-      iStyle = styling[i+1]
-    }
-    iOffset = i<styling.size ? styling[i] : lineLen
-
-    // compute remaining chars in run
-    left := lineLen - offset - 1
-    if (i+2<styling.size)
-      left = ((Int)styling[i+2]) - offset - 1
-
-    // a) if we are replacing a single char run
-    if (offset == iOffset && left == 0)
-    {
-      styling[i+1] = options.bracketMatch
-      return
-    }
-
-    // b) if end of run, insert only
-    if (left == 0)
-    {
-      styling.insert(i, options.bracketMatch)
-      styling.insert(i, offset)
-      return
-    }
-
-    // c) if starting a run of more than one character
-    if (offset == iOffset)
-    {
-      styling[i] = offset+1  // move to left one char
-      styling.insert(i, options.bracketMatch)
-      styling.insert(i, offset)
-      return
-    }
-
-    // d) we are breaking the middle of run
-    styling.insert(i, iStyle)
-    styling.insert(i, offset+1)
-    styling.insert(i, options.bracketMatch)
-    styling.insert(i, offset)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -366,34 +298,6 @@ internal class Doc
     }
     return null
   }
-
-  **
-  ** Find the specified string in the document starting the
-  ** search at the document offset and looking backward.
-  ** Return null is not found.  Note we don't currently
-  ** support searching across multiple lines.
-  **
-  /*
-  Int? findPrev(Str s, Int offset, Bool matchCase)
-  {
-    offset = offset.max(0).min(size)
-    lineIndex := lineAtOffset(offset)
-    offsetInLine := offset - lines[lineIndex].offset
-
-    while (lineIndex >= 0)
-    {
-      line := lines[lineIndex]
-      r := matchCase ?
-        line.text.indexr(s, offsetInLine) :
-        line.text.indexrIgnoreCase(s, offsetInLine)
-      if (r != null) return line.offset+r
-      offsetInLine = -1 // after first line we always start at end
-      lineIndex--
-    }
-
-    return null
-  }
-  */
 
   **
   ** Attempt to find the matching bracket the specified
@@ -490,12 +394,6 @@ internal class Doc
   Line[] lines := Line[,]   // lines
   Str delimiter             // line delimiter
   Parser parser             // to parse lines into styled segments
-
-  Int caretLine             // current line for highlighting
-  Int? bracketLine1         // matched bracket 1 line index
-  Int? bracketLine2         // matched bracket 2 line index
-  Int? bracketCol1          // matched bracket 1 offset in line
-  Int? bracketCol2          // matched bracket 2 offset in line
 }
 
 **************************************************************************
