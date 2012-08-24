@@ -123,11 +123,12 @@ internal class Parser
       tok := next
       switch (tok)
       {
-        case Token.bracket: addStyle(styling, p, options.bracket)
-        case Token.keyword: addStyle(styling, p, options.keyword)
-        case Token.literal: addStyle(styling, p, options.literal)
-        case Token.comment: addStyle(styling, p, options.comment)
-        default:            addStyle(styling, p, options.text)
+        case Token.bracket:    addStyle(styling, p, options.bracket)
+        case Token.keyword:    addStyle(styling, p, options.keyword)
+        case Token.numLiteral: addStyle(styling, p, options.numLiteral)
+        case Token.strLiteral: addStyle(styling, p, options.strLiteral)
+        case Token.comment:    addStyle(styling, p, options.comment)
+        default:               addStyle(styling, p, options.text)
       }
     }
   }
@@ -224,9 +225,8 @@ internal class Parser
       if (peek == '-' && (cur == 'e' || cur == 'E')) { consume; consume; continue }
       break
     }
-    return Token.literal
+    return Token.numLiteral
   }
-
   **
   ** Parse str literal
   **
@@ -238,14 +238,13 @@ internal class Parser
       if (s.end.isMatch && countEscapes(s.escape).isEven)
       {
         s.end.consume
-        return Token.literal
+        return Token.strLiteral
       }
       consume
     }
     if (s.multiLine) opens = s.blockOpen
-    return Token.literal
+    return Token.strLiteral
   }
-
   **
   ** Count the number of escape chars preceeding the current char.
   **
@@ -298,10 +297,9 @@ internal class Parser
       end       = toMatcher(s.delimiterEnd ?: s.delimiter, s.escape)
       escape    = s.escape
       multiLine = s.multiLine
-      blockOpen = BlockOpen(this, s.delimiter, [0, options.literal].ro)
+      blockOpen = BlockOpen(this, s.delimiter, [0, options.numLiteral].ro)
     }
   }
-
   Matcher toMatcher(Str? tok, Int esc := 0)
   {
     tok = tok?.trim ?: ""
@@ -456,7 +454,8 @@ internal enum class Token
   text,
   bracket,
   keyword,
-  literal,
+  numLiteral,
+  strLiteral,
   preprocessor,
   comment
 }

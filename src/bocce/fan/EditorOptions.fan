@@ -59,8 +59,8 @@ const class EditorOptions
   const RichTextStyle bracket       := RichTextStyle { fg = Color(0xff_00_00) }
   const RichTextStyle bracketMatch  := RichTextStyle { fg = Color(0xff_00_00); it.bg=Color(0xff_ff_00); }
   const RichTextStyle keyword       := RichTextStyle { fg = Color(0x00_00_ff) }
-  const RichTextStyle literal       := RichTextStyle { fg = Color(0x00_77_77) }
+  const RichTextStyle numLiteral    := RichTextStyle { fg = Color(0x00_77_77) }
+  const RichTextStyle strLiteral    := RichTextStyle { fg = Color(0x00_77_77) }
   const RichTextStyle comment       := RichTextStyle { fg = Color(0x00_77_00) }
-
 }
 
