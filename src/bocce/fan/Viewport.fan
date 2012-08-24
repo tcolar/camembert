@@ -249,7 +249,11 @@ internal class Viewport
       end   := styling.getSafe(i+2) as Int ?: line.size
       text  := line[start..<end]
       textw := g.font.width(text)
-
+      if (style.bg != null)
+      {
+          g.brush = style.bg
+          g.fillRect(linex, liney, textw, lineh)
+      }
       g.brush = style.fg
       g.drawText(text, linex, liney)
 
