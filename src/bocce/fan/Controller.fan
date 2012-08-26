@@ -324,8 +324,7 @@ internal class Controller
 //////////////////////////////////////////////////////////////////////////
 // Modification / Undo
 //////////////////////////////////////////////////////////////////////////
-
-  private Pos modify(Span span, Str newText)
+  internal Pos modify(Span span, Str newText)
   {
     doc := editor.doc
     oldText := doc.textRange(span)
