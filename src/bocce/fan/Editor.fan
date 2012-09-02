@@ -144,8 +144,8 @@ class Editor : Panel
 //////////////////////////////////////////////////////////////////////////
 
   internal Doc doc
-  internal Viewport viewport
-  internal Controller controller
+  @NoDoc Viewport viewport
+  @NoDoc Controller controller
 
 }
 

@@ -13,7 +13,8 @@ using syntax
 **
 ** Viewport
 **
-internal class Viewport
+@NoDoc
+class Viewport
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ internal class Viewport
 // Conveniences
 //////////////////////////////////////////////////////////////////////////
 
-  Doc doc() { editor.doc }
+  internal Doc doc() { editor.doc }
 
   EditorOptions options() { editor.options }
 

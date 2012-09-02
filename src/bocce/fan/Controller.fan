@@ -14,7 +14,8 @@ using concurrent
 **
 ** Controller
 **
-internal class Controller
+@NoDoc
+class Controller
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,7 +43,7 @@ internal class Controller
 // Conveniences
 //////////////////////////////////////////////////////////////////////////
 
-  Doc doc() { editor.doc }
+  internal Doc doc() { editor.doc }
 
   Viewport viewport() { editor.viewport }
 
