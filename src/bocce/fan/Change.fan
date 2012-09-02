@@ -14,12 +14,11 @@ using concurrent
 **************************************************************************
 ** Change
 **************************************************************************
-
 abstract const class Change
 {
+  abstract Void execute(Editor editor)
   abstract Void undo(Editor editor)
 }
-
 **************************************************************************
 ** SimpleChange
 **************************************************************************
@@ -37,16 +36,27 @@ const class SimpleChange : Change
   const Str oldText
   const Str newText
 
+  override Void execute(Editor editor)
+  {
+    doc := editor.doc
+    end := doc.offsetToPos(doc.posToOffset(pos) + oldText.size)
+    replaceText(editor, Span(pos, end), newText)
+  }
+
   override Void undo(Editor editor)
   {
     doc := editor.doc
-    start := pos
-    end := doc.offsetToPos(doc.posToOffset(start) + newText.size)
-    caret := doc.modify(Span(start, end), oldText)
-    editor.viewport.goto(caret)
+    end := doc.offsetToPos(doc.posToOffset(pos) + newText.size)
+    replaceText(editor, Span(pos, end), oldText)
+  }
+
+  ** replace whatever is in the given span with the given text
+  private Void replaceText(Editor editor, Span span, Str text)
+  {
+    newPos := editor.doc.modify(span, text)
+    editor.viewport.goto(newPos)
   }
 }
-
 **************************************************************************
 ** BatchChange
 **************************************************************************
@@ -54,7 +64,13 @@ const class SimpleChange : Change
 const class BatchChange : Change
 {
   new make(Change[] changes) { this.changes = changes }
+
   const Change[] changes
+
+  override Void execute(Editor editor)
+  {
+    changes.each |c| { c.execute(editor) }
+  }
 
   override Void undo(Editor editor)
   {

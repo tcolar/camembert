@@ -180,11 +180,9 @@ class Controller
   {
     sel := editor.selection
     if (sel == null) sel = Span(editor.caret, editor.caret)
-    endPos := modify(sel, newText)
-    viewport.goto(endPos)
+    modify(sel, newText)
     editor.selection = null
   }
-
   private Void onCopy()
   {
     if (editor.selection == null) return
@@ -252,10 +250,8 @@ class Controller
     span := Span(start, end)
     text := doc.textRange(span)
     Desktop.clipboard.setText(text)
-    x := modify(span, "")
-    viewport.goto(x)
+    modify(span, "")
   }
-
   private Void delSelection()
   {
     sel := editor.selection
@@ -276,8 +272,7 @@ class Controller
       col := caret.col + 1
       while (col % options.tabSpacing != 0) col++
       spaces := Str.spaces(col - caret.col)
-      x := modify(Span(caret, caret), spaces)
-      viewport.goto(x)
+      modify(Span(caret, caret), spaces)
     }
     else
     {
@@ -285,11 +280,9 @@ class Controller
       while (col % options.tabSpacing != 0) col--
       if (col < 0) col = 0
       if (col == caret.col) return
-      x := modify(Span(Pos(caret.line, col), caret), "")
-      viewport.goto(x)
+      modify(Span(Pos(caret.line, col), caret), "")
     }
   }
-
   private Void onBatchTab(Bool indent)
   {
     changes := Change[,]
@@ -308,7 +301,6 @@ class Controller
       if (indent)
       {
         spaces := Str.spaces(options.tabSpacing)
-        doc.modify(Span(pos, pos), spaces)
         changes.add(SimpleChange(pos, "", spaces))
       }
       else
@@ -325,12 +317,14 @@ class Controller
 //////////////////////////////////////////////////////////////////////////
 // Modification / Undo
 //////////////////////////////////////////////////////////////////////////
-  internal Pos modify(Span span, Str newText)
+
+  internal Void modify(Span span, Str newText)
   {
     doc := editor.doc
     oldText := doc.textRange(span)
-    pushChange(SimpleChange(span.start, oldText, newText))
-    return doc.modify(span, newText)
+    change := SimpleChange(span.start, oldText, newText)
+    change.execute(editor)
+    pushChange(change)
   }
 
   private Void pushChange(SimpleChange c)

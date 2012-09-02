@@ -65,9 +65,11 @@ class Editor : Panel
 
   ** Save the document to the given output stream
   Void save(OutStream out) { doc.save(out) }
+
   ** Remove text between span and/or insert new given text
   ** at that position.  Return new position of end of inserted text.
-  Pos modify(Span span, Str newText) { controller.modify(span, newText) }
+  Void modify(Span span, Str newText) { controller.modify(span, newText) }
+
   ** Get text for the given span
   Str textForSpan(Span span) { doc.textRange(span) }
 
