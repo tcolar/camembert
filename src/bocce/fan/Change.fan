@@ -10,6 +10,84 @@ using gfx
 using fwt
 using syntax
 using concurrent
+**************************************************************************
+** ChangeStack
+**************************************************************************
+class ChangeStack
+{
+  new make()
+  {
+    this.changes = Change[,]
+    this.curChange = -1
+  }
+
+  ** Push a Change onto the stack.
+  Void push(Change change)
+  {
+    // see if we need to truncate changes which have been undone
+    truncated := false
+    if (curChange == -1)
+    {
+      truncated = true
+      changes = [,]
+      changes.push(change)
+    }
+    else if (curChange < changes.size - 1)
+    {
+      truncated = true
+      changes = changes[0..curChange]
+      changes.push(change)
+    }
+
+    // If we didn't truncate the stack, maybe we can merge
+    // this change with the previous one.  This represents
+    // an 'in-progress' edit that is inserting characters sequentially.
+    if (!truncated && (change is SimpleChange))
+    {
+      simple := change as SimpleChange
+      top := changes.peek as SimpleChange
+      if (isAtomicUndo(top, simple))
+        changes[-1] = SimpleChange(top.pos, top.oldText, top.newText+simple.newText)
+      else
+        changes.push(simple)
+    }
+
+    // set the index
+    curChange = changes.size - 1
+  }
+
+  private Bool isAtomicUndo(SimpleChange? a, SimpleChange b)
+  {
+    if (a == null) return false
+    if (a.oldText.size > 0) return false
+    if (b.newText.size > 1) return false
+    if (a.pos.line != b.pos.line) return false
+    return a.pos.col + a.newText.size == b.pos.col
+  }
+
+  ** Undo a change.  Do nothing if all change have
+  ** already been undone.
+  Void onUndo(Editor editor)
+  {
+    if (curChange == -1) return
+    c := changes[curChange--]
+    c.undo(editor)
+  }
+
+  ** Redo a change.  Do nothing if all change have
+  ** already been redone.
+  Void onRedo(Editor editor)
+  {
+    if (curChange == changes.size - 1) return
+    c := changes[++curChange]
+    c.execute(editor)
+  }
+
+  private Change[] changes
+
+  // this points to the last change that was executed
+  private Int curChange
+}
 
 **************************************************************************
 ** Change
@@ -19,10 +97,10 @@ abstract const class Change
   abstract Void execute(Editor editor)
   abstract Void undo(Editor editor)
 }
+
 **************************************************************************
 ** SimpleChange
 **************************************************************************
-
 const class SimpleChange : Change
 {
   new make(Pos pos, Str oldText, Str newText)
@@ -57,10 +135,10 @@ const class SimpleChange : Change
     editor.viewport.goto(newPos)
   }
 }
+
 **************************************************************************
 ** BatchChange
 **************************************************************************
-
 const class BatchChange : Change
 {
   new make(Change[] changes) { this.changes = changes }

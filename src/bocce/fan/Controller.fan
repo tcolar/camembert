@@ -25,8 +25,7 @@ class Controller
   new make(Editor editor)
   {
     this.editor = editor
-    this.changes = Change[,]
-
+    this.changeStack = ChangeStack()
     editor.onFocus.add |e|      { onFocus(e)      }
     editor.onBlur.add |e|       { onBlur(e)       }
 
@@ -121,7 +120,8 @@ class Controller
       case "Ctrl+D":     event.consume; onCutLine; return
       case "Ctrl+X":     event.consume; onCut; return
       case "Ctrl+V":     event.consume; onPaste; return
-      case "Ctrl+Z":     event.consume; onUndo; return
+      case "Ctrl+Z":     event.consume; changeStack.onUndo(editor); return
+      case "Ctrl+Y":     event.consume; changeStack.onRedo(editor); return
       case "Tab":        event.consume; onTab(true); return
       case "Shift+Tab":  event.consume; onTab(false); return
     }
@@ -283,6 +283,7 @@ class Controller
       modify(Span(Pos(caret.line, col), caret), "")
     }
   }
+
   private Void onBatchTab(Bool indent)
   {
     changes := Change[,]
@@ -311,9 +312,10 @@ class Controller
         doc.modify(Span(pos, end), "")
       }
     }
-    this.changes.push(BatchChange(changes))
+    batch := BatchChange(changes)
+    batch.execute(editor)
+    changeStack.push(batch)
   }
-
 //////////////////////////////////////////////////////////////////////////
 // Modification / Undo
 //////////////////////////////////////////////////////////////////////////
@@ -324,36 +326,8 @@ class Controller
     oldText := doc.textRange(span)
     change := SimpleChange(span.start, oldText, newText)
     change.execute(editor)
-    pushChange(change)
+    changeStack.push(change)
   }
-
-  private Void pushChange(SimpleChange c)
-  {
-    // if appending a single char to end of last
-    // change then make it one big atomic undo change
-    top := changes.peek as SimpleChange
-    if (isAtomicUndo(top, c))
-      changes[-1] = SimpleChange(top.pos, top.oldText, top.newText+c.newText)
-    else
-      changes.push(c)
-  }
-
-  private Bool isAtomicUndo(SimpleChange? a, SimpleChange b)
-  {
-    if (a == null) return false
-    if (a.oldText.size > 0) return false
-    if (b.newText.size > 1) return false
-    if (a.pos.line != b.pos.line) return false
-    return a.pos.col + a.newText.size == b.pos.col
-  }
-
-  private Void onUndo()
-  {
-    c := changes.pop
-    if (c == null) return
-    c.undo(editor)
-  }
-
 //////////////////////////////////////////////////////////////////////////
 // Mouse Eventing
 //////////////////////////////////////////////////////////////////////////
@@ -437,7 +411,8 @@ class Controller
   private Pos? anchor          // if in selection mode
   private Bool isMouseDown     // is mouse currently down
   private Int? navCol          // to handle ragged col up/down
-  private Change[] changes     // change stack
-  Bool caretVisible            // is caret visible or blinking off
+
+  ChangeStack changeStack  // change stack
+  Bool caretVisible    // is caret visible or blinking off
 }
 
