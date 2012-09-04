@@ -10,6 +10,7 @@ using gfx
 using fwt
 using syntax
 using concurrent
+
 **************************************************************************
 ** ChangeStack
 **************************************************************************
@@ -24,38 +25,44 @@ class ChangeStack
   ** Push a Change onto the stack.
   Void push(Change change)
   {
-    // see if we need to truncate changes which have been undone
-    truncated := false
+    // everything has been undone -- reset stack
     if (curChange == -1)
     {
-      truncated = true
       changes = [,]
       changes.push(change)
     }
+    // at least one change has been undone -- truncate stack
     else if (curChange < changes.size - 1)
     {
-      truncated = true
       changes = changes[0..curChange]
       changes.push(change)
     }
-
-    // If we didn't truncate the stack, maybe we can merge
-    // this change with the previous one.  This represents
-    // an 'in-progress' edit that is inserting characters sequentially.
-    if (!truncated && (change is SimpleChange))
+    // nothing has been undone -- proceed 'normally'
+    else
     {
-      simple := change as SimpleChange
-      top := changes.peek as SimpleChange
-      if (isAtomicUndo(top, simple))
-        changes[-1] = SimpleChange(top.pos, top.oldText, top.newText+simple.newText)
+      if (change is SimpleChange)
+      {
+        simple := change as SimpleChange
+        // Maybe we can merge this change with the previous one.
+        // This represents an 'in-progress' edit that is inserting
+        // characters sequentially.
+        top := changes.peek as SimpleChange
+        if (isAtomicUndo(top, simple))
+        {
+          changes[-1] = SimpleChange(top.pos, top.oldText, top.newText+simple.newText)
+        }
+        else
+        {
+          changes.push(simple)
+        }
+      }
       else
-        changes.push(simple)
+      {
+        changes.push(change)
+      }
     }
-
-    // set the index
     curChange = changes.size - 1
   }
-
   private Bool isAtomicUndo(SimpleChange? a, SimpleChange b)
   {
     if (a == null) return false
@@ -82,9 +89,20 @@ class ChangeStack
     c := changes[++curChange]
     c.execute(editor)
   }
+  ** Debug dump of the ChangeStack.
+  **
+  internal Void dump(OutStream out := Env.cur.out)
+  {
+    out.printLine("")
+    out.printLine("==== ChangeStack.dump ===")
+    out.printLine("size=$changes.size")
+    out.printLine("curChange=$curChange")
+    changes.each |Change change| { out.printLine(change.toStr) }
+    out.printLine("")
+    out.flush
+  }
 
   private Change[] changes
-
   // this points to the last change that was executed
   private Int curChange
 }
@@ -108,6 +126,10 @@ const class SimpleChange : Change
     this.pos     = pos
     this.oldText = oldText
     this.newText = newText
+  }
+  override Str toStr()
+  {
+    "[SimpleChange pos:$pos oldText:'$oldText' newText:'$newText']"
   }
 
   const Pos pos
@@ -142,8 +164,11 @@ const class SimpleChange : Change
 const class BatchChange : Change
 {
   new make(Change[] changes) { this.changes = changes }
-
   const Change[] changes
+  override Str toStr()
+  {
+    "[BatchChange changes:$changes]"
+  }
 
   override Void execute(Editor editor)
   {

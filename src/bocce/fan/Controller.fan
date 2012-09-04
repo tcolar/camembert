@@ -293,11 +293,6 @@ class Controller
     if (endLine > sel.start.line && sel.end.col == 0) endLine--
     for (linei := sel.start.line; linei <= endLine; ++linei)
     {
-      // find first non-space
-      first := 0
-      line := doc.line(linei)
-      while (first < line.size && line[first].isSpace) first++
-
       pos := Pos(linei, 0)
       if (indent)
       {
@@ -306,16 +301,25 @@ class Controller
       }
       else
       {
+        // find first non-space
+        first := 0
+        line := doc.line(linei)
+        while (first < line.size && line[first].isSpace) first++
+
         if (first == 0) continue
         end := Pos(linei, first.min(2))
         changes.add(SimpleChange(pos, Str.spaces(end.col), ""))
-        doc.modify(Span(pos, end), "")
       }
     }
-    batch := BatchChange(changes)
-    batch.execute(editor)
-    changeStack.push(batch)
+
+    if (changes.size > 0)
+    {
+      batch := BatchChange(changes)
+      batch.execute(editor)
+      changeStack.push(batch)
+    }
   }
+
 //////////////////////////////////////////////////////////////////////////
 // Modification / Undo
 //////////////////////////////////////////////////////////////////////////
