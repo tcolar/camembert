@@ -212,7 +212,12 @@ internal const class GotoCmd : Cmd
     prompt.onAction.add |e| { dialog.close(ok) }
     prompt.onKeyDown.add |e|
     {
-      if (e.key == Key.down) { e.consume; table.focus; return }
+      if (e.key == Key.down)
+      {
+        e.consume
+        if (table.model.numRows > 0) table.selected = [0]
+        table.focus
+      }
     }
     prompt.onModify.add |e|
     {
