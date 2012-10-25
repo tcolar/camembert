@@ -45,6 +45,8 @@ const class Commands
   const Cmd findInSpace := FindInSpaceCmd()
   const Cmd goto        := GotoCmd()
   const Cmd build       := BuildCmd()
+  const Cmd editConfig  := EditConfigCmd()
+  const Cmd reloadConfig:= ReloadConfigCmd()
 }
 
 **************************************************************************
@@ -460,6 +462,27 @@ internal const class BuildCmd : Cmd
       f = f.parent
     }
     return null
+  }
+  
+  
+}
+
+internal const class EditConfigCmd : Cmd
+{
+  override const Str name := "Edit config"
+  override Void invoke(Event event)
+  {
+    frame.goto(Item.makeFile(Options.file))
+  }
+}
+
+internal const class ReloadConfigCmd : Cmd
+{
+  override const Str name := "Reload Config"
+  override const Key? key := Key("Shift+Ctrl+R")
+  override Void invoke(Event event)
+  {
+    Sys.reload
   }
 }
 

@@ -14,31 +14,47 @@ using gfx
 @Serializable
 const class Options
 {
+  static const File file := Env.cur.workDir + `etc/camenbert/options.fog`
+  
   ** Reload options
   static Options load()
   {
-    f := Env.cur.workDir + `etc/camenbert/options.fog`
-    try
-      if (f.exists) return f.readObj
-    catch (Err e)
-      echo("ERROR: Cannot load $f\n  $e")
-    return Options()
+    Options? options
+    if (file.exists) 
+    {
+      try
+        options = file.readObj
+      catch (Err e)
+        echo("ERROR: Cannot load $file\n  $e")
+    }
+    else
+    {
+      options = Options()
+      options.save()
+    }  
+    return options
   }
 
   ** Default constructor with it-block
   new make(|This|? f := null)
   {
     if (f != null) f(this)
-    fanHome = fanHomeUri.toFile.normalize
+      fanHome = fanHomeUri.toFile.normalize
+  }
+  
+  Void save()
+  {
+    file.writeObj(this)
   }
 
   ** Directories to crawl looking for for pod, file navigation
-  const Uri[] indexDirs := [Env.cur.homeDir.uri + `etc/camembert/`]
+  const Uri[] indexDirs := [file.uri]
 
   ** Home directory to use for fan/build commands
   const Uri fanHomeUri := Env.cur.homeDir.uri
 
   ** File of `fanHomeUri`
+  @Transient
   const File fanHome
   
   ** Name of theme to use (saved in etc/camembert/theme-name.fog)

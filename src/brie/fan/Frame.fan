@@ -51,6 +51,11 @@ class Frame : Window
         MenuItem{ text= "Build"; command = sys.commands.build.asCommand},
         MenuItem{ text= "Quit process"; command = sys.commands.esc.asCommand},
       },
+      Menu {
+        text = "Options"
+        MenuItem{ text= "Edit Config"; command = sys.commands.editConfig.asCommand},
+        MenuItem{ text= "Reload Config"; command = sys.commands.reloadConfig.asCommand},
+      },
     }
 
     // eventing
@@ -58,7 +63,7 @@ class Frame : Window
     onKeyDown.add |e| { trapKeyDown(e) }
     onDrop = |data| { doDrop(data) }
 
-    // build UI
+   // build UI
     this.spaceBar = SpaceBar(this)
     this.spacePane = ContentPane()
     this.statusBar = StatusBar(this)
@@ -75,11 +80,18 @@ class Frame : Window
       }
       it.bottom = statusBar
     }
-
+ 
     // load session and home space
     loadSession
     curSpace = spaces.first
     load(curSpace, 0, null)
+  }
+
+  Void update(Sys sys)
+  {
+    this.sys = sys
+    spaces[0] = HomeSpace(sys)
+    select(spaces[0])
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -87,7 +99,7 @@ class Frame : Window
   //////////////////////////////////////////////////////////////////////////
 
   ** System services
-  const Sys sys
+  Sys sys
 
   ** Current space
   Space curSpace

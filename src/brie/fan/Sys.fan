@@ -31,5 +31,24 @@ const class Sys : Service
 
   ** Logger
   const Log log := Log.get("camembert")
+  
+  override Void onStop()
+  {
+    index.cache.pool.stop
+    index.crawler.pool.stop
+    Actor.sleep(1sec)
+    index.cache.pool.kill
+    index.crawler.pool.kill
+  }
+  
+  static Void reload()
+  {
+    sys := Service.find(Sys#) as Sys
+ sys.uninstall
+    
+    sys = Sys()
+    sys.install  
+    sys.frame.update(sys)  
+  } 
 }
 
