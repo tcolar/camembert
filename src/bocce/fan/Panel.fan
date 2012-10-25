@@ -292,17 +292,17 @@ abstract class Panel : Canvas
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
-  static const Color wallpaperColor := Desktop.sysBg
-  static const Color viewportColor  := Color.white
-  static const Color borderColor    := Color(0x88_88_88)
-  static const Color gutterColor    := Color(0xee_ee_ee)
-  static const Color gutterBorder   := Color(0xdd_dd_dd)
-  static const Color thumbColor     := Color(0xbb_bb_bb)
+  Color wallpaperColor := Desktop.sysBg
+  Color viewportColor  := Color.white
+  Color borderColor    := Color(0x88_88_88)
+  Color gutterColor    := Color(0xee_ee_ee)
+  Color gutterBorder   := Color(0xdd_dd_dd)
+  Color thumbColor     := Color(0xbb_bb_bb)
 
-  static const Insets margin := Insets(6, 6, 6, 6)
-  static const Int vthumbw   := 9
-  static const Int hthumbh   := 9
-  static const Int thumbMin  := 30
+  Insets margin := Insets(6, 6, 6, 6)
+  Int vthumbw   := 9
+  Int hthumbh   := 9
+  Int thumbMin  := 30
 
   private Size lastSize := Size.defVal // check for layout
   private Int lastLineCount            // last number of lines
