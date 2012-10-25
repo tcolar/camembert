@@ -23,9 +23,9 @@ internal class SpaceBar : Canvas
       e.consume
       tab := posToTab(e.pos)
       if (tab == null) return
-      if (e.isPopupTrigger) { onPopup(e, tab.space); return }
-      if (e.button == 1) { frame.select(tab.space); return }
-    }
+        if (e.isPopupTrigger) { onPopup(e, tab.space); return }
+        if (e.button == 1) { frame.select(tab.space); return }
+      }
   }
 
   Void onLoad()
@@ -78,9 +78,15 @@ internal class SpaceBar : Canvas
   private Void onPopup(Event e, Space s)
   {
     if (s is HomeSpace) return
-    menu := Menu
+      menu := Menu
     {
       MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },
+      MenuItem { text="Close Others"; onAction.add{ 
+          frame.spaces.each {if(it != s) frame.closeSpace(it)} 
+        }},
+      MenuItem { text="Close All"; onAction.add {
+          frame.spaces.each {frame.closeSpace(it)} 
+        }},
     }
     menu.open(e.widget, e.pos)
   }
