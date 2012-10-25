@@ -173,6 +173,9 @@ class Viewport
 
   Void onPaintBackground(Graphics g)
   {
+    g.brush = options.bg
+    g.fillRect(0, 0, editor.size.w, editor.size.h)
+
     if (options.showCols.isEmpty) return
 
     oldPen := g.pen
