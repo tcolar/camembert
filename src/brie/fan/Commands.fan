@@ -65,6 +65,11 @@ const abstract class Cmd
   Options options() { sys.options }
   Frame frame() { sys.frame }
   Console console() { frame.console }
+  
+  Command asCommand()
+  {
+    Command(name, null, |Event e| {invoke(e)})
+  }
 }
 
 **************************************************************************

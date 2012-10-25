@@ -33,7 +33,7 @@ const class Options
   }
 
   ** Directories to crawl looking for for pod, file navigation
-  const Uri[] indexDirs := [,]
+  const Uri[] indexDirs := [Env.cur.homeDir.uri + `etc/camembert/`]
 
   ** Home directory to use for fan/build commands
   const Uri fanHomeUri := Env.cur.homeDir.uri

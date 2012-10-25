@@ -17,9 +17,9 @@ using bocce
 class Frame : Window
 {
 
-//////////////////////////////////////////////////////////////////////////
-// Constructor
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Constructor
+  //////////////////////////////////////////////////////////////////////////
 
   ** Construct for given system
   new make(Sys sys) : super(null)
@@ -28,6 +28,30 @@ class Frame : Window
     this.sys = sys
     this.icon = Image(`fan://icons/x32/blueprints.png`)
     Actor.locals["frame"] = this
+   
+    // menu
+    menuBar = Menu{
+      Menu {
+        text = "File"
+        MenuItem{ text= "Save"; command = sys.commands.save.asCommand},
+        MenuItem{ text= "Reload"; command = sys.commands.reload.asCommand},
+        MenuItem{ text= "Exit"; command = sys.commands.exit.asCommand},
+      },
+      Menu {
+        text = "Navigation"
+        MenuItem{ text= "Recent"; command = sys.commands.recent.asCommand},
+        MenuItem{ text= "Prev mark"; command = sys.commands.prevMark.asCommand},
+        MenuItem{ text= "Next mark"; command = sys.commands.nextMark.asCommand},
+        MenuItem{ text= "Find"; command = sys.commands.find.asCommand},
+        MenuItem{ text= "Find in space"; command = sys.commands.findInSpace.asCommand},
+        MenuItem{ text= "Goto"; command = sys.commands.goto.asCommand},
+      },
+      Menu {
+        text = "Run"
+        MenuItem{ text= "Build"; command = sys.commands.build.asCommand},
+        MenuItem{ text= "Quit process"; command = sys.commands.esc.asCommand},
+      },
+    }
 
     // eventing
     onClose.add |Event e| { e.consume; sys.commands.exit.invoke(e) }
@@ -58,9 +82,9 @@ class Frame : Window
     load(curSpace, 0, null)
   }
 
-//////////////////////////////////////////////////////////////////////////
-// Access
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Access
+  //////////////////////////////////////////////////////////////////////////
 
   ** System services
   const Sys sys
@@ -86,9 +110,9 @@ class Frame : Window
   ** Navigation history
   History history := History() { private set }
 
-//////////////////////////////////////////////////////////////////////////
-// Space Lifecycle
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Space Lifecycle
+  //////////////////////////////////////////////////////////////////////////
 
   ** Select given space
   Void select(Space space)
@@ -113,7 +137,7 @@ class Frame : Window
     // check if current view is on item
     if (curView?.file == item.file) { curView.onGoto(item); return }
 
-    // find best space to handle item, or create new one
+      // find best space to handle item, or create new one
     best := matchSpace(item)
     if (best != null)
     {
@@ -123,7 +147,7 @@ class Frame : Window
     {
       c := create(item).goto(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
-      load(c, null, item)
+        load(c, null, item)
     }
   }
 
@@ -131,7 +155,7 @@ class Frame : Window
   {
     i := spaceIndex(space)
     if (i == 0) return
-    spaces = spaces.dup { removeAt(i) }.toImmutable
+      spaces = spaces.dup { removeAt(i) }.toImmutable
     if (curSpace == space)
       curSpace = spaces.getSafe(i) ?: spaces.last
     reload
@@ -142,15 +166,15 @@ class Frame : Window
     // current always trumps others
     if (curSpace.match(item) > 0) return curSpace
 
-    // find best match
+      // find best match
     Space? bestSpace := null
     Int bestPriority := 0
     this.spaces.each |s|
     {
       priority := s.match(item)
       if (priority == 0) return
-      if (priority > bestPriority) { bestSpace = s; bestPriority = priority }
-    }
+        if (priority > bestPriority) { bestSpace = s; bestPriority = priority }
+      }
     return bestSpace
   }
 
@@ -158,13 +182,13 @@ class Frame : Window
   {
     if (item.space != null) return item.space
 
-    file := item.file
+      file := item.file
     if (file == null) return null
 
-    pod := sys.index.podForFile(file)
+      pod := sys.index.podForFile(file)
     if (pod != null) return PodSpace(sys, pod.name, pod.srcDir)
 
-    dir := file.isDir ? file : file.parent
+      dir := file.isDir ? file : file.parent
     return FileSpace(sys, dir)
   }
 
@@ -174,7 +198,7 @@ class Frame : Window
     // confirm if we should close
     if (!confirmClose) return
 
-    // save current file line number
+      // save current file line number
     if (curView != null)
       filePosHis[curView.file] = curView.curPos
 
@@ -204,7 +228,7 @@ class Frame : Window
     // save curItem and push into history
     if (item != null) history.push(space, item)
 
-    // relayout
+      // relayout
     spaceBar.relayout
     spacePane.relayout
     relayout
@@ -216,15 +240,15 @@ class Frame : Window
       {
         pos := filePosHis[curView.file]
         if (pos != null) item = Item { it.dis = pos.toStr; it.line = pos.line; it.col = pos.col }
-      }
+        }
       if (item != null) curView.onGoto(item)
-    }
+      }
   }
 
   private static View? findView(Widget w)
   {
     if (w is View) return w
-    return w.children.eachWhile |kid| { findView(kid) }
+      return w.children.eachWhile |kid| { findView(kid) }
   }
 
   private Int spaceIndex(Space space)
@@ -232,9 +256,9 @@ class Frame : Window
     spaces.indexSame(space) ?: throw Err("Space not open: $space.typeof")
   }
 
-//////////////////////////////////////////////////////////////////////////
-// Marks (build errors/finds)
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Marks (build errors/finds)
+  //////////////////////////////////////////////////////////////////////////
 
   Item[] marks := Item[,]
   {
@@ -246,31 +270,31 @@ class Frame : Window
     set
     {
       if (it >= marks.size) it = marks.size - 1
-      if (it < 0) it = 0
-      &curMark = it
+        if (it < 0) it = 0
+        &curMark = it
       if (!marks.isEmpty) goto(marks[it])
-    }
+      }
   }
 
-//////////////////////////////////////////////////////////////////////////
-// View Lifecycle
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // View Lifecycle
+  //////////////////////////////////////////////////////////////////////////
 
   private Bool confirmClose()
   {
     if (curView == null || !curView.dirty) return true
-    r := Dialog.openQuestion(this, "Save changes to $curView.file.name?",
+      r := Dialog.openQuestion(this, "Save changes to $curView.file.name?",
       [Dialog.yes, Dialog.no, Dialog.cancel])
     if (r == Dialog.cancel) return false
-    if (r == Dialog.yes) save
-    return true
+      if (r == Dialog.yes) save
+      return true
   }
 
   Void save()
   {
     if (curView == null) return
-    if (curView.dirty) curView.onSave
-    curView.dirty = false
+      if (curView.dirty) curView.onSave
+      curView.dirty = false
     updateStatus
   }
 
@@ -281,32 +305,32 @@ class Frame : Window
     {
       title += " $curView.file.name"
       if (curView.dirty) title += "*"
-    }
+      }
     this.title = title
     this.statusBar.update
   }
 
-//////////////////////////////////////////////////////////////////////////
-// Eventing
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Eventing
+  //////////////////////////////////////////////////////////////////////////
 
   internal Void trapKeyDown(Event event)
   {
     cmd := sys.commands.findByKey(event.key)
     if (cmd != null) cmd.invoke(event)
-  }
+    }
 
   private Void doDrop(Obj data)
   {
     files := data as File[]
     if (files == null || files.isEmpty) return
-    file := files.first
+      file := files.first
     goto(Item(file))
   }
 
-//////////////////////////////////////////////////////////////////////////
-// Session State
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Session State
+  //////////////////////////////////////////////////////////////////////////
 
   internal Void loadSession()
   {
@@ -314,7 +338,7 @@ class Frame : Window
     props := Str:Str[:]
     try
       if (sessionFile.exists) props = sessionFile.readProps
-    catch (Err e)
+      catch (Err e)
       sys.log.err("Cannot load session: $sessionFile", e)
 
     // read bounds
@@ -330,7 +354,7 @@ class Frame : Window
       type := props[typeKey]
       if (type == null) break
 
-      // get all "space.nn.xxxx" props
+        // get all "space.nn.xxxx" props
       spaceProps := Str:Str[:]
       props.each |val, key|
       {
@@ -346,7 +370,7 @@ class Frame : Window
         spaces.add(space)
       }
       catch (Err e) sys.log.err("ERROR: Cannot load space $type", e)
-    }
+      }
 
     // always insert HomeSpace
     if (spaces.first isnot HomeSpace)
@@ -383,9 +407,9 @@ class Frame : Window
       sys.log.err("Cannot save $sessionFile", e)
   }
 
-//////////////////////////////////////////////////////////////////////////
-// Private Fields
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Private Fields
+  //////////////////////////////////////////////////////////////////////////
 
   private File sessionFile := Env.cur.workDir + `etc/camenbert/session.props`
   private SpaceBar spaceBar
