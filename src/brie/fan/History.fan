@@ -88,7 +88,7 @@ class HistoryPicker : EdgePane
 
 internal class HistoryPickerModel : TableModel
 {
-  const Sys? sys := Service.find(Sys#) as Sys
+  Sys? sys := Service.find(Sys#) as Sys
 
   new make(Item[] items) { this.items = items }
 
@@ -118,7 +118,7 @@ internal class HistoryPickerModel : TableModel
   }
   Item[] items
   Image def := sys.theme.iconFile
-  Font accFont := Desktop.sysFont.toSize(Desktop.sysFont.size-1)
+  Font accFont := sys.theme.font.toSize(sys.theme.font.size - 1)
   Color accColor := Color("#666")
 }
 

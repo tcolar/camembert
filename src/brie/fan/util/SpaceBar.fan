@@ -60,10 +60,9 @@ internal class SpaceBar : Canvas
     {
       g.brush = tab.cur ? bgCur : bgTab
       g.fillRoundRect(tab.x, 4, tab.w, h-11, 12, 12)
-      g.brush = fgTab
+      g.brush = fg
       g.drawRoundRect(tab.x, 4, tab.w, h-11, 12, 12)
       g.drawImage(tab.space.icon, tab.x+6, 7)
-      g.brush = Color.black
       g.drawText(tab.space.dis, tab.x+24, 7)
     }
     g.pop
@@ -92,11 +91,11 @@ internal class SpaceBar : Canvas
   }
   static const Sys? sys := Service.find(Sys#) as Sys
 
-  static const Font font   := Desktop.sysFont
-  static const Color bgBar := sys.theme.wallpaper
-  static const Color bgTab := Color(0xee_ee_ee)
-  static const Color bgCur := Color.green
-  static const Color fgTab := Color(0x66_66_66)
+  static const Font font   := sys.theme.font
+  static const Color bgBar := sys.theme.bg
+  static const Color bgTab := sys.theme.spacePillBg
+  static const Color bgCur := sys.theme.spacePillOnBg
+  static const Color fg := sys.theme.fontColor
 
   private Frame frame
   private SpaceTab[] tabs := [,]

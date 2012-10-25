@@ -46,7 +46,6 @@ internal class StatusBar : ContentPane
       it.text="File"
       it.halign = Halign.left
       it.onMouseDown.add |e| { if (e.button == 1) frame.save }
-      it.onMouseUp.add |e| { if (e.isPopupTrigger) onFilePopup(e) }
     }
 
     // view (line/col status, etc)
@@ -145,28 +144,6 @@ internal class StatusBar : ContentPane
       MenuItem { text="Reindex All"; onAction.add |e| { sys.index.reindexAll } },
     }
     menu.open(index, event.pos)
-  }
-
-  Void onFilePopup(Event event)
-  {
-    view := frame.curView
-    if (view == null) return
-    menu := Menu
-    {
-      toMenuItem(sys.commands.save) { it.enabled = view.dirty },
-      toMenuItem(sys.commands.reload),
-    }
-    menu.open(file, event.pos)
-  }
-
-  private MenuItem toMenuItem(Cmd cmd)
-  {
-    MenuItem
-    {
-      text = cmd.name
-      accelerator = cmd.key
-      onAction.add |e| { cmd.invoke(e) }
-    }
   }
 
 //////////////////////////////////////////////////////////////////////////

@@ -18,6 +18,8 @@ class TextView : View
 {
   new make(Frame frame, File file) : super(frame, file)
   {
+    sys := Service.find(Sys#) as Sys
+    
     this.fileTimeAtLoad = file.modified
 
     // read document into memory, if we fail with the
@@ -35,7 +37,12 @@ class TextView : View
     if (rules == null) rules = SyntaxRules {}
 
     // construct and load editor
-    editor = Editor { it.rules = rules }
+    editor = Editor 
+    { 
+      it.rules = rules 
+      it.options.bg = sys.theme.bg
+      it.options.font = sys.theme.editorFont
+    }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
     editor.onCaret.add |e| { frame.updateStatus }

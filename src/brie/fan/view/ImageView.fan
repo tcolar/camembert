@@ -18,6 +18,7 @@ class ImageView : View
 {
   new make(Frame frame, File file) : super(frame, file)
   {
+    sys := Service.find(Sys#) as Sys
     image = Image.makeFile(file)
     details := EdgePane
     {
@@ -26,7 +27,7 @@ class ImageView : View
         GridPane
         {
           numCols = 2
-          Label { text="Size"; font=Desktop.sysFont.toBold },
+          Label { text="Size"; font=sys.theme.font.toBold },
           Label { text="${this.image.size.w}px x ${this.image.size.h}px" },
         },
       }
@@ -55,7 +56,7 @@ internal class ImageViewWidget : Canvas
   new make(Image image) { this.image = image }
   override Void onPaint(Graphics g)
   {
-    g.brush = Color.white
+    g.brush = ((Sys)Service.find(Sys#)).theme.bg
     g.fillRect(0, 0, size.w, size.h)
     g.drawImage(image, 8, 8)
   }

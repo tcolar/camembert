@@ -179,7 +179,7 @@ internal const class GotoCmd : Cmd
   override Void invoke(Event event)
   {
     // prompt field
-    font :=  Desktop.sysFontMonospace
+    font :=  ((Sys)Service.find(Sys#)).theme.font
     prompt := Text
     {
       it.font = font

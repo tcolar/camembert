@@ -7,7 +7,8 @@
 //
 
 using gfx
-using bocce
+//using bocce
+using fwt
 
 **
 ** Theme constants
@@ -15,30 +16,15 @@ using bocce
 @Serializable
 const class Theme
 {
-  @Transient
-  const Str name := "default"
+  const Font font           := Font("9pt DejaVu Sans Mono", false) ?: Desktop.sysFont
+  const Color fontColor     := Color.black
+  const Color bg            := Color.white
+  const Color spacePillBg   := Color(0xEE_EE_EE)
+  const Color spacePillOnBg := Color.green
   
-  ** Reload options
-  static Theme load(Str name)
-  {
-    template := Env.cur.workDir + `etc/camenbert/template.fog`
-    try
-      if (template.exists) return template.readObj
-    catch (Err e)
-      echo("ERROR: Cannot load $template\n  $e")
-    return Theme()
-  }
+  const Font editorFont     := Font("11pt DejaVu Sans Mono", false) ?: Desktop.sysFont
+  const Color editorBg      := Color.white
 
-  ** Default constructor with it-block
-  new make(|This|? f := null)
-  {
-    if (f != null) f(this)
-  }
-
-  const Color wallpaper := Color.white
-  const Color bg := Color.white
-  const Color itemHeadingBg := Color(0xdd_dd_dd)
-  
   const Image iconHome      := Image(`fan://camembert/res/home.png`)
   const Image iconFile      := Image(`fan://icons/x16/file.png`)
   const Image iconDir       := Image(`fan://icons/x16/folder.png`)
@@ -72,6 +58,35 @@ const class Theme
     if (f.ext == "js")   return t.iconJs
     if (f.ext == "cs")   return t.iconCs
     return t.iconFile
+  }
+
+  @Transient
+  const Str name := "default"
+
+  ** Reload theme
+  static Theme load(Str name)
+  {
+    template := Env.cur.workDir + `etc/camenbert/template-${name}.fog`
+    Theme? theme
+    if(template.exists)
+    {
+      try
+        theme = template.readObj
+      catch (Err e)
+        echo("ERROR: Cannot load $template\n  $e")
+    }
+    if(theme == null)
+    {
+      theme = Theme()
+      template.writeObj(theme)
+    }
+    return theme
+  }
+
+  ** Default constructor with it-block
+  new make(|This|? f := null)
+  {
+    if (f != null) f(this)
   }
 
 }

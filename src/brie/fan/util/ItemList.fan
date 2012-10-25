@@ -16,7 +16,8 @@ using bocce
 **
 class ItemList : Panel
 {
-
+  Sys? sys := (Sys)Service.find(Sys#) as Sys
+  
 //////////////////////////////////////////////////////////////////////////
 // Constructor
 //////////////////////////////////////////////////////////////////////////
@@ -26,6 +27,8 @@ class ItemList : Panel
     this.frame = frame
     update(items)
     onMouseUp.add |e| { doMouseUp(e) }
+    wallpaperColor = sys.theme.bg
+    viewportColor = sys.theme.bg
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -36,7 +39,7 @@ class ItemList : Panel
 
   Item[] items := [,] { private set  }
 
-  const Font font := Desktop.sysFontMonospace
+  Font font := sys.theme.font
 
   Item? highlight { set { &highlight = it; repaint } }
 
@@ -90,13 +93,12 @@ class ItemList : Panel
 //////////////////////////////////////////////////////////////////////////
 // Painting
 //////////////////////////////////////////////////////////////////////////
-
   override Void onPaintLines(Graphics g, Range lines)
   {
     x := 0
     y := 0
     itemh := this.itemh
-    g.font = font
+
     items.eachRange(lines) |item|
     {
       paintItem(g, item, x, y)
@@ -112,7 +114,7 @@ class ItemList : Panel
       g.fillRect(0, y, size.w, itemh)
     }
     x += item.indent*20
-    g.brush = Color.black
+    g.brush = sys.theme.fontColor
     if (item.icon != null) g.drawImage(item.icon, x, y)
     g.drawText(item.dis, x+20, y)
   }

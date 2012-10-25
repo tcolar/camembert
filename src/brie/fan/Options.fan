@@ -27,7 +27,7 @@ const class Options
       catch (Err e)
         echo("ERROR: Cannot load $file\n  $e")
     }
-    else
+    if(options == null)
     {
       options = Options()
       options.save()
