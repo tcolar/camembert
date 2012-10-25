@@ -1,23 +1,16 @@
 #! /usr/bin/env fan
-//
-// Copyright (c) 2012, Brian Frank
-// Licensed under the Academic Free License version 3.0
-//
-// History:
-//   22 Apr 12  Brian Frank  Creation
-//
 
 using build
 
 **
-** Build: brie
+** Build: camembert
 **
 class Build : BuildPod
 {
   new make()
   {
-    podName = "brie"
-    summary = "Brian's Rocking Integrated Environment"
+    podName = "camembert"
+    summary = "Thibaut's customized version of a fork of Brian's Rocking Integrated Environment"
     depends = ["sys 1.0",
                "compiler 1.0",
                "compilerDoc 1.0",
