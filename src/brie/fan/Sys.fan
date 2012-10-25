@@ -12,11 +12,14 @@ using concurrent
 **
 ** Sys manages references to system services
 **
-const class Sys
+const class Sys : Service
 {
   ** Configuration options
   const Options options := Options.load
 
+  ** Theme
+  const Theme theme := Theme.load(options.theme)
+  
   ** Indexing service
   const Index index := Index(this)
 
@@ -27,6 +30,6 @@ const class Sys
   Frame frame() { Actor.locals["frame"] ?: throw Err("Not on UI thread") }
 
   ** Logger
-  const Log log := Log.get("brie")
+  const Log log := Log.get("camembert")
 }
 

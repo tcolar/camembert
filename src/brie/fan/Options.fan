@@ -17,7 +17,7 @@ const class Options
   ** Reload options
   static Options load()
   {
-    f := Env.cur.workDir + `etc/brie/options.fog`
+    f := Env.cur.workDir + `etc/camenbert/options.fog`
     try
       if (f.exists) return f.readObj
     catch (Err e)
@@ -40,5 +40,8 @@ const class Options
 
   ** File of `fanHomeUri`
   const File fanHome
+  
+  ** Name of theme to use (saved in etc/camembert/theme-name.fog)
+  const Str theme := "default"
 }
 

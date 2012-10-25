@@ -188,7 +188,7 @@ internal const class ConsoleProcess
       it.dis  = text
       it.line = line-1
       it.col  = col-1
-      it.icon = Theme.iconErr
+      it.icon = sys.theme.iconErr
     }
   }
 
@@ -204,7 +204,7 @@ internal const class ConsoleProcess
     {
       it.dis  = text
       it.line = line-1
-      it.icon = Theme.iconErr
+      it.icon = sys.theme.iconErr
     }
   }
 

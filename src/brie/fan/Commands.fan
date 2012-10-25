@@ -381,7 +381,7 @@ internal const class FindCmd : Cmd
           it.col  = col
           it.span = span
           it.dis  = dis
-          it.icon = Theme.iconMark
+          it.icon = this.sys.theme.iconMark
         })
         col = chars.index(str, col+str.size)
       }

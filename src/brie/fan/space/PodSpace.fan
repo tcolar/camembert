@@ -36,7 +36,7 @@ const class PodSpace : Space
 
   override Str dis() { name }
 
-  override Image icon() { Theme.iconPod }
+  override Image icon() { sys.theme.iconPod }
 
   override File? curFile() { file }
 

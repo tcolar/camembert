@@ -276,7 +276,7 @@ class Frame : Window
 
   internal Void updateStatus()
   {
-    title := "Brie"
+    title := "Camembert"
     if (curView != null)
     {
       title += " $curView.file.name"
@@ -387,7 +387,7 @@ class Frame : Window
 // Private Fields
 //////////////////////////////////////////////////////////////////////////
 
-  private File sessionFile := Env.cur.workDir + `etc/brie/session.props`
+  private File sessionFile := Env.cur.workDir + `etc/camenbert/session.props`
   private SpaceBar spaceBar
   private ContentPane spacePane
   private StatusBar statusBar

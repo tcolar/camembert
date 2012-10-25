@@ -84,9 +84,10 @@ internal class SpaceBar : Canvas
     }
     menu.open(e.widget, e.pos)
   }
+  static const Sys? sys := Service.find(Sys#) as Sys
 
   static const Font font   := Desktop.sysFont
-  static const Color bgBar := Theme.wallpaper
+  static const Color bgBar := sys.theme.wallpaper
   static const Color bgTab := Color(0xee_ee_ee)
   static const Color bgCur := Color.green
   static const Color fgTab := Color(0x66_66_66)

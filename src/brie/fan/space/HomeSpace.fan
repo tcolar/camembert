@@ -18,7 +18,7 @@ const class HomeSpace : Space
   new make(Sys sys) : super(sys) {}
 
   override Str dis() { "home" }
-  override Image icon() { Theme.iconHome }
+  override Image icon() { sys.theme.iconHome }
 
   override Str:Str saveSession()
   {

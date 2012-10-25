@@ -32,7 +32,7 @@ const class FileSpace : Space
 
   override const Str dis
 
-  override Image icon() { Theme.iconDir }
+  override Image icon() { sys.theme.iconDir }
 
   override Str:Str saveSession()
   {

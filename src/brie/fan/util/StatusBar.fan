@@ -82,17 +82,17 @@ internal class StatusBar : ContentPane
   Void update()
   {
     // console up/down
-    console.image = frame.console.isOpen ? Theme.iconSlideDown : Theme.iconSlideUp
+    console.image = frame.console.isOpen ? sys.theme.iconSlideDown : sys.theme.iconSlideUp
 
     // indexing
-    index.image = sys.index.isIndexing ? Theme.iconIndexing : Theme.iconOk
+    index.image = sys.index.isIndexing ? sys.theme.iconIndexing : sys.theme.iconOk
 
     // view file
     v := frame.curView
     if (v != null)
     {
       file.text = FileUtil.pathDis(v.file)
-      file.image = v.dirty ? Theme.iconDirty : Theme.iconNotDirty
+      file.image = v.dirty ? sys.theme.iconDirty : sys.theme.iconNotDirty
       view.text = v.curStatus
     }
     else

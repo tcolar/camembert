@@ -17,6 +17,8 @@ using bocce
 **
 const class Item
 {
+  const Sys? sys := Service.find(Sys#) as Sys
+  
   static Item[] makeFiles(File[] files)
   {
     acc := Item[,]
@@ -37,7 +39,7 @@ const class Item
   new makePod(PodInfo p, |This|? f := null)
   {
     this.dis  = p.name
-    this.icon = Theme.iconPod
+    this.icon = sys.theme.iconPod
     this.file = p.srcDir + `build.fan`
     this.pod  = p
     if (f != null) f(this)
@@ -46,7 +48,7 @@ const class Item
   new makeType(TypeInfo t, |This|? f := null)
   {
     this.dis  = t.qname
-    this.icon = Theme.iconType
+    this.icon = sys.theme.iconType
     this.file = t.toFile
     this.line = t.line
     this.pod  = t.pod
@@ -57,7 +59,7 @@ const class Item
   new makeSlot(SlotInfo s, |This|? f := null)
   {
     this.dis  = s.qname
-    this.icon = s is FieldInfo ? Theme.iconField : Theme.iconMethod
+    this.icon = s is FieldInfo ? sys.theme.iconField : sys.theme.iconMethod
     this.file = s.type.toFile
     this.line = s.line
     this.col  = 2

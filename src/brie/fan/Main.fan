@@ -13,6 +13,11 @@ using concurrent
 
 class Main
 {
-  static Void main() { Frame(Sys()).open }
+  static Void main() 
+  {
+    sys := Sys()
+    sys.install 
+    Frame(sys).open 
+  }
 }
 
