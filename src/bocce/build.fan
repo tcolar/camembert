@@ -16,8 +16,8 @@ class Build : BuildPod
 {
   new make()
   {
-    podName = "bocce"
-    summary = "Brian's Open Canvas Code Editor"
+    podName = "petanque"
+    summary = "Thibaut's customized version of a branch of Brian's Open Canvas Code Editor"
     depends = ["sys 1.0",
                "concurrent 1.0",
                "fandoc 1.0",

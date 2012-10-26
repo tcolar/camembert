@@ -9,7 +9,7 @@
 using gfx
 using fwt
 using concurrent
-using bocce
+using petanque
 
 **
 ** Item represents an active item such as file or type

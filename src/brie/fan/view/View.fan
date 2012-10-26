@@ -8,7 +8,7 @@
 
 using gfx
 using fwt
-using bocce
+using petanque
 
 **
 ** View is used to view/edit a file

@@ -9,7 +9,7 @@
 using gfx
 using fwt
 using syntax
-using bocce
+using petanque
 
 **
 ** TextView

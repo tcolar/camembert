@@ -44,7 +44,7 @@ const class Sys : Service
   static Void reload()
   {
     sys := Service.find(Sys#) as Sys
- sys.uninstall
+    sys.uninstall
     
     sys = Sys()
     sys.install  
@@ -52,3 +52,8 @@ const class Sys : Service
   } 
 }
 
+mixin SysListener
+{
+  ** Called whne sys chnages
+  abstract Void updateSys(Sys sys)
+}

@@ -9,7 +9,7 @@
 using gfx
 using fwt
 using concurrent
-using bocce
+using petanque
 
 **
 ** Application level commands

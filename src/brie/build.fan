@@ -19,7 +19,7 @@ class Build : BuildPod
                "syntax 1.0",
                "gfx 1.0",
                "fwt 1.0",
-               "bocce 1.0",
+               "petanque 1.0",
                "netColarUtils 0.0.1+"
     ]
     srcDirs = [`fan/`,
