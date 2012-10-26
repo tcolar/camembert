@@ -26,7 +26,8 @@ class Build : BuildPod
                `fan/space/`,
                `fan/view/`,
                `fan/index/`,
-               `fan/util/`]
+               `fan/util/`,
+                `fan/command/`]
     resDirs = [`res/`]
     docSrc  = true
   }
