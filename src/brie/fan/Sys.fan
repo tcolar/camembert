@@ -48,7 +48,7 @@ const class Sys : Service
     
     sys = Sys()
     sys.install  
-    sys.frame.update(sys)  
+    sys.frame.updateSys()  
   } 
 }
 

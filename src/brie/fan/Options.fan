@@ -7,6 +7,7 @@
 //
 
 using gfx
+using netColarUtils
 
 **
 ** Configuration options
@@ -14,7 +15,7 @@ using gfx
 @Serializable
 const class Options
 {
-  static const File file := Env.cur.workDir + `etc/camenbert/options.fog`
+  static const File file := Env.cur.workDir + `etc/camenbert/options.props`
   
   ** Reload options
   static Options load()
@@ -23,15 +24,16 @@ const class Options
     if (file.exists) 
     {
       try
-        options = file.readObj
+        options = SettingUtils().read(Options#, file.in)
       catch (Err e)
         echo("ERROR: Cannot load $file\n  $e")
     }
-    if(options == null)
+    else
     {
       options = Options()
-      options.save()
     }  
+    // always save as to merge possible new settings
+    SettingUtils().save(options, file.out)
     return options
   }
 
@@ -42,22 +44,16 @@ const class Options
       fanHome = fanHomeUri.toFile.normalize
   }
   
-  Void save()
-  {
-    file.writeObj(this)
-  }
+  @Setting{ help = ["Directories to crawl looking for sources, file navigation"] }
+  const Uri[] indexDirs := [file.parent.uri]
 
-  ** Directories to crawl looking for for pod, file navigation
-  const Uri[] indexDirs := [file.uri]
-
-  ** Home directory to use for fan/build commands
+  @Setting{ help = ["Home directory to use for fan/build commands"] }
   const Uri fanHomeUri := Env.cur.homeDir.uri
 
-  ** File of `fanHomeUri`
-  @Transient
-  const File fanHome
-  
-  ** Name of theme to use (saved in etc/camembert/theme-name.fog)
+  @Setting{ help = ["Name of theme to use (saved in etc/camembert/theme-name.props)"] }
   const Str theme := "default"
+  
+  ** File of `fanHomeUri`
+  const File fanHome  
 }
 

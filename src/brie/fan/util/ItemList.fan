@@ -27,8 +27,15 @@ class ItemList : Panel
     this.frame = frame
     update(items)
     onMouseUp.add |e| { doMouseUp(e) }
+    updateSys(frame.sys)
+  }
+  
+  Void updateSys(Sys sys)
+  {
+    this.sys = sys
     wallpaperColor = sys.theme.bg
     viewportColor = sys.theme.bg
+    repaint
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,7 +117,7 @@ class ItemList : Panel
   {
     if (item === this.highlight)
     {
-      g.brush = Color.yellow
+      g.brush = sys.theme.selectedItem
       g.fillRect(0, y, size.w, itemh)
     }
     x += item.indent*20

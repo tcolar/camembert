@@ -7,7 +7,7 @@
 //
 
 using gfx
-//using bocce
+using netColarUtils
 using fwt
 
 **
@@ -16,15 +16,61 @@ using fwt
 @Serializable
 const class Theme
 {
+  @Setting{help = ["Default font : for anyhting but the editor"]}
   const Font font           := Font("9pt DejaVu Sans Mono", false) ?: Desktop.sysFont
-  const Color fontColor     := Color.black
-  const Color bg            := Color.white
-  const Color spacePillBg   := Color(0xEE_EE_EE)
-  const Color spacePillOnBg := Color.green
   
-  const Font editorFont     := Font("11pt DejaVu Sans Mono", false) ?: Desktop.sysFont
-  const Color editorBg      := Color.white
+  @Setting{help = ["Default font color : for anyhting but the editor"]}
+  const Color fontColor     := Color.black
+  
+  @Setting{help = ["Background color : for anyhting but the editor"]}
+  const Color bg            := Color.white
+  
+  @Setting{help = ["Background of space 'pills'"]}
+  const Color spacePillBg   := Color(0xEE_EE_EE)
+  
+  @Setting{help = ["Background of selected items"]}
+  const Color selectedItem := Color.green
+    
+  @Setting{help = ["Font used in editor pane'"]}
+  const Font edFont     := Font("11pt DejaVu Sans Mono", false) ?: Desktop.sysFont
+    
+  @Setting{help = ["Editor pane background color'"]}
+  const Color edBg      := Color.white
 
+  @Setting{help = ["Editor pane background behind current line'"]}
+  const Color edCurLineBg:= Color(0xEE_EE_EE)
+
+  @Setting{help = ["Background Color for text selection in Editor'"]}
+  const Color edSelectBg:= Color.yellow
+
+  @Setting{help = ["Where to show color indicators (lines in the editor background)"]}
+  const Int[] edCols   :=  [2, 79]
+  
+  @Setting{help = ["Color for the color indicators"]}
+  const Color edColsColor:= Color(0xDD_DD_DD)
+  
+  @Setting{help = ["Default color of text in the editor"]}
+  const RichTextStyle edText          := RichTextStyle { fg = Color(0x00_00_00) }
+  
+  @Setting{help = ["brackets in editor"]}
+  const RichTextStyle edBracket       := RichTextStyle { fg = Color(0xff_00_00) }
+  
+  @Setting{help = ["brackets match in editor"]}  
+  const RichTextStyle edBracketMatch  := RichTextStyle { fg = Color(0xff_00_00); it.bg=Color(0xff_ff_00); }
+  
+  @Setting{help = ["keywords in editors"]}
+  const RichTextStyle edKeyword       := RichTextStyle { fg = Color(0x00_00_ff) }
+  
+  @Setting{help = ["Numbers in editor"]}
+  const RichTextStyle edNum    := RichTextStyle { fg = Color(0x77_00_77) }
+  
+  @Setting{help = ["Strings in editor"]}
+  const RichTextStyle edStr    := RichTextStyle { fg = Color(0x00_77_77) }
+  
+  @Setting{help = ["Comments in editor"]}
+  const RichTextStyle edComment       := RichTextStyle { fg = Color(0x00_77_00) }
+ 
+  // not making those settings for now ...
   const Image iconHome      := Image(`fan://camembert/res/home.png`)
   const Image iconFile      := Image(`fan://icons/x16/file.png`)
   const Image iconDir       := Image(`fan://icons/x16/folder.png`)
@@ -60,26 +106,26 @@ const class Theme
     return t.iconFile
   }
 
-  @Transient
   const Str name := "default"
 
   ** Reload theme
   static Theme load(Str name)
   {
-    template := Env.cur.workDir + `etc/camenbert/template-${name}.fog`
+    template := Env.cur.workDir + `etc/camenbert/theme-${name}.props`
     Theme? theme
     if(template.exists)
     {
       try
-        theme = template.readObj
+        theme = SettingUtils().read(Theme#, template.in)
       catch (Err e)
         echo("ERROR: Cannot load $template\n  $e")
     }
     if(theme == null)
     {
       theme = Theme()
-      template.writeObj(theme)
     }
+    // always save as to merge possible new settings
+    SettingUtils().save(theme, template.out)
     return theme
   }
 

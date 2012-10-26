@@ -26,6 +26,13 @@ class Console : InsetPane
     this.content = this.list
     this.visible = false
   }
+  
+  Void updateSys(Sys sys)
+  {
+    this.sys = sys
+    list.updateSys(sys)
+    repaint
+  }
 
   Bool isBusy() { proc != null }
 
@@ -108,7 +115,7 @@ class Console : InsetPane
 
   Frame frame { private set }
   ItemList list { private set}
-  const Sys sys
+  Sys? sys
   private ConsoleProcess? proc
   private Bool inKill
   private |Console|? onDone

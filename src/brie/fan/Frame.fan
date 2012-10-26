@@ -87,11 +87,13 @@ class Frame : Window
     load(curSpace, 0, null)
   }
 
-  Void update(Sys sys)
+  Void updateSys()
   {
-    this.sys = sys
+    this.sys = Service.find(Sys#) as Sys
     spaces[0] = HomeSpace(sys)
     select(spaces[0])
+    spaceBar.updateSys(sys)
+    console.updateSys(sys)
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -99,7 +101,7 @@ class Frame : Window
   //////////////////////////////////////////////////////////////////////////
 
   ** System services
-  Sys sys
+  Sys? sys
 
   ** Current space
   Space curSpace

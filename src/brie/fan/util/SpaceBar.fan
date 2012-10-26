@@ -89,16 +89,28 @@ internal class SpaceBar : Canvas
     }
     menu.open(e.widget, e.pos)
   }
-  static const Sys? sys := Service.find(Sys#) as Sys
+  
+  Sys? sys := Service.find(Sys#) as Sys
 
-  static const Font font   := sys.theme.font
-  static const Color bgBar := sys.theme.bg
-  static const Color bgTab := sys.theme.spacePillBg
-  static const Color bgCur := sys.theme.spacePillOnBg
-  static const Color fg := sys.theme.fontColor
+  Font font   := sys.theme.font
+  Color bgBar := sys.theme.bg
+  Color bgTab := sys.theme.spacePillBg
+  Color bgCur := sys.theme.selectedItem
+  Color fg := sys.theme.fontColor
 
   private Frame frame
   private SpaceTab[] tabs := [,]
+  
+  Void updateSys(Sys sys)
+  {
+    this.sys = sys
+    font   = sys.theme.font
+    bgBar = sys.theme.bg
+    bgTab = sys.theme.spacePillBg
+    bgCur = sys.theme.selectedItem
+    fg = sys.theme.fontColor   
+    repaint
+  }
 }
 
 internal class SpaceTab
@@ -108,7 +120,8 @@ internal class SpaceTab
     this.space = space
     this.cur = cur
     this.x = x
-    this.w = 6 + 20 + SpaceBar.font.width(space.dis) + 6
+    sys := Service.find(Sys#) as Sys
+    this.w = 6 + 20 + sys.theme.font.width(space.dis) + 6
   }
 
   const Space space

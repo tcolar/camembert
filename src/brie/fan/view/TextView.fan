@@ -40,8 +40,20 @@ class TextView : View
     editor = Editor 
     { 
       it.rules = rules 
-      it.options.bg = sys.theme.bg
-      it.options.font = sys.theme.editorFont
+      it.options.bg = sys.theme.edBg
+      it.options.font = sys.theme.edFont
+      it.options.bgCurLine = sys.theme.edCurLineBg
+      it.options.highlight = sys.theme.edSelectBg
+      it.options.showCols = sys.theme.edCols
+      it.options.showColColor = sys.theme.edColsColor      
+      it.options.bracket = sys.theme.edBracket
+      it.options.bracketMatch = sys.theme.edBracketMatch
+      it.options.comment = sys.theme.edComment
+      it.options.keyword = sys.theme.edKeyword
+      it.options.numLiteral = sys.theme.edNum
+      it.options.strLiteral = sys.theme.edStr
+      it.options.text = sys.theme.edText
+      
     }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
