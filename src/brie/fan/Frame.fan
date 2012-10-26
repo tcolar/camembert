@@ -39,22 +39,25 @@ class Frame : Window
       },
       Menu {
         text = "Navigation"
-        MenuItem{ text= "Recent"; command = sys.commands.recent.asCommand},
-        MenuItem{ text= "Prev mark"; command = sys.commands.prevMark.asCommand},
-        MenuItem{ text= "Next mark"; command = sys.commands.nextMark.asCommand},
-        MenuItem{ text= "Find"; command = sys.commands.find.asCommand},
-        MenuItem{ text= "Find in space"; command = sys.commands.findInSpace.asCommand},
-        MenuItem{ text= "Goto"; command = sys.commands.goto.asCommand},
+        MenuItem{ command = sys.commands.recent.asCommand},
+        MenuItem{ command = sys.commands.prevMark.asCommand},
+        MenuItem{ command = sys.commands.nextMark.asCommand},
+        MenuItem{ command = sys.commands.find.asCommand},
+        MenuItem{ command = sys.commands.findInSpace.asCommand},
+        MenuItem{ command = sys.commands.goto.asCommand},
       },
       Menu {
-        text = "Run"
-        MenuItem{ text= "Build"; command = sys.commands.build.asCommand},
-        MenuItem{ text= "Quit process"; command = sys.commands.esc.asCommand},
+        text = "Process"
+        MenuItem{ command = sys.commands.build.asCommand},
+        MenuItem{ command = sys.commands.run.asCommand},
+        MenuItem{ command = sys.commands.buildAndRun.asCommand},
+        MenuItem{ command = sys.commands.esc.asCommand},
+        MenuItem{ command = sys.commands.terminate.asCommand},
       },
       Menu {
         text = "Options"
-        MenuItem{ text= "Edit Config"; command = sys.commands.editConfig.asCommand},
-        MenuItem{ text= "Reload Config"; command = sys.commands.reloadConfig.asCommand},
+        MenuItem{ command = sys.commands.editConfig.asCommand},
+        MenuItem{ command = sys.commands.reloadConfig.asCommand},
       },
     }
 
@@ -123,6 +126,8 @@ class Frame : Window
 
   ** Navigation history
   History history := History() { private set }
+  
+  ProcessUtil process := ProcessUtil() { private set }
 
   //////////////////////////////////////////////////////////////////////////
   // Space Lifecycle

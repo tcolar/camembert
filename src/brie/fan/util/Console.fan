@@ -95,12 +95,14 @@ class Console : InsetPane
     this.proc = ConsoleProcess(this)
     this.onDone = onDone
     list.clear
+    log("Running: $cmd in $dir.osPath")
     proc.spawn(cmd, dir)
   }
 
-  internal Void procDone()
+  internal Void procDone(Int result)
   {
     if (inKill) log("killed")
+    lastResult = result
     if (onDone != null)
     {
       try
@@ -112,10 +114,11 @@ class Console : InsetPane
     inKill = false
     onDone = null
   }
-
+  
   Frame frame { private set }
   ItemList list { private set}
   Sys? sys
+  Int lastResult := 0
   private ConsoleProcess? proc
   private Bool inKill
   private |Console|? onDone
@@ -135,7 +138,7 @@ internal const class ConsoleProcess
 
   Void spawn(Str[] cmd, File dir)
   {
-    actor.send(Msg("spawn", cmd, dir))
+    actor.send(Msg("spawn", cmd, dir, Unsafe(console)))
   }
 
   Console console()
@@ -217,19 +220,20 @@ internal const class ConsoleProcess
 
   private Obj? receive(Msg msg)
   {
-    if (msg.id == "spawn") return doSpawn(msg.a, msg.b)
+    if (msg.id == "spawn") return doSpawn(msg.a, msg.b, msg.c)
     echo("WARNING: unknown msg: $msg")
     throw Err("unknown msg $msg")
   }
 
-  private Obj? doSpawn(Str[] cmd, File dir)
+  private Obj? doSpawn(Str[] cmd, File dir, Unsafe c)
   {
+    Int result := -1
     try
     {
       proc := Process(cmd, dir)
       procRef.val = Unsafe(proc)
       proc.out = ConsoleOutStream(this)
-      proc.run.join
+      result = proc.run.join
     }
     catch (Err e)
     {
@@ -237,8 +241,10 @@ internal const class ConsoleProcess
     }
     finally
     {
-      Desktop.callAsync |->| { console.procDone }
+      cons := c.val as Console
+      cons.procDone(result)
     }
+    
     return null
   }
 

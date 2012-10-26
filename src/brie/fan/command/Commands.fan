@@ -20,7 +20,7 @@ const class Commands
     list := Cmd[,]
     typeof.fields.each |field|
     {
-      if (field.type != Cmd#) return
+      if ( ! field.type.fits(Cmd#)) return
         Cmd cmd := field.get(this)
       list.add(cmd)
       cmd.sysRef.val = sys
@@ -45,6 +45,9 @@ const class Commands
   const Cmd build       := BuildCmd()
   const Cmd editConfig  := EditConfigCmd()
   const Cmd reloadConfig:= ReloadConfigCmd()
+  const Cmd run         := RunCmd()
+  const Cmd buildAndRun := BuildAndRunCmd()
+  const Cmd terminate   := TerminateCmd()
 }
 
 **************************************************************************
@@ -56,7 +59,7 @@ const abstract class Cmd
   abstract Str name()
 
   abstract Void invoke(Event event)
-
+  
   virtual Key? key() { null }
 
   Sys sys() { sysRef.val }
@@ -72,9 +75,6 @@ const abstract class Cmd
     return Command("${name}$k", null, |Event e| {invoke(e)})
   }
 }
-
-
-
 
 internal const class EditConfigCmd : Cmd
 {
