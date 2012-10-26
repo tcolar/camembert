@@ -98,12 +98,12 @@ const class Theme
     t := sys.theme
 
     if (f.isDir) return t.iconDir
-    if (f.mimeType?.mediaType == "image") return t.iconImage
-    if (f.ext == "fan")  return t.iconFan
-    if (f.ext == "java") return t.iconJava
-    if (f.ext == "js")   return t.iconJs
-    if (f.ext == "cs")   return t.iconCs
-    return t.iconFile
+      if (f.mimeType?.mediaType == "image") return t.iconImage
+      if (f.ext == "fan")  return t.iconFan
+      if (f.ext == "java") return t.iconJava
+      if (f.ext == "js")   return t.iconJs
+      if (f.ext == "cs")   return t.iconCs
+      return t.iconFile
   }
 
   const Str name := "default"
@@ -113,19 +113,20 @@ const class Theme
   {
     template := Env.cur.workDir + `etc/camenbert/theme-${name}.props`
     Theme? theme
-    if(template.exists)
-    {
-      try
-        theme = SettingUtils().read(Theme#, template.in)
-      catch (Err e)
-        echo("ERROR: Cannot load $template\n  $e")
-    }
+    if(! template.exists)
+      SettingUtils().save(Theme(), template.out)
+    try
+    {    
+      theme = SettingUtils().read(Theme#, template.in)
+      // always save as to merge possible new settings
+      SettingUtils().save(theme, template.out)
+    }    
+    catch (Err e)
+      echo("ERROR: Cannot load $template\n  $e")
     if(theme == null)
     {
       theme = Theme()
     }
-    // always save as to merge possible new settings
-    SettingUtils().save(theme, template.out)
     return theme
   }
 
@@ -133,6 +134,6 @@ const class Theme
   new make(|This|? f := null)
   {
     if (f != null) f(this)
-  }
+    }
 
 }

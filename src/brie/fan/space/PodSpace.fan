@@ -18,10 +18,23 @@ const class PodSpace : Space
   new make(Sys sys, Str name, File dir, File? file := null) : super(sys)
   {
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
-    if (!dir.isDir) throw Err("Not a dir: $dir")
-    this.name = name
+      if (!dir.isDir) throw Err("Not a dir: $dir")
+      this.name = name
     this.dir  = dir.normalize
     this.file = file ?: dir + `build.fan`
+    Regex[] r := Regex[,]
+    try
+    {  
+      sys.options.hidePatterns.each
+      {
+        r.add(Regex.fromStr(it))
+      }
+    }
+    catch(Err e)
+    {
+      sys.log.err("Failed to load the hidden file patterns !", e)
+    }  
+    hideFiles = r
   }
 
   ** Pod name
@@ -33,6 +46,8 @@ const class PodSpace : Space
   ** Active file
   const File file
 
+  ** Patterns of files to hide
+  const Regex[] hideFiles
 
   override Str dis() { name }
 
@@ -46,14 +61,14 @@ const class PodSpace : Space
   {
     pod := curPod
     if (pod == null) return null
-    types := pod.types.findAll |t| { t.file == file.name }
+      types := pod.types.findAll |t| { t.file == file.name }
     if (types.size == 0) return null
-    if (types.size == 1) return types.first
-    types.sort |a, b| { a.line <=> b.line }
+      if (types.size == 1) return types.first
+      types.sort |a, b| { a.line <=> b.line }
     curLine := sys.frame.curView?.curPos?.line ?: 0
     for (i := 1; i<types.size; ++i)
       if (types[i].line > curLine) return types[i-1]
-    return types.first
+      return types.first
   }
 
   override Str:Str saveSession()
@@ -64,14 +79,14 @@ const class PodSpace : Space
   static Space loadSession(Sys sys, Str:Str props)
   {
     make(sys, props.getOrThrow("pod"),
-         props.getOrThrow("dir").toUri.toFile,
-         props.get("file")?.toUri?.toFile)
+      props.getOrThrow("dir").toUri.toFile,
+      props.get("file")?.toUri?.toFile)
   }
 
   override Int match(Item item)
   {
     if (!FileUtil.contains(this.dir, item.file)) return 0
-    return 100
+      return 100
   }
 
   override This goto(Item item)
@@ -96,8 +111,14 @@ const class PodSpace : Space
   {
     // get all the files
     files := File[,]
-    dir.walk |f| { if (!f.isDir) files.add(f) }
-
+    dir.walk |f| 
+    { 
+      hidden := hideFiles.eachWhile |Regex r -> Bool?| {
+        r.matches(f.uri.toStr) ? true : null} ?: false
+      if (!f.isDir && !hidden) 
+        files.add(f) 
+    }
+    
     // organize by dir
     byDir := File:File[][:]
     files.each |f|
@@ -129,13 +150,13 @@ const class PodSpace : Space
   {
     if (file.ext != "fan") return null
 
-    pod := sys.index.pod(this.name, false)
+      pod := sys.index.pod(this.name, false)
     if (pod == null) return null
 
-    types := pod.types.findAll |t| { t.file == file.name }
+      types := pod.types.findAll |t| { t.file == file.name }
     if (types.isEmpty) return null
 
-    items := Item[,]
+      items := Item[,]
     types.sort |a, b| { a.line <=> b.line }
     types.each |t|
     {
