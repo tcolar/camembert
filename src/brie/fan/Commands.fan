@@ -23,7 +23,7 @@ const class Commands
     typeof.fields.each |field|
     {
       if (field.type != Cmd#) return
-      Cmd cmd := field.get(this)
+        Cmd cmd := field.get(this)
       list.add(cmd)
       cmd.sysRef.val = sys
     }
@@ -70,7 +70,8 @@ const abstract class Cmd
   
   Command asCommand()
   {
-    Command(name, null, |Event e| {invoke(e)})
+    k := key != null ? " ($key)" : ""
+    return Command("${name}$k", null, |Event e| {invoke(e)})
   }
 }
 
@@ -86,7 +87,7 @@ internal const class ExitCmd : Cmd
   {
     r := Dialog.openQuestion(frame, "Exit application?", null, Dialog.okCancel)
     if (r != Dialog.ok) return
-    frame.saveSession
+      frame.saveSession
     Env.cur.exit(0)
   }
 }
@@ -187,6 +188,8 @@ internal const class GotoCmd : Cmd
 
     // table of matches
     matches := GotoMatchModel { itemFont = font; width = 500 }
+
+    
     table := Table
     {
       it.headerVisible = false
@@ -196,6 +199,17 @@ internal const class GotoCmd : Cmd
     // check for current selection to initialize
     selection := frame.curView?.curSelection ?: ""
     prompt.text = selection
+    
+    // If selection & single match, no need to prompt, just go straight there
+    if(! selection.isEmpty)
+    {
+      matches.items = findMatches(prompt.text.trim)
+      if(matches.items.size == 1)
+      {
+        frame.goto(matches.items.first)
+        return
+      }  
+    }
 
     // build dialog
     Item? selected
@@ -223,7 +237,7 @@ internal const class GotoCmd : Cmd
       {
         e.consume
         if (table.model.numRows > 0) table.selected = [0]
-        table.focus
+          table.focus
       }
     }
     prompt.onModify.add |e|
@@ -243,11 +257,11 @@ internal const class GotoCmd : Cmd
     // open dialog
     if (dialog.open != Dialog.ok) return
 
-    // if we got actual selection from table use that
+      // if we got actual selection from table use that
     // otherwise assume top match from table
     if (selected == null) selected = matches.items.first
-    if (selected == null) return
-    frame.goto(selected)
+      if (selected == null) return
+      frame.goto(selected)
   }
 
   private Item[] findMatches(Str text)
@@ -267,7 +281,7 @@ internal const class GotoCmd : Cmd
       curType.slots.each |s|
       {
         if (s.name.startsWith(text)) acc.add(Item(s) { dis = s.name })
-      }
+        }
     }
 
     // match types
@@ -309,7 +323,7 @@ internal const class FindCmd : Cmd
   {
     f := frame.curFile
     if (f != null) find(f)
-  }
+    }
 
   Void find(File file)
   {
@@ -344,7 +358,7 @@ internal const class FindCmd : Cmd
     prompt.onAction.add |->| { dlg.close(Dialog.ok) }
     if (Dialog.ok != dlg.open) return
 
-    // get and save text to search for
+      // get and save text to search for
     str := prompt.text
     lastStr.val = str
     lastMatchCase.val = matchCase.selected
@@ -352,10 +366,10 @@ internal const class FindCmd : Cmd
     // find all matches
     matches := Item[,]
     if (!matchCase.selected) str = str.lower
-    findMatches(matches, file, str, matchCase.selected)
+      findMatches(matches, file, str, matchCase.selected)
     if (matches.isEmpty) { Dialog.openInfo(frame, "No matches: $str.toCode"); return }
 
-    // open in console
+      // open in console
     console.show(matches)
     frame.goto(matches.first)
   }
@@ -366,15 +380,15 @@ internal const class FindCmd : Cmd
     if (f.isDir)
     {
       if (f.name.startsWith(".")) return
-      if (f.name == "tmp" || f.name == "temp") return
-      f.list.each |x| { findMatches(matches, x, str, matchCase) }
+        if (f.name == "tmp" || f.name == "temp") return
+        f.list.each |x| { findMatches(matches, x, str, matchCase) }
       return
     }
 
     // skip non-text files
     if (f.mimeType?.mediaType != "text") return
 
-    f.readAllLines.each |line, linei|
+      f.readAllLines.each |line, linei|
     {
       chars := matchCase ? line : line.lower
       col := chars.index(str)
@@ -383,13 +397,13 @@ internal const class FindCmd : Cmd
         dis := "$f.name(${linei+1}): $line.trim"
         span := Span(linei, col, linei, col+str.size)
         matches.add(Item(f)
-        {
-          it.line = linei
-          it.col  = col
-          it.span = span
-          it.dis  = dis
-          it.icon = this.sys.theme.iconMark
-        })
+          {
+            it.line = linei
+            it.col  = col
+            it.span = span
+            it.dis  = dis
+            it.icon = this.sys.theme.iconMark
+          })
         col = chars.index(str, col+str.size)
       }
     }
@@ -412,9 +426,9 @@ internal const class FindInSpaceCmd : Cmd
     File? dir
     cs := frame.curSpace
     if (cs is PodSpace)  dir = ((PodSpace)cs).dir
-    if (cs is FileSpace) dir = ((FileSpace)cs).dir
-    if (dir != null) ((FindCmd)sys.commands.find).find(dir)
-  }
+      if (cs is FileSpace) dir = ((FileSpace)cs).dir
+      if (dir != null) ((FindCmd)sys.commands.find).find(dir)
+    }
 }
 
 **************************************************************************
@@ -439,7 +453,7 @@ internal const class BuildCmd : Cmd
     {
       pod := sys.index.podForFile(f)
       if (pod != null) sys.index.reindexPod(pod)
-    }
+      }
   }
 
   File? findBuildFile()
@@ -451,15 +465,15 @@ internal const class BuildCmd : Cmd
     // the build.fan file itself, then we're done
     f := frame.curFile
     if (f == null) return null
-    if (f.name == "build.fan") return f
+      if (f.name == "build.fan") return f
 
-    // lookup up directory tree until we find "build.fan"
+      // lookup up directory tree until we find "build.fan"
     if (!f.isDir) f = f.parent
-    while (f.path.size > 0)
+      while (f.path.size > 0)
     {
       buildFile := f + `build.fan`
       if (buildFile.exists) return buildFile
-      f = f.parent
+        f = f.parent
     }
     return null
   }
