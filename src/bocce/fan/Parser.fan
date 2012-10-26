@@ -179,11 +179,7 @@ internal class Parser
     }
 
     // number
-    /*
-    if (cur === '-' && peek.isDigit) consume
-    if (cur.isDigit) return number
-    */
-
+    
     // identifier which might be keyword
     if (keywordPrefixes[cur.shiftl(16).or(peek)])
     {
@@ -194,6 +190,16 @@ internal class Parser
       word := text[start..<pos]
       if (keywords[word]) return Token.keyword
       return Token.text
+    }
+
+    // number
+    if (cur == '-' && peek.isDigit) consume
+    if(cur.isDigit)
+    {  
+        consume
+        if(cur.isDigit || cur == 'x') consume
+        while (cur.isDigit(16) || cur == '_') consume
+        return Token.numLiteral    
     }
 
     // tokenize an identifier in one big swoop
@@ -207,6 +213,8 @@ internal class Parser
     consume
     return Token.text
   }
+
+
 
   **
   ** Parse number literal:
