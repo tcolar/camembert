@@ -48,6 +48,7 @@ const class Commands
   const Cmd run         := RunCmd()
   const Cmd buildAndRun := BuildAndRunCmd()
   const Cmd terminate   := TerminateCmd()
+  const Cmd searchDocs   := HelpCmd()
 }
 
 **************************************************************************
@@ -95,4 +96,13 @@ internal const class ReloadConfigCmd : Cmd
   }
 }
 
-
+internal const class HelpCmd : Cmd
+{
+  override const Str name := "Search Docs"
+  override const Key? key := Key("F1")
+  override Void invoke(Event event)
+  {
+    selection := frame.curView?.curSelection ?: ""
+    frame.helpPane.showSearch(selection)
+  }
+}

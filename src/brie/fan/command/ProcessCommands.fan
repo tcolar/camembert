@@ -62,7 +62,7 @@ internal const class BuildCmd : Cmd
 internal const class RunCmd : Cmd
 {
   override const Str name := "Run"
-  override const Key? key := Key("F10")
+  override const Key? key := Key("F5")
   override Void invoke(Event event)
   {
     cmd := frame.process.findRunCmd(frame)
@@ -76,7 +76,7 @@ internal const class RunCmd : Cmd
 internal const class BuildAndRunCmd : Cmd
 {
   override const Str name := "BuildAndRun"
-  override const Key? key := Key("F11")
+  override const Key? key := Key("F6")
   override Void invoke(Event event)
   {
     sys.commands.build.invoke(event)

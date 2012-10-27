@@ -74,7 +74,7 @@ class Console : InsetPane
   {
     proc := this.proc
     if (proc == null) return
-    this.inKill = true
+      this.inKill = true
     log("killing...")
     proc.kill
   }
@@ -102,7 +102,7 @@ class Console : InsetPane
   internal Void procDone(Int result)
   {
     if (inKill) log("killed")
-    lastResult = result
+      lastResult = result
     if (onDone != null)
     {
       try
@@ -208,7 +208,7 @@ internal const class ConsoleProcess
     c2 := str.index(":", c1+1); if (c2 == null) return null
     file := File.os(str[0..<c1])
     if (!file.exists) return null
-    line := str[c1+1..<c2].toInt(10, false) ?: 1
+      line := str[c1+1..<c2].toInt(10, false) ?: 1
     text := file.name + str[c1..-1]
     return Item(file)
     {
@@ -221,7 +221,7 @@ internal const class ConsoleProcess
   private Obj? receive(Msg msg)
   {
     if (msg.id == "spawn") return doSpawn(msg.a, msg.b, msg.c)
-    echo("WARNING: unknown msg: $msg")
+      echo("WARNING: unknown msg: $msg")
     throw Err("unknown msg $msg")
   }
 
@@ -280,7 +280,7 @@ internal class ConsoleOutStream : OutStream
     proc := this.proc
     lines := curStr.splitLines
     if (lines.size <= 1) return
-    Desktop.callAsync |->| { proc.writeLines(lines[0..-2]) }
+      Desktop.callAsync |->| { proc.writeLines(lines[0..-2]) }
     curStr = lines.last
   }
 

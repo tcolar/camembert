@@ -45,6 +45,7 @@ class Frame : Window
         MenuItem{ command = sys.commands.find.asCommand},
         MenuItem{ command = sys.commands.findInSpace.asCommand},
         MenuItem{ command = sys.commands.goto.asCommand},
+        MenuItem{ command = sys.commands.searchDocs.asCommand},
       },
       Menu {
         text = "Process"
@@ -66,19 +67,26 @@ class Frame : Window
     onKeyDown.add |e| { trapKeyDown(e) }
     onDrop = |data| { doDrop(data) }
 
-   // build UI
+    // build UI
     this.spaceBar = SpaceBar(this)
     this.spacePane = ContentPane()
     this.statusBar = StatusBar(this)
     this.console   = Console(this)
+    this.helpPane = HelpPane(this)
     this.content = EdgePane
     {
       it.top = spaceBar
       it.center = SashPane
       {
         orientation = Orientation.vertical
-        weights = [70, 30]
-        spacePane,
+        weights = [80, 20]
+        SashPane
+        {
+          orientation = Orientation.horizontal
+          weights = [80, 20]
+          spacePane,
+          helpPane,
+        },
         console,
       }
       it.bottom = statusBar
@@ -123,6 +131,8 @@ class Frame : Window
 
   ** Console
   Console console { private set }
+  
+  HelpPane helpPane { private set }
 
   ** Navigation history
   History history := History() { private set }
@@ -323,8 +333,9 @@ class Frame : Window
     if (curView != null)
     {
       title += " $curView.file.name"
-      if (curView.dirty) title += "*"
-      }
+      if (curView.dirty) 
+        title += "*"
+    }
     this.title = title
     this.statusBar.update
   }
