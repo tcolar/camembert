@@ -3,6 +3,14 @@ using fwt
 using gfx
 using fandoc
 
+// TODO: Use the index insead not "local" fan and Pod.list!
+// TODO: allow opening url's (ie: any website / docs)
+// TODO: searc either pods or slots if first letter is upper/lower case & provide checkboxes to search either or both
+// TODO: Provides links on types to open them in editor
+// TODO: Fix ist/map to show proper type rather than just List/Map
+// TODO: less pink ;)
+// TODO: when in axon file/prj search axon libs only ?
+
 ** Sidebar to search / display fandocs
 class HelpPane : ContentPane
 {
@@ -10,7 +18,7 @@ class HelpPane : ContentPane
   Str[] pageHistory := [,]
   Text? search
 
-  new make(Frame frame) 
+  new make(Frame frame)
   {
     try
     {
@@ -20,10 +28,10 @@ class HelpPane : ContentPane
     }catch(Err e)
     {
       content = Label{ text = "WebBrowser failed to load !" }
-      e.trace 
+      e.trace
       return
     }
-    
+
     content = EdgePane
     {
       search = Text
@@ -97,13 +105,15 @@ class HelpPane : ContentPane
     this.visible = true
     parent.relayout
   }
-  
+
   internal Void showPage(Str uri)
   {
     if(browser==null)
       return
     pageHistory.push(uri)
-    browser.loadStr(showDoc(uri))
+    try
+        browser.loadStr(showDoc(uri))
+    catch(Err e) {e.trace}
   }
 
   ** Search pods and types for items matching the query
