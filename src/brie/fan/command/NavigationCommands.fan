@@ -11,7 +11,7 @@ using concurrent
 
 internal const class RecentCmd : Cmd
 {
-  override const Str name := "Recent"
+  override const Str name := "Recent Files"
   override Void invoke(Event event)
   {
     Dialog? dlg
@@ -23,6 +23,17 @@ internal const class RecentCmd : Cmd
     pane := ConstraintPane { minw = 300; maxh = 300; add(picker) }
     dlg = Dialog(frame) { title="Recent"; body=pane; commands=[Dialog.ok, Dialog.cancel] }
     dlg.open
+  }
+  new make(|This| f) {f(this)}
+}
+
+internal const class MostRecentCmd : Cmd
+{
+  override const Str name := "Last File"
+  override Void invoke(Event event)
+  {
+    if(frame.history.items.size > 0)
+      frame.goto(frame.history.items[1])
   }
   new make(|This| f) {f(this)}
 }

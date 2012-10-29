@@ -54,7 +54,7 @@ class HelpPane : ContentPane
             }
           }
         },
-        Button{image = gfx::Image(`fan://camembert/res/home.png`, false); onAction.add |Event e| { showPage("") }},
+        Button{image = gfx::Image(`fan://camembert/res/home.png`, false); onAction.add |Event e| {showPage("") }},
         search,
         Button
         {
@@ -131,6 +131,7 @@ class HelpPane : ContentPane
 
   private Void showPage(Str uri)
   {
+    search.text = uri
     if(browser==null)
       return
     pageHistory.push(uri)

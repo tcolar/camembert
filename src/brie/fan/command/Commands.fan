@@ -22,6 +22,7 @@ const class Commands
     save        = SaveCmd{key = Key(sys.shortcuts.saveFile)}
     esc         = EscCmd{key = Key(sys.shortcuts.escape)}
     recent      = RecentCmd{key = Key(sys.shortcuts.recent)}
+    mostRecent  = MostRecentCmd{key = Key(sys.shortcuts.mostRecent)}
     prevMark    = PrevMarkCmd{key = Key(sys.shortcuts.prevMark)}
     nextMark    = NextMarkCmd{key = Key(sys.shortcuts.nextMark)}
     find        = FindCmd{key = Key(sys.shortcuts.find)}
@@ -67,6 +68,7 @@ const class Commands
   const Cmd buildAndRun
   const Cmd terminate
   const Cmd searchDocs
+  const Cmd mostRecent
 }
 
 **************************************************************************

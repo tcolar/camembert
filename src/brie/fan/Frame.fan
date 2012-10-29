@@ -39,6 +39,7 @@ class Frame : Window
       },
       Menu {
         text = "Navigation"
+        MenuItem{ command = sys.commands.mostRecent.asCommand},
         MenuItem{ command = sys.commands.recent.asCommand},
         MenuItem{ command = sys.commands.prevMark.asCommand},
         MenuItem{ command = sys.commands.nextMark.asCommand},
@@ -154,8 +155,10 @@ class Frame : Window
   Void reload() { load(curSpace, spaceIndex(curSpace), null) }
 
   ** Route to best open space or open new one for given item.
-  Void goto(Item item)
+  Void goto(Item? item)
   {
+    if(item == null)
+      return
     // if this item is one of our marks, let console know
     markIndex := marks.indexSame(item)
     if (markIndex != null)
