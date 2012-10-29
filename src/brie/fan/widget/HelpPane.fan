@@ -164,7 +164,7 @@ class HelpPane : ContentPane
       results += "<h2>Slots:</h2>"
       index.matchSlots(query, kind).each
       {
-        results+="<a href='${it.qname}'>$it.qname</a> <br/>"
+        results+="<a href='${it.type.qname}'>$it.qname</a> <br/>"
       }
     }
 

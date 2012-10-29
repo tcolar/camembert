@@ -63,7 +63,7 @@ internal class IndexCache
     {
       pod.types.each |t|
       {
-        if(match(t.qname, pattern, kind) || match(t.name, pattern, kind))
+        if((pattern.contains("::") && match(t.qname, pattern, kind)) || match(t.name, pattern, kind))
           results.add(t)
       }
     }
@@ -79,8 +79,7 @@ internal class IndexCache
       {
         t.slots.each |s|
         {
-          //if(methodsOnly && s.)
-          if(match(s.qname, pattern, kind) || match(s.name, pattern, kind))
+          if((pattern.contains("::") && match(s.qname, pattern, kind)) || match(s.name, pattern, kind))
             results.add(s)
         }
       }
