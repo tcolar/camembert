@@ -24,7 +24,7 @@ const class PodSpace : Space
     this.file = file ?: dir + `build.fan`
     Regex[] r := Regex[,]
     try
-    {  
+    {
       sys.options.hidePatterns.each
       {
         r.add(Regex.fromStr(it))
@@ -33,7 +33,7 @@ const class PodSpace : Space
     catch(Err e)
     {
       sys.log.err("Failed to load the hidden file patterns !", e)
-    }  
+    }
     hideFiles = r
   }
 
@@ -111,14 +111,14 @@ const class PodSpace : Space
   {
     // get all the files
     files := File[,]
-    dir.walk |f| 
-    { 
+    dir.walk |f|
+    {
       hidden := hideFiles.eachWhile |Regex r -> Bool?| {
         r.matches(f.uri.toStr) ? true : null} ?: false
-      if (!f.isDir && !hidden) 
-        files.add(f) 
+      if (!f.isDir && !hidden)
+        files.add(f)
     }
-    
+
     // organize by dir
     byDir := File:File[][:]
     files.each |f|
@@ -168,7 +168,7 @@ const class PodSpace : Space
       }
     }
 
-    return ItemList(frame, items)
+    return ItemList(frame, items, 175)
   }
 }
 

@@ -17,19 +17,20 @@ using petanque
 class ItemList : Panel
 {
   Sys? sys := (Sys)Service.find(Sys#) as Sys
-  
+
 //////////////////////////////////////////////////////////////////////////
 // Constructor
 //////////////////////////////////////////////////////////////////////////
 
-  new make(Frame frame, Item[] items)
+  new make(Frame frame, Item[] items, Int width := 200)
   {
     this.frame = frame
+    this.width = width
     update(items)
     onMouseUp.add |e| { doMouseUp(e) }
     updateSys(frame.sys)
   }
-  
+
   Void updateSys(Sys sys)
   {
     this.sys = sys
@@ -64,6 +65,8 @@ class ItemList : Panel
 
   private Int itemh() { font.height.max(18) }
 
+  private Int width
+
 //////////////////////////////////////////////////////////////////////////
 // Items
 //////////////////////////////////////////////////////////////////////////
@@ -94,7 +97,7 @@ class ItemList : Panel
 
   override Size prefSize(Hints hints := Hints.defVal)
   {
-    Size(200,200)
+    Size(width ,200)
   }
 
 //////////////////////////////////////////////////////////////////////////
