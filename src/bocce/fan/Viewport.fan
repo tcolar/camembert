@@ -242,6 +242,13 @@ class Viewport
         g.fillRect(linex  + brackets.end.col*colw, liney, colw, lineh)
     }
 
+    // line # indicator every 10 rows
+    if(linei % 10 == 0)
+    {
+      g.brush = options.lineNumberColor
+      g.drawText(linei.toStr, clip.w - 60, liney)
+    }
+
     // styled text (actual line content)
     linex0   := linex
     line     := doc.line(linei)

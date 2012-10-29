@@ -19,7 +19,7 @@ class TextView : View
   new make(Frame frame, File file) : super(frame, file)
   {
     sys := Service.find(Sys#) as Sys
-    
+
     this.fileTimeAtLoad = file.modified
 
     // read document into memory, if we fail with the
@@ -37,15 +37,15 @@ class TextView : View
     if (rules == null) rules = SyntaxRules {}
 
     // construct and load editor
-    editor = Editor 
-    { 
-      it.rules = rules 
+    editor = Editor
+    {
+      it.rules = rules
       it.options.bg = sys.theme.edBg
       it.options.font = sys.theme.edFont
       it.options.bgCurLine = sys.theme.edCurLineBg
       it.options.highlight = sys.theme.edSelectBg
       it.options.showCols = sys.theme.edCols
-      it.options.showColColor = sys.theme.edColsColor      
+      it.options.showColColor = sys.theme.edColsColor
       it.options.bracket = sys.theme.edBracket
       it.options.bracketMatch = sys.theme.edBracketMatch
       it.options.comment = sys.theme.edComment
@@ -53,7 +53,7 @@ class TextView : View
       it.options.numLiteral = sys.theme.edNum
       it.options.strLiteral = sys.theme.edStr
       it.options.text = sys.theme.edText
-      
+      it.options.lineNumberColor = sys.theme.lineNumberColor
     }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }

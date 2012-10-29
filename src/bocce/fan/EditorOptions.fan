@@ -54,6 +54,7 @@ const class EditorOptions
   const Color selectFg              := Desktop.sysListSelFg
   const Int[] showCols              := [2,79]
   const Color showColColor          := Color(0xdd_dd_dd)
+  const Color lineNumberColor       := Color(0xaa_aa_aa)
   const Pen showColPen              := Pen { width = 1; dash = [1,3] }
   const RichTextStyle text          := RichTextStyle { fg = Color(0x00_00_00) }
   const RichTextStyle bracket       := RichTextStyle { fg = Color(0xff_00_00) }
