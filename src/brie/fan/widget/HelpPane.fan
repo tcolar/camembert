@@ -4,11 +4,7 @@ using gfx
 using fandoc
 using compilerDoc
 
-// TODO: allow opening url's (ie: any website / docs)
 // TODO: searc either pods or slots if first letter is upper/lower case & provide checkboxes to search either or both
-// TODO: Provides links on types to open them in editor
-// TODO: Fix ist/map to show proper type rather than just List/Map
-// TODO: less pink ;)
 // TODO: when in axon file/prj search axon libs only ?
 
 ** Sidebar to search / display fandocs
