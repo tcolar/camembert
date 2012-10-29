@@ -101,16 +101,28 @@ const class Index
     crawler.send(Msg("reindexPod", pod))
   }
 
-  ** Match types
-  TypeInfo[] matchTypes(Str pattern, Bool exact := false)
+  ** Match pods
+  PodInfo[] matchPods(Str pattern, MatchKind kind := MatchKind.startsWith)
   {
-    cache.send(Msg("matchTypes", pattern, exact)).get(timeout)->val
+    cache.send(Msg("matchPods", pattern, kind)).get(timeout)->val
+  }
+
+  ** Match types
+  TypeInfo[] matchTypes(Str pattern, MatchKind kind := MatchKind.startsWith)
+  {
+    cache.send(Msg("matchTypes", pattern, kind)).get(timeout)->val
+  }
+
+  ** Match types
+  SlotInfo[] matchSlots(Str pattern, MatchKind kind := MatchKind.startsWith, Bool methodsOnly := true)
+  {
+    cache.send(Msg("matchSlots", pattern, kind, methodsOnly)).get(timeout)->val
   }
 
   ** Match files
-  Item[] matchFiles(Str pattern, Bool exact := false)
+  Item[] matchFiles(Str pattern, MatchKind kind := MatchKind.startsWith)
   {
-    cache.send(Msg("matchFiles", pattern, exact)).get(timeout)->val
+    cache.send(Msg("matchFiles", pattern, kind)).get(timeout)->val
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,6 +139,8 @@ const class Index
     if (id === "pod")         return c.pod(msg.a)
     if (id === "podForFile")  return c.podForFile(msg.a)
     if (id === "matchTypes")  return Unsafe(c.matchTypes(msg.a, msg.b))
+    if (id === "matchSlots")  return Unsafe(c.matchSlots(msg.a, msg.b, msg.c))
+    if (id === "matchPods")  return Unsafe(c.matchPods(msg.a, msg.b))
     if (id === "matchFiles")  return Unsafe(c.matchFiles(msg.a, msg.b))
     if (id === "addPodSrc")   return c.addPodSrc(msg.a, msg.b, msg.c)
     if (id === "addPodLib")   return c.addPodLib(msg.a, msg.b, msg.c)

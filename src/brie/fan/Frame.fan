@@ -28,7 +28,7 @@ class Frame : Window
     this.sys = sys
     this.icon = Image(`fan://icons/x32/blueprints.png`)
     Actor.locals["frame"] = this
-   
+
     // menu
     menuBar = Menu{
       Menu {
@@ -91,7 +91,7 @@ class Frame : Window
       }
       it.bottom = statusBar
     }
- 
+
     // load session and home space
     loadSession
     curSpace = spaces.first
@@ -105,6 +105,7 @@ class Frame : Window
     select(spaces[0])
     spaceBar.updateSys(sys)
     console.updateSys(sys)
+    helpPane.updateSys(sys)
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -131,12 +132,12 @@ class Frame : Window
 
   ** Console
   Console console { private set }
-  
+
   HelpPane helpPane { private set }
 
   ** Navigation history
   History history := History() { private set }
-  
+
   ProcessUtil process := ProcessUtil() { private set }
 
   //////////////////////////////////////////////////////////////////////////
@@ -333,7 +334,7 @@ class Frame : Window
     if (curView != null)
     {
       title += " $curView.file.name"
-      if (curView.dirty) 
+      if (curView.dirty)
         title += "*"
     }
     this.title = title

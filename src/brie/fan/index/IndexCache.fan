@@ -45,54 +45,83 @@ internal class IndexCache
     return null
   }
 
-  TypeInfo[] matchTypes(Str pattern, Bool exact)
+  PodInfo[] matchPods(Str pattern, MatchKind kind)
   {
-    exacts := TypeInfo[,]
-    approx := TypeInfo[,]
+    results := PodInfo[,]
+    pods.vals.sort.each |pod|
+    {
+      if(match(pod.name, pattern, kind))
+        results.add(pod)
+    }
+    return results
+  }
+
+  TypeInfo[] matchTypes(Str pattern, MatchKind kind)
+  {
+    results := TypeInfo[,]
     pods.vals.sort.each |pod|
     {
       pod.types.each |t|
       {
-        m := matchType(t, pattern)
-        if (m == 0) return
-        if (m == 2) exacts.add(t)
-        else if (!exact) approx.add(t)
+        if(match(t.qname, pattern, kind) || match(t.name, pattern, kind))
+          results.add(t)
       }
     }
-    return exacts.addAll(approx)
+    return results
   }
 
-  private Int matchType(TypeInfo t, Str pattern)
+  SlotInfo[] matchSlots(Str pattern, MatchKind kind, Bool methodsOnly := true)
   {
-    if (t.name == pattern) return 2
-    if (t.name.startsWith(pattern)) return 1
-    return 0
+    results := SlotInfo[,]
+    pods.vals.sort.each |pod|
+    {
+      pod.types.each |t|
+      {
+        t.slots.each |s|
+        {
+          //if(methodsOnly && s.)
+          if(match(s.qname, pattern, kind) || match(s.name, pattern, kind))
+            results.add(s)
+        }
+      }
+    }
+    return results
   }
 
-  Item[] matchFiles(Str pattern, Bool exact)
+  Item[] matchFiles(Str pattern, MatchKind kind)
   {
-    exacts := Item[,]
-    approx := Item[,]
+    results := Item[,]
     pods.vals.sort.each |pod|
     {
       pod.srcFiles.each |f|
       {
-        m := matchFile(f, pattern)
-        if (m == 0) return
-        item := Item(f) { dis="$pod.name::$f.name" }
-        if (m == 2) exacts.add(item )
-        else if (!exact) approx.add(item)
+        if(match(f.name, pattern, kind))
+          results.add(Item(f) { dis="$pod.name::$f.name" })
       }
     }
-    return exacts.addAll(approx)
+    return results
   }
 
-  private Int matchFile(File f, Str pattern)
+  private Bool match(Str name, Str pattern, MatchKind kind)
   {
-    if (f.name == pattern) return 2
-    if (f.name.startsWith(pattern)) return 1
-    return 0
+    nm := name.lower
+    p := pattern.lower
+    switch(kind)
+    {
+      case MatchKind.exact:
+        return nm == p
+      case MatchKind.startsWith:
+        return nm.startsWith(p)
+      case MatchKind.contains:
+        return nm.contains(p)
+    }
+    return false
   }
 
   private Str:PodInfo pods := [:]
+}
+
+enum class MatchKind
+{
+  exact, startsWith, contains
 }

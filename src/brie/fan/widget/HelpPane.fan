@@ -2,8 +2,8 @@
 using fwt
 using gfx
 using fandoc
+using compilerDoc
 
-// TODO: Use the index insead not "local" fan and Pod.list!
 // TODO: allow opening url's (ie: any website / docs)
 // TODO: searc either pods or slots if first letter is upper/lower case & provide checkboxes to search either or both
 // TODO: Provides links on types to open them in editor
@@ -17,14 +17,17 @@ class HelpPane : ContentPane
   WebBrowser? browser
   Str[] pageHistory := [,]
   Text? search
+  private Frame frame
+  private Sys sys
 
   new make(Frame frame)
   {
+    this.frame = frame
+    sys = frame.sys
     try
     {
-      // TODO: this can fail because of SWT / native browser incompatibilities
+      // This can fail because of SWT / native browser incompatibilities
       browser = WebBrowser {}
-      //throw(Err("test"))
     }catch(Err e)
     {
       content = Label{ text = "WebBrowser failed to load !" }
@@ -74,13 +77,32 @@ class HelpPane : ContentPane
     }
     browser.onHyperlink.add |Event e|
     {
-      uri := e.data
-      if(uri.toStr.contains("://"))
-        browser.load(uri)
-      else
-        showPage(uri.toStr)
+      onHyperlink(e)
     }
     showPage("")
+  }
+
+  Void updateSys(Sys newSys)
+  {
+    sys = newSys
+  }
+
+  internal Void onHyperlink(Event e)
+  {
+    uri := e.data.toStr
+    if(uri.contains("#goto:"))
+    {
+      // maybe support directly to a slot later (matchSlot)
+      info := sys.index.matchTypes(uri[uri.index("#goto:") + 6 .. -1], MatchKind.exact).first
+      if(info != null)
+      try{frame.goto(Item(info))}catch(Err err){}
+      e.data = null
+    }
+    if( ! uri.contains("://"))
+    {
+      showPage(uri)
+      e.data = null
+    }
   }
 
   internal Void showSearch(Str text)
@@ -89,6 +111,11 @@ class HelpPane : ContentPane
       return
     if(visible == false)
       show
+    if(text.contains("://"))
+    {
+      browser.load(text.toUri)
+      return
+    }
     search.text = text
     pageHistory.clear
     browser.loadStr(find(search.text))
@@ -106,53 +133,52 @@ class HelpPane : ContentPane
     parent.relayout
   }
 
-  internal Void showPage(Str uri)
+  private Void showPage(Str uri)
   {
     if(browser==null)
       return
     pageHistory.push(uri)
     try
-        browser.loadStr(showDoc(uri))
+      browser.loadStr(showDoc(uri))
     catch(Err e) {e.trace}
   }
 
   ** Search pods and types for items matching the query
-  Str find(Str query)
+  private Str find(Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := false)
   {
-    if(browser==null)
-      return ""
-    pods := [,]
-    types := [,]
-    slots := [,]
-    query = query.lower
-    results := ""
-    Pod.list.each
+    echo("find: $query")
+    index := sys.index
+
+    results := "<h2>Pods:</h2>"
+    index.matchPods(query, kind).each
     {
-      if(it.name.lower.contains(query)) {pods.add(it.name)}
-        it.types.each
+      results+="<a href='${it.name}::index'>$it</a> <br/>"
+    }
+    results += "<h2>Types:</h2>"
+    index.matchTypes(query, kind).each
+    {
+      results+="<a href='${it.qname}'>$it.qname</a> <br/>"
+    }
+    if(! inclSlots)
+    {
+      results += "<h2>Slots:</h2>"
+      index.matchSlots(query, kind).each
       {
-        if(!it.isSynthetic && (it.name.lower.contains(query) || it.qname.lower.contains(query)))
-        {
-          types.add(it.qname)
-        }
+        results+="<a href='${it.qname}'>$it.qname</a> <br/>"
       }
     }
-    pods.each {results+="<a href='${it}::index'>$it</a> <br/>"}
-    types.each {results+="<a href='${it}'>$it</a> <br/>"}
 
     return results
   }
 
   ** Display doc for a qualified name: pod, type etc...
-  Str showDoc(Str fqn)
+  private Str showDoc(Str fqn)
   {
-    if(browser==null)
-      return ""
     if( fqn.isEmpty )
     {
       // home (pod list)
       Str pods := "<h2>Pod List</h2>"
-      Pod.list.each
+      sys.index.pods.each
       {
         pods+="<a href='${it.name}::pod-doc'>$it.name</a> <br/>"
       }
@@ -167,93 +193,121 @@ class HelpPane : ContentPane
       if(! fqn.contains("::"))
     {
       // pod
-      pod := Pod.list.find |Pod p, bool| {p.name.lower == fqn.lower}
-      if(pod == null) return "$fqn not found !";
-        text := "<h2>$pod.name</h2>"
-      text += pod.doc!=null ? docToHtml(pod.doc) : pod.meta["pod.summary"]
+      info := sys.index.matchPods(fqn.lower, MatchKind.exact).first
+      if(info == null)
+        return "$fqn not found !"
+      text := "<h2>$info.name</h2>"
+      text += readPodDoc(info.podFile)
       text += "<hr/>"
-      pod.types().each {if(!it.isSynthetic) {text += "<br/> <a href='$it.qname'>$it.name</a>"}}
+      info.types.each {text += "<br/> <a href='$it.qname'>$it.name</a>"}
       return text
     }
     else
     {
-      // type
-      // doing a manual find, because Pod.find causes a case issue with pods that have upper case letters
-      Str[] parts := fqn.split(':')
-      pod := Pod.list.find |Pod p, bool| {p.name.lower == parts[0].lower}
-      type := Type.find("${pod?.name}::${parts[2]}", false)
-      if(type == null) return "$fqn not found !";
-        text := "<h2>$type.qname</h2>"
-      text += docToHtml(type.doc)
-      text += "<div style='background-color:#ccccff'><b>Inheritance</b></div>"
-      type.inheritance.eachr{text += htmlType(it)+" - "}
-      slots := type.slots.dup.sort |Slot slot1, Slot slot2 -> Int| {slot1.name.compare(slot2.name)}
-      Str local := ""
-      Str inherited := ""
-      slots.each
+      info := sys.index.matchTypes(fqn.lower, MatchKind.exact).first
+      if(info == null)
+        return "$fqn not found !"
+      text := "<h2>$info.qname</h2>"
+      if(info.toFile != null)
       {
-        if(!it.isSynthetic)
-        {
-          if(it.parent.qname == type.qname)
-          {
-            local += "<div style='background-color:#ffeedd'>"+htmlSig(it) + "</div>" + docToHtml(it.doc)
-          }
-          else
-          {
-            inherited += "<div style='background-color:#ffeedd'>["+htmlType(it.parent)+"] " + htmlSig(it) + + "</div>" +docToHtml(it.doc)
-          }
-        }
+        link := anchor("#goto:$info.qname")
+        text += "<a href='$link'>Click here to open in editor</a></a><br/><br/>"
       }
-      text += "<div style='background-color:#ccccff'><b>Local slots</b></div>$local <div style='background-color:#ccccff'><b>Inherited slots</b></div> $inherited"
+      text += readTypeDoc(info.pod.podFile, info.name)
       return text
     }
     return ""
   }
 
   ** Parse Fandoc into HTML
-  internal Str docToHtml(Str? doc)
+  private Str docToHtml(DocFandoc? doc)
   {
-    if(doc == null || doc.isEmpty) return "<br/>"
+    if(doc == null || doc.text.isEmpty) return "<br/>"
       buf := Buf()
-    FandocParser.make.parseStr(doc).write(HtmlDocWriter(buf.out))
+    FandocParser.make.parseStr(doc.text).write(HtmlDocWriter(buf.out))
     return buf.flip.readAllStr
   }
 
-  ** Beautified slot signature with links to types
-  internal Str htmlSig(Slot slot)
+  private Str readPodDoc(File podFile)
   {
-    Str sig := ""
-    if(slot.isAbstract) sig += "abstract "
-      if(slot.isConst) sig += "const "
-      if(slot.isNative) sig += "native "
-      if(slot.isOverride) sig += "override "
-      if(slot.isPrivate) sig += "private "
-      if(slot.isProtected) sig += "protected "
-      if(slot.isStatic) sig += "static "
-      if(slot.isVirtual) sig += "virtual "
-      if(slot.isField)
+    result := "Failed to read pod doc !"
+    try
     {
-      f := slot as Field
-      sig += htmlType(f.type)
-      sig += " <b>$f.name </b>"
+      doc := DocPod(podFile)
+      if(doc.podDoc != null)
+        result = docToHtml(doc.podDoc.doc)
+      else
+       result = doc.summary
     }
-    else if(slot.isMethod || slot.isCtor)
+    catch(Err e) {sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
+    return result
+  }
+
+  private Str readTypeDoc(File podFile, Str typeName)
+  {
+    result := "Failed to read pod doc !"
+    try
     {
-      m := slot as Method
-      if(slot.isCtor) sig += "new "
-        sig += htmlType(m.returns)+" "
-      sig += "<b>$m.name </b>"
+      doc := DocPod(podFile)
+
+      DocType? type := doc.type(typeName, false)
+
+      if(type?.doc != null)
+        result = docToHtml(type.doc)
+      else
+        result = doc.summary
+
+      if(type!=null)
+      {
+        result += "<div style='background-color:#ccccff'><b>Inheritance</b></div>"
+        type.base.eachr{result += htmlType(it)+" - "}
+        result += "<div style='background-color:#ccccff'><b>Local slots</b></div>"
+        type.slots.each
+        {
+          result += "<div style='background-color:#ffeedd'>"+htmlSig(it) + "</div>" + docToHtml(it.doc)
+        }
+      }
+    }
+    catch(Err e) {sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
+
+    return result
+  }
+
+  ** Beautified slot signature with links to types
+  private Str htmlSig(DocSlot slot)
+  {
+    flags := slot.flags
+    Str sig := DocFlags.toSlotDis(flags)
+    if(slot is DocField)
+    {
+      field := slot as DocField
+      sig += htmlType(field.type)
+      sig += " <b>$slot.name </b>"
+    }
+    else if(slot is DocMethod)
+    {
+      method := slot as DocMethod
+      sig += htmlType(method.returns)+" "
+      sig += " <b>$method.name </b>"
       sig += "(";
-      m.params.each{sig += htmlType(it.type) + (it.hasDefault?" <i>$it.name</i>":" $it.name") + ", "}
+      method.params.each{sig += htmlType(it.type) + (it.def != null ?" <i>${it.name}:=${it.def}</i>":" $it.name") + ", "}
       sig += ")"
     }
     return sig
   }
 
   ** Type signature with link
-  internal Str htmlType(Type type)
+  private Str htmlType(DocTypeRef type)
   {
-    return "<a href='$type.qname'>$type.name</a>"
+    return "<a href='$type.qname'>$type.dis</a> "
+  }
+
+  Str anchor(Str anchor)
+  {
+    uri := pageHistory.peek?.toStr ?: ""
+    if(uri.contains("#"))
+     uri = uri[0 ..< uri.indexr("#")]
+    return uri + anchor
   }
 }
 
