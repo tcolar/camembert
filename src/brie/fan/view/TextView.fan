@@ -18,7 +18,6 @@ class TextView : View
 {
   new make(Frame frame, File file) : super(frame, file)
   {
-    sys := Service.find(Sys#) as Sys
 
     this.fileTimeAtLoad = file.modified
 
@@ -133,10 +132,11 @@ class TextView : View
   private Void editorKeyDown(Event event)
   {
     if (editor.ro) return
+
     switch (event.key.toStr)
     {
-      case "Ctrl+=": event.consume; insertSection
-      case "Ctrl+Slash": event.consume; toggleCommentBlock
+      case sys.shortcuts.insertCommentSection : event.consume; insertSection
+      case sys.shortcuts.toggleComment        : event.consume; toggleCommentBlock
     }
   }
 

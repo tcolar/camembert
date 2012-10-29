@@ -17,6 +17,24 @@ const class Commands
   new make(Sys sys)
   {
     this.sys = sys
+    exit        = ExitCmd{}
+    reload      = ReloadCmd{key = Key(sys.shortcuts.reloadFile)}
+    save        = SaveCmd{key = Key(sys.shortcuts.saveFile)}
+    esc         = EscCmd{key = Key(sys.shortcuts.escape)}
+    recent      = RecentCmd{key = Key(sys.shortcuts.recent)}
+    prevMark    = PrevMarkCmd{key = Key(sys.shortcuts.prevMark)}
+    nextMark    = NextMarkCmd{key = Key(sys.shortcuts.nextMark)}
+    find        = FindCmd{key = Key(sys.shortcuts.find)}
+    findInSpace = FindInSpaceCmd{key = Key(sys.shortcuts.findInSpace)}
+    goto        = GotoCmd{key = Key(sys.shortcuts.goto)}
+    build       = BuildCmd{key = Key(sys.shortcuts.build)}
+    editConfig  = EditConfigCmd{}
+    reloadConfig= ReloadConfigCmd{}
+    run         = RunCmd{key = Key(sys.shortcuts.run)}
+    buildAndRun = BuildAndRunCmd{key = Key(sys.shortcuts.buildAndRun)}
+    terminate   = TerminateCmd{}
+    searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
+
     list := Cmd[,]
     typeof.fields.each |field|
     {
@@ -32,23 +50,23 @@ const class Commands
 
   const Sys sys
   const Cmd[] list
-  const Cmd exit        := ExitCmd()
-  const Cmd reload      := ReloadCmd()
-  const Cmd save        := SaveCmd()
-  const Cmd esc         := EscCmd()
-  const Cmd recent      := RecentCmd()
-  const Cmd prevMark    := PrevMarkCmd()
-  const Cmd nextMark    := NextMarkCmd()
-  const Cmd find        := FindCmd()
-  const Cmd findInSpace := FindInSpaceCmd()
-  const Cmd goto        := GotoCmd()
-  const Cmd build       := BuildCmd()
-  const Cmd editConfig  := EditConfigCmd()
-  const Cmd reloadConfig:= ReloadConfigCmd()
-  const Cmd run         := RunCmd()
-  const Cmd buildAndRun := BuildAndRunCmd()
-  const Cmd terminate   := TerminateCmd()
-  const Cmd searchDocs   := HelpCmd()
+  const Cmd exit
+  const Cmd reload
+  const Cmd save
+  const Cmd esc
+  const Cmd recent
+  const Cmd prevMark
+  const Cmd nextMark
+  const Cmd find
+  const Cmd findInSpace
+  const Cmd goto
+  const Cmd build
+  const Cmd editConfig
+  const Cmd reloadConfig
+  const Cmd run
+  const Cmd buildAndRun
+  const Cmd terminate
+  const Cmd searchDocs
 }
 
 **************************************************************************
@@ -60,16 +78,15 @@ const abstract class Cmd
   abstract Str name()
 
   abstract Void invoke(Event event)
-  
-  virtual Key? key() { null }
+  const Key? key
 
-  Sys sys() { sysRef.val }
   internal const AtomicRef sysRef := AtomicRef(null)
+  Sys sys() {sysRef.val }
 
   Options options() { sys.options }
   Frame frame() { sys.frame }
   Console console() { frame.console }
-  
+
   Command asCommand()
   {
     k := key != null ? " ($key)" : ""
@@ -84,25 +101,26 @@ internal const class EditConfigCmd : Cmd
   {
     frame.goto(Item.makeFile(Options.file))
   }
+  new make(|This| f) {f(this)}
 }
 
 internal const class ReloadConfigCmd : Cmd
 {
   override const Str name := "Reload Config"
-  override const Key? key := Key("Shift+Ctrl+R")
   override Void invoke(Event event)
   {
     Sys.reload
   }
+  new make(|This| f) {f(this)}
 }
 
 internal const class HelpCmd : Cmd
 {
   override const Str name := "Search Docs"
-  override const Key? key := Key("F1")
   override Void invoke(Event event)
   {
     selection := frame.curView?.curSelection ?: ""
     frame.helpPane.showSearch(selection)
   }
+  new make(|This| f) {f(this)}
 }

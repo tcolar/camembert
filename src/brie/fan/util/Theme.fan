@@ -29,7 +29,7 @@ const class Theme
   const Color spacePillBg   := Color(0xEE_EE_EE)
 
   @Setting{help = ["Background of selected items"]}
-  const Color selectedItem := Color.green
+  const Color selectedItem := Color(0x99_ff_99)
 
   @Setting{help = ["Font used in editor pane'"]}
   const Font edFont     := Font("11pt DejaVu Sans Mono", false) ?: Desktop.sysFont
@@ -95,6 +95,8 @@ const class Theme
   const Image iconMethod    := Image(`fan://camembert/res/method.png`)
   const Image iconMark      := Image(`fan://icons/x16/tag.png`)
 
+  // End Option fields
+
   static Image fileToIcon(File f)
   {
     Sys? sys := Service.find(Sys#) as Sys
@@ -115,22 +117,7 @@ const class Theme
   static Theme load(Str name)
   {
     template := Env.cur.workDir + `etc/camenbert/theme-${name}.props`
-    Theme? theme
-    if(! template.exists)
-      SettingUtils().save(Theme(), template.out)
-    try
-    {
-      theme = SettingUtils().read(Theme#, template.in)
-      // always save as to merge possible new settings
-      SettingUtils().save(theme, template.out)
-    }
-    catch (Err e)
-      echo("ERROR: Cannot load $template\n  $e")
-    if(theme == null)
-    {
-      theme = Theme()
-    }
-    return theme
+    return (Theme) SettingUtils.load(template, Theme#)
   }
 
   ** Default constructor with it-block

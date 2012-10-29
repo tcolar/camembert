@@ -15,6 +15,7 @@ internal const class ExitCmd : Cmd
       frame.saveSession
     Env.cur.exit(0)
   }
+  new make(|This| f) {f(this)}
 }
 **************************************************************************
 ** ReloadCmd
@@ -23,8 +24,8 @@ internal const class ExitCmd : Cmd
 internal const class ReloadCmd : Cmd
 {
   override const Str name := "Reload"
-  override const Key? key := Key("Ctrl+R")
   override Void invoke(Event event) { frame.reload }
+  new make(|This| f) {f(this)}
 }
 
 **************************************************************************
@@ -34,7 +35,7 @@ internal const class ReloadCmd : Cmd
 internal const class SaveCmd : Cmd
 {
   override const Str name := "Save"
-  override const Key? key := Key("Ctrl+S")
   override Void invoke(Event event) { frame.save }
+  new make(|This| f) {f(this)}
 }
 

@@ -14,12 +14,15 @@ using concurrent
 **
 const class Sys : Service
 {
+  ** Shortcuts config
+  const Shortcuts shortcuts := Shortcuts.load
+
   ** Configuration options
   const Options options := Options.load
 
   ** Theme
   const Theme theme := Theme.load(options.theme)
-  
+
   ** Indexing service
   const Index index := Index(this)
 
@@ -31,7 +34,7 @@ const class Sys : Service
 
   ** Logger
   const Log log := Log.get("camembert")
-  
+
   override Void onStop()
   {
     index.cache.pool.stop
@@ -40,16 +43,16 @@ const class Sys : Service
     index.cache.pool.kill
     index.crawler.pool.kill
   }
-  
+
   static Void reload()
   {
     sys := Service.find(Sys#) as Sys
     sys.uninstall
-    
+
     sys = Sys()
-    sys.install  
-    sys.frame.updateSys()  
-  } 
+    sys.install
+    sys.frame.updateSys()
+  }
 }
 
 mixin SysListener

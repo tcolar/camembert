@@ -12,7 +12,6 @@ using concurrent
 internal const class RecentCmd : Cmd
 {
   override const Str name := "Recent"
-  override const Key? key := Key("Ctrl+Space")
   override Void invoke(Event event)
   {
     Dialog? dlg
@@ -25,6 +24,7 @@ internal const class RecentCmd : Cmd
     dlg = Dialog(frame) { title="Recent"; body=pane; commands=[Dialog.ok, Dialog.cancel] }
     dlg.open
   }
+  new make(|This| f) {f(this)}
 }
 
 **************************************************************************
@@ -34,15 +34,15 @@ internal const class RecentCmd : Cmd
 internal const class PrevMarkCmd : Cmd
 {
   override const Str name := "Prev Mark"
-  override const Key? key := Key("Shift+F8")
   override Void invoke(Event event) { frame.curMark-- }
+  new make(|This| f) {f(this)}
 }
 
 internal const class NextMarkCmd : Cmd
 {
   override const Str name := "Next Mark"
-  override const Key? key := Key("F8")
   override Void invoke(Event event) { frame.curMark++ }
+  new make(|This| f) {f(this)}
 }
 
 **************************************************************************
@@ -51,8 +51,8 @@ internal const class NextMarkCmd : Cmd
 
 internal const class GotoCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Goto"
-  override const Key? key := Key("Ctrl+G")
   override Void invoke(Event event)
   {
     // prompt field
@@ -65,7 +65,7 @@ internal const class GotoCmd : Cmd
     // table of matches
     matches := GotoMatchModel { itemFont = font; width = 500 }
 
-    
+
     table := Table
     {
       it.headerVisible = false
@@ -75,7 +75,7 @@ internal const class GotoCmd : Cmd
     // check for current selection to initialize
     selection := frame.curView?.curSelection ?: ""
     prompt.text = selection
-    
+
     // If selection & single match, no need to prompt, just go straight there
     if(! selection.isEmpty)
     {
@@ -84,7 +84,7 @@ internal const class GotoCmd : Cmd
       {
         frame.goto(matches.items.first)
         return
-      }  
+      }
     }
 
     // build dialog
@@ -178,6 +178,7 @@ internal class GotoMatchModel : TableModel
   Int width
   Item[] items := Item[,]
 
+  new make(|This| f) {f(this)}
   override Int numRows() { items.size }
   override Int numCols() { 1 }
   override Str header(Int col) { "" }
@@ -193,8 +194,8 @@ internal class GotoMatchModel : TableModel
 
 internal const class FindCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Find"
-  override const Key? key := Key("Ctrl+F")
   override Void invoke(Event event)
   {
     f := frame.curFile
@@ -295,8 +296,8 @@ internal const class FindCmd : Cmd
 
 internal const class FindInSpaceCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Find in Space"
-  override const Key? key := Key("Shift+Ctrl+F")
   override Void invoke(Event event)
   {
     File? dir

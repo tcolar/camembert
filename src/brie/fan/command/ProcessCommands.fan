@@ -1,5 +1,5 @@
 using fwt
-using concurrent 
+using concurrent
 
 **************************************************************************
 ** EscCmd
@@ -7,8 +7,8 @@ using concurrent
 
 internal const class EscCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Close Console"
-  override const Key? key := Key("Esc")
   override Void invoke(Event event)
   {
     frame.marks = Item[,]
@@ -19,6 +19,7 @@ internal const class EscCmd : Cmd
 
 internal const class TerminateCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Terminate"
   override Void invoke(Event event)
   {
@@ -33,8 +34,8 @@ internal const class TerminateCmd : Cmd
 
 internal const class BuildCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Build"
-  override const Key? key := Key("F9")
   override Void invoke(Event event)
   {
     // save current file
@@ -50,7 +51,7 @@ internal const class BuildCmd : Cmd
     console.execFan([f.osPath], f.parent) |c|
     {
       pod := sys.index.podForFile(f)
-      if (pod != null) 
+      if (pod != null)
         sys.index.reindexPod(pod)
     }
   }
@@ -61,22 +62,22 @@ internal const class BuildCmd : Cmd
 **
 internal const class RunCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "Run"
-  override const Key? key := Key("F5")
   override Void invoke(Event event)
   {
     cmd := frame.process.findRunCmd(frame)
     f := frame.curFile
     defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-    
+
     cmd?.execute(console, defaultDir)
   }
 }
 
 internal const class BuildAndRunCmd : Cmd
 {
+  new make(|This| f) {f(this)}
   override const Str name := "BuildAndRun"
-  override const Key? key := Key("F6")
   override Void invoke(Event event)
   {
     sys.commands.build.invoke(event)
