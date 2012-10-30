@@ -18,7 +18,7 @@ using petanque
 const class Item
 {
   const Sys? sys := Service.find(Sys#) as Sys
-  
+
   static Item[] makeFiles(File[] files)
   {
     acc := Item[,]
@@ -106,6 +106,8 @@ const class Item
   const Int indent
 
   override Str toStr() { dis }
+
+  Str debug() {"$dis $file $pod $type $slot"}
 
   Pos pos() { Pos(line, col) }
 

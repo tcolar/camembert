@@ -178,7 +178,7 @@ class Frame : Window
     }
     else
     {
-      c := create(item).goto(item)
+      c := create(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
         load(c, null, item)
     }
@@ -215,13 +215,13 @@ class Frame : Window
   {
     if (item.space != null) return item.space
 
-      file := item.file
+    file := item.file
     if (file == null) return null
 
-      pod := sys.index.podForFile(file)
+    pod := sys.index.podForFile(file)
     if (pod != null) return PodSpace(sys, pod.name, pod.srcDir)
 
-      dir := file.isDir ? file : file.parent
+    dir := file.isDir ? file : file.parent
     return FileSpace(sys, dir)
   }
 

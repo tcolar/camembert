@@ -94,11 +94,13 @@ class HelpPane : ContentPane
       try{frame.goto(Item(info))}catch(Err err){}
       e.data = null
     }
-    if( ! uri.contains("://"))
-    {
-      showPage(uri)
-      e.data = null
-    }
+    if(uri.contains("://"))
+      return // let browser handle it
+    if(uri.startsWith(pageHistory.peek+"#"))
+      return // let browser handle it
+
+    showPage(uri)
+    e.data = null
   }
 
   internal Void showSearch(Str text)
@@ -143,7 +145,6 @@ class HelpPane : ContentPane
   ** Search pods and types for items matching the query
   private Str find(Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := false)
   {
-    echo("find: $query")
     index := sys.index
 
     results := "<h2>Pods:</h2>"
@@ -249,19 +250,23 @@ class HelpPane : ContentPane
 
       DocType? type := doc.type(typeName, false)
 
-      if(type?.doc != null)
-        result = docToHtml(type.doc)
-      else
-        result = doc.summary
+      Str summary := type?.doc != null ? docToHtml(type.doc) : doc.summary
 
       if(type!=null)
       {
+        /*result="<hr/>Slots: "
+        type.slots.each
+        {
+          a:=anchor("#$it.name")
+          result += "<a href='$a'>$it.name</a>&nbsp"
+        }*/
+        result = summary
         result += "<div style='background-color:#ccccff'><b>Inheritance</b></div>"
         type.base.eachr{result += htmlType(it)+" - "}
         result += "<div style='background-color:#ccccff'><b>Local slots</b></div>"
         type.slots.each
         {
-          result += "<div style='background-color:#ffeedd'>"+htmlSig(it) + "</div>" + docToHtml(it.doc)
+          result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"+htmlSig(it) + "</div>" + docToHtml(it.doc)
         }
       }
     }

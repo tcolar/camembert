@@ -33,15 +33,23 @@ internal class IndexCache
 
   Obj? addPodSrc(Str name, File srcDir, File[] srcFiles)
   {
+    //echo("$name -> $srcDir.osPath")
     cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList)
-    pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles)
+    if(cur.srcDir != null && cur.srcDir.uri !=  srcDir.uri)
+      echo("WARNING: Ignoring second source root for pod $name : $cur.srcDir.osPath .. $srcDir.osPath")
+    else
+      pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles)
     return null
   }
 
   Obj? addPodLib(Str name, File podFile, TypeInfo[] types)
   {
+    //echo("$name -> $podFile.osPath")
     cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList)
-    pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles)
+    if(cur.podFile != null && cur.podFile.uri !=  podFile.uri)
+      echo("WARNING: Ignoring second pod file for pod $name : $cur.podFile.osPath .. $podFile.osPath")
+    else
+      pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles)
     return null
   }
 

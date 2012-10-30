@@ -27,7 +27,7 @@ const class Index
   {
     this.sys = sys
     dirs := File[,]
-    sys.options.indexDirs.each |uri|
+    sys.options.srcDirs.each |uri|
     {
       try
       {
@@ -36,9 +36,22 @@ const class Index
         if (!file.isDir) throw Err("Not dir")
         dirs.add(file)
       }
-      catch (Err e) echo("Invalid indextDir: $uri\n  $e")
+      catch (Err e) echo("Invalid srcDir: $uri\n  $e")
     }
-    this.dirs = dirs
+    this.srcDirs = dirs
+    dirs.clear
+    sys.options.podDirs.each |uri|
+    {
+      try
+      {
+        file := File(uri, false).normalize
+        if (!file.exists) throw Err("Dir does not exist")
+        if (!file.isDir) throw Err("Not dir")
+        dirs.add(file)
+      }
+      catch (Err e) echo("Invalid podDir: $uri\n  $e")
+    }
+    this.podDirs = dirs
     reindexAll
   }
 
@@ -48,8 +61,11 @@ const class Index
 // Access
 //////////////////////////////////////////////////////////////////////////
 
-  ** Directories to crawl and maintain synchronization
-  const File[] dirs
+  ** Source directories to crawl and maintain synchronization
+  const File[] srcDirs
+
+  ** Pods directories to crawl and maintain synchronization
+  const File[] podDirs
 
   ** Are we currently indexing
   Bool isIndexing() { isIndexingRef.val }

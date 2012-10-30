@@ -25,7 +25,8 @@ internal class IndexCrawler
     try
     {
       t1 := Duration.now
-      index.dirs.each |dir| { indexDir(dir) }
+      index.podDirs.each |dir| { indexPodDir(dir) }
+      index.srcDirs.each |dir| { indexSrcDir(dir) }
       t2 := Duration.now
       echo("Index all ${(t2-t1).toLocale}")
       return (t2-t1)
@@ -39,7 +40,7 @@ internal class IndexCrawler
     try
     {
       t1 := Duration.now
-      indexPodSrcDir(pod.srcDir)
+      indexPodSrcDir(pod.srcDir, pod.name)
       indexPodLib(pod.podFile)
       t2 := Duration.now
       echo("Index pod '$pod.name' ${(t2-t1).toLocale}")
@@ -48,22 +49,40 @@ internal class IndexCrawler
     finally index.setIsIndexing(false)
   }
 
-  private Void indexDir(File dir)
+  private Void indexSrcDir(File dir)
   {
-    // skip these
+    if (!dir.isDir) return
+    name := dir.name.lower
+    if (name.startsWith(".")) return
+    if (name == "temp" || name == "tmp" || name == "dist") return
+
+    // if build.fan with BuildPod
+    if (isPodSrcDir(dir))
+    {
+      indexPodSrcDir(dir, getPodName(dir))
+      //return -> no, we might have sub-pods
+    }
+
+    // recurse
+    dir.listDirs.each |subDir| { indexSrcDir(subDir) }
+  }
+
+  private Void indexPodDir(File dir)
+  {
     if (!dir.isDir) return
     name := dir.name.lower
     if (name.startsWith(".")) return
     if (name == "temp" || name == "tmp" || name == "dist") return
 
     // if lib/fan check pod files
-    if (dir.pathStr.endsWith("lib/fan/")) { indexPodLibDir(dir); return }
-
-    // if build.fan with BuildPod
-    if (isPodSrcDir(dir)) { indexPodSrcDir(dir); return }
+    if (dir.pathStr.endsWith("lib/fan/"))
+    {
+      indexPodLibDir(dir)
+      return
+    }
 
     // recurse
-    dir.listDirs.each |subDir| { indexDir(subDir) }
+    dir.listDirs.each |subDir| { indexPodDir(subDir) }
   }
 
   private Bool isPodSrcDir(File dir)
@@ -86,18 +105,43 @@ internal class IndexCrawler
     return false
   }
 
-  private Void indexPodSrcDir(File dir)
+  ** Relying on dir being == to podName is asking for troublee from build.fan
+  ** So trying to lokup the real nam
+  private Str getPodName(File buildDir)
+  {
+    build :=  buildDir + `build.fan`
+    name := build.readAllLines.eachWhile |Str s -> Str?|
+    {
+       line := s.trim
+       parts := line.split('=')
+       if(parts.size != 2) return null
+       val := parts[1].trim
+       if(val[0]=='"' && val[-1]=='"' && val[1].isAlpha) // (might start with $ or % -> variable)
+        return val[1..-2]
+       return null
+    }
+    if(name == null)
+    {
+      echo("Didn't find the podName in $build.osPath - Will use $buildDir.name")
+    }
+    return name ?: buildDir.name
+  }
+
+  private Void indexPodSrcDir(File dir, Str podName)
   {
     files := File[,]
     indexPodSrcFiles(files, dir)
-    index.cache.send(Msg("addPodSrc", dir.name, dir, files))
+    index.cache.send(Msg("addPodSrc", podName, dir, files))
   }
 
   private Void indexPodSrcFiles(File[] acc, File dir)
   {
     dir.list.each |f|
     {
-      if (f.isDir) { indexPodSrcFiles(acc, f); return }
+      if (f.isDir && ! isPodSrcDir(f)) // if it's a subpod don't deal with it in here
+      {
+        indexPodSrcFiles(acc, f); return
+      }
       if (indexSkipExts.containsKey(f.ext ?: "")) return
       acc.add(f)
     }
@@ -106,7 +150,7 @@ internal class IndexCrawler
 
   private Void indexPodLibDir(File dir)
   {
-    dir.list.each |f| { if (f.ext == "pod") indexPodLib(f) }
+      dir.list.each |f| { if (f.ext == "pod") indexPodLib(f) }
   }
 
   private Void indexPodLib(File podFile)

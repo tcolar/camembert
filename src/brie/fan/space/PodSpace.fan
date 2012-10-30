@@ -18,7 +18,7 @@ const class PodSpace : Space
   new make(Sys sys, Str name, File dir, File? file := null) : super(sys)
   {
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
-      if (!dir.isDir) throw Err("Not a dir: $dir")
+    if (!dir.isDir) throw Err("Not a dir: $dir")
       this.name = name
     this.dir  = dir.normalize
     this.file = file ?: dir + `build.fan`
@@ -149,14 +149,14 @@ const class PodSpace : Space
   private Widget? makeSlotNav(Frame frame)
   {
     if (file.ext != "fan") return null
-
-      pod := sys.index.pod(this.name, false)
+    pod := sys.index.pod(this.name, false)
     if (pod == null) return null
 
-      types := pod.types.findAll |t| { t.file == file.name }
+    types := pod.types.findAll |t| { return t.file == file.name }
+
     if (types.isEmpty) return null
 
-      items := Item[,]
+    items := Item[,]
     types.sort |a, b| { a.line <=> b.line }
     types.each |t|
     {

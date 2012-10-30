@@ -42,7 +42,7 @@ const class HomeSpace : Space
   {
     podGroups := ItemList[,]
     pods := sys.index.pods.dup
-    sys.index.dirs.each |indexDir|
+    sys.index.srcDirs.each |indexDir|
     {
       items := Item[,]
       items.add(Item(indexDir) { it.dis = FileUtil.pathDis(indexDir) })
