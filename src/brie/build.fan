@@ -10,7 +10,7 @@ class Build : BuildPod
   new make()
   {
     podName = "camembert"
-    summary = "Thibaut's customized version of a fork of Brian's Rocking Integrated Environment"
+    summary = "Pure Fantom lightweight IDE - Forked and fermented version of Brie (Brian's Rocking Integrated Environment)"
     depends = ["sys 1.0",
                "compiler 1.0",
                "compilerDoc 1.0",
@@ -30,6 +30,9 @@ class Build : BuildPod
                `fan/command/`,
                `fan/widget/`]
     resDirs = [`res/`]
+    version = Version("1.0.0")
+    meta    =  ["license"   : "Academic License",
+                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
     docSrc  = true
   }
 }

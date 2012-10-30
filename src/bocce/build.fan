@@ -17,7 +17,7 @@ class Build : BuildPod
   new make()
   {
     podName = "petanque"
-    summary = "Thibaut's customized version of a branch of Brian's Open Canvas Code Editor"
+    summary = "Thibaut's customized version of a fork of Bocce"
     depends = ["sys 1.0",
                "concurrent 1.0",
                "fandoc 1.0",
@@ -25,6 +25,9 @@ class Build : BuildPod
                "gfx 1.0",
                "fwt 1.0"]
     srcDirs = [`fan/`]
+    version = Version("1.0.0")
+    meta    =  ["license"   : "Academic License",
+                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
     docSrc  = true
   }
 }

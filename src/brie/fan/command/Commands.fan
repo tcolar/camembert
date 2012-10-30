@@ -35,6 +35,7 @@ const class Commands
     buildAndRun = BuildAndRunCmd{key = Key(sys.shortcuts.buildAndRun)}
     terminate   = TerminateCmd{}
     searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
+    newFile     = NewFileCmd{key = Key(sys.shortcuts.newFile)}
 
     list := Cmd[,]
     typeof.fields.each |field|
@@ -69,6 +70,7 @@ const class Commands
   const Cmd terminate
   const Cmd searchDocs
   const Cmd mostRecent
+  const Cmd newFile
 }
 
 **************************************************************************

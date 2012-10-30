@@ -289,8 +289,8 @@ class HelpPane : ContentPane
     else if(slot is DocMethod)
     {
       method := slot as DocMethod
-      sig += htmlType(method.returns)+" "
-      sig += " <b>$method.name </b>"
+      sig += " " + htmlType(method.returns)
+      sig += " <b>$method.name</b>"
       sig += "(";
       method.params.each{sig += htmlType(it.type) + (it.def != null ?" <i>${it.name}:=${it.def}</i>":" $it.name") + ", "}
       sig += ")"

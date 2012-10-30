@@ -7,6 +7,8 @@ const class Shortcuts
   @Setting
   const Str saveFile              := "Ctrl+S"
   @Setting
+  const Str newFile               := "Ctrl+N"
+  @Setting
   const Str reloadFile            := "Ctrl+R"
 
   @Setting
