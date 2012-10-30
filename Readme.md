@@ -13,7 +13,7 @@ You need Fantom installed obviously
 **Run** :
 > fan camembert
 
-First start: At the first start you will want to go in Options/edit config and edit **options.props**
+**First start**: At the first start you will want to go in Options/edit config and edit **options.props**
 
 You will want to at least set:
 
@@ -41,3 +41,9 @@ Then **Restart camembert** and you should see all your projects listed.
 * Better separation of runtime fantom env VS deploy/index env
 * Alt+Space for quicly switching between last 2 files
 * New File command
+
+# Screenshot
+
+![Screenshot](https://bitbucket.org/tcolar/camembert/raw/tip/shot.png)
+
+
