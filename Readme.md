@@ -44,6 +44,8 @@ Then **Restart camembert** and you should see all your projects listed.
 
 # Screenshot
 
+See full shot here: [https://bitbucket.org/tcolar/camembert/raw/tip/shot.png]
+
 ![Screenshot](https://bitbucket.org/tcolar/camembert/raw/tip/shot.png)
 
 
