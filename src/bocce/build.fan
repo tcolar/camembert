@@ -26,7 +26,7 @@ class Build : BuildPod
                "fwt 1.0"]
     srcDirs = [`fan/`]
     version = Version("1.0.0")
-    meta    =  ["license"   : "Academic License",
+    meta    =  ["license.name"   : "Academic License",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
     docSrc  = true
   }

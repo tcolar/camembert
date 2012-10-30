@@ -20,7 +20,7 @@ class Build : BuildPod
                "gfx 1.0",
                "fwt 1.0",
                "petanque 1.0",
-               "netColarUtils 0.0.1+"
+               "netColarUtils 0.0.2+"
     ]
     srcDirs = [`fan/`,
                `fan/space/`,
@@ -31,7 +31,7 @@ class Build : BuildPod
                `fan/widget/`]
     resDirs = [`res/`]
     version = Version("1.0.0")
-    meta    =  ["license"   : "Academic License",
+    meta    =  ["license.name"   : "Academic License",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
     docSrc  = true
   }
