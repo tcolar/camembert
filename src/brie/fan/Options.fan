@@ -37,7 +37,7 @@ const class Options
   const Uri[] srcDirs := [file.parent.uri]
 
   @Setting{ help = ["Pod directories to crawl. Typically [fanHomeUri]/lib/fan/"] }
-  const Uri[] podDirs := [`${Env.cur.homeDir.uri}/lib/fan/`]
+  const Uri[] podDirs := [Env.cur.homeDir.uri]
 
   @Setting{ help = ["Name of theme to use (saved in etc/camembert/theme-name.props)"] }
   const Str theme := "default"
