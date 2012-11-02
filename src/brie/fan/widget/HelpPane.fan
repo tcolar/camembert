@@ -35,7 +35,7 @@ class HelpPane : ContentPane
     {
       search = Text
       {
-        text="Search"
+        text=""
         prefCols = 15
         onAction.add |Event e|
         {
@@ -45,7 +45,8 @@ class HelpPane : ContentPane
       top = GridPane
       {
         numCols = 3
-        Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`); onAction.add |Event e|
+        Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`);
+        onAction.add |Event e|
           {
             if( ! pageHistory.isEmpty) pageHistory.pop()
             if( ! pageHistory.isEmpty)
@@ -54,7 +55,8 @@ class HelpPane : ContentPane
             }
           }
         },
-        Button{image = gfx::Image(`fan://camembert/res/home.png`, false); onAction.add |Event e| {showPage("") }},
+        Button{image = gfx::Image(`fan://camembert/res/home.png`, false);
+        onAction.add |Event e| {showPage("")}},
         search,
       }
       center = BorderPane
@@ -120,6 +122,12 @@ class HelpPane : ContentPane
       parent.visible = false
       parent.parent.relayout
     }
+  }
+
+  Void indexUpdated()
+  {
+    if(search.text.isEmpty)
+      showPage("")
   }
 
   Void toggle()

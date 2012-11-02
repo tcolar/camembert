@@ -81,6 +81,8 @@ const class Index
         frame := sys.frame
         if (frame.curSpace is HomeSpace) frame.reload
         else frame.updateStatus
+        if(! val)  // done
+          frame.helpPane.indexUpdated
       }
     }
     catch {}
