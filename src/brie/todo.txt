@@ -4,8 +4,6 @@ duplicate file
 
 allow copy from console output
 
-recent/history -> prevent same item multiple times
-
 slots/types nav -> sort
 
 space nav pill -> right click: find in space (so don't need to open file to do it)
@@ -30,4 +28,8 @@ if build group dir name is "src" use parent folder name / dir as root
 same for pod ? if src is the folder of build.fan then use the parent as root ?p
 
 F3 -> Goto (if on a type name) ... if multiple choices -> ask
+
+stack trace links in console ?
+
+icons for pod group parent , pod group child
 

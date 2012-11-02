@@ -162,7 +162,7 @@ const class PodSpace : Space
     types.each |t|
     {
       items.add(Item(t) { it.dis = t.name } )
-      slots := t.slots.dup.sort |a, b| { a.line <=> b.line }
+      slots := t.slots.dup.sort |a, b| { a.name <=> b.name }
       slots.each |s|
       {
         items.add(Item(s) { it.dis = s.name; it.indent = 1 })
