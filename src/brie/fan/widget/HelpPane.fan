@@ -4,7 +4,6 @@ using gfx
 using fandoc
 using compilerDoc
 
-// TODO: searc either pods or slots if first letter is upper/lower case & provide checkboxes to search either or both
 // TODO: when in axon file/prj search axon libs only ?
 
 ** Sidebar to search / display fandocs
@@ -271,6 +270,7 @@ class HelpPane : ContentPane
 
       Str summary := type?.doc != null ? docToHtml(type.doc) : doc.summary
 
+      result = summary
       if(type!=null)
       {
         /*result="<hr/>Slots: "
@@ -279,7 +279,6 @@ class HelpPane : ContentPane
           a:=anchor("#$it.name")
           result += "<a href='$a'>$it.name</a>&nbsp"
         }*/
-        result = summary
         result += "<div style='background-color:#ccccff'><b>Inheritance</b></div>"
         type.base.eachr{result += htmlType(it)+" - "}
         result += "<div style='background-color:#ccccff'><b>Local slots</b></div>"

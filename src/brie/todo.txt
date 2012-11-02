@@ -3,7 +3,8 @@ rename file
 duplicate file
 
 allow copy from console output
-fix bug where recent show same file many times
+
+slots/types nav -> sort
 
 space nav pill -> right click: find in space (so don't need to open file to do it)
 
@@ -22,3 +23,9 @@ Bocce: Ctrl+A -> select all
 pod view -> Specific pod : customize root ? (for example from /camembert/src/brie/ to /camembert)
 
 If detecting a buildgroup type build.fan, present that as pod collection(folder) in podl ist, then can open if (file view)
+build group command ?
+if build group dir name is "src" use parent folder name / dir as root
+same for pod ? if src is the folder of build.fan then use the parent as root ?p
+
+F3 -> Goto (if on a type name) ... if multiple choices -> ask
+
