@@ -153,10 +153,10 @@ class History
       it.icon  = Theme.fileToIcon(link.file)
     }
 
-    // remove any item that matches space + file
+    // remove any item that matches file (regardless of space)
     dup := items.findIndex |x|
     {
-      item.space.typeof == x.space.typeof &&
+      //item.space.typeof == x.space.typeof &&
       item.file == x.file
     }
     if (dup != null) items.removeAt(dup)

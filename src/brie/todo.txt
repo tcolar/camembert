@@ -4,6 +4,8 @@ duplicate file
 
 allow copy from console output
 
+recent/history -> prevent same item multiple times
+
 slots/types nav -> sort
 
 space nav pill -> right click: find in space (so don't need to open file to do it)
