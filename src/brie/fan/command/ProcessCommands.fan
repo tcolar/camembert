@@ -1,22 +1,6 @@
 using fwt
 using concurrent
 
-**************************************************************************
-** EscCmd
-**************************************************************************
-
-internal const class EscCmd : Cmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Close Console"
-  override Void invoke(Event event)
-  {
-    frame.marks = Item[,]
-    frame.console.close
-    frame.curView?.onReady
-  }
-}
-
 internal const class TerminateCmd : Cmd
 {
   new make(|This| f) {f(this)}

@@ -19,7 +19,7 @@ const class Shortcuts
   const Str buildAndRun           := "F6"
 
   @Setting{help = ["Escape (close console / panel)"]}
-  const Str escape                := "Esc"
+  const Str consoleToggle         := "Alt+C"
 
   @Setting{help = ["Insert a comment section(separator)"]}
   const Str insertCommentSection  := "Ctrl+="
@@ -38,11 +38,17 @@ const class Shortcuts
   @Setting{help = ["Search docs for a pod/type/slot. Opens docc pane"]}
   const Str searchDocs            := "F1"
 
-  @Setting{help = ["Navigate between recent files"]}
-  const Str recent                := "Ctrl+Space"
+  @Setting{help = ["Search docs for a pod/type/slot. Opens docc pane"]}
+  const Str docsToggle            := "Alt+D"
 
-  @Setting{help = ["Back to most recent file (Equivalent to Ctrl+Space then a)"]}
-  const Str mostRecent            := "Alt+Space"
+  @Setting{help = ["Toggle recent files panel"]}
+  const Str recentToggle          := "Alt+R"
+
+  @Setting{help = ["Back to most recent file (Equivalent to Ctrl+1)"]}
+  const Str mostRecent            := "Ctrl+Space"
+
+  @Setting{help = ["Recent files will be mapped to Modifier + 1 .. 9"]}
+  const Str recentModifier := "Ctrl"
 
   @Setting{help = ["Next mark (next item in console)"]}
   const Str nextMark              := "F8"

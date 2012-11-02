@@ -26,7 +26,7 @@ class Console : InsetPane
     this.content = this.list
     this.visible = false
   }
-  
+
   Void updateSys(Sys sys)
   {
     this.sys = sys
@@ -114,7 +114,7 @@ class Console : InsetPane
     inKill = false
     onDone = null
   }
-  
+
   Frame frame { private set }
   ItemList list { private set}
   Sys? sys
@@ -244,7 +244,7 @@ internal const class ConsoleProcess
       cons := c.val as Console
       cons.procDone(result)
     }
-    
+
     return null
   }
 

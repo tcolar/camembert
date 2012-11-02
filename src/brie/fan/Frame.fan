@@ -29,6 +29,10 @@ class Frame : Window
     this.icon = Image(`fan://icons/x32/blueprints.png`)
     Actor.locals["frame"] = this
 
+    history.pushListeners.add(
+      |history| {recentPane.update(history)}
+    )
+
     // menu
     menuBar = Menu{
       Menu {
@@ -41,21 +45,24 @@ class Frame : Window
       Menu {
         text = "Navigation"
         MenuItem{ command = sys.commands.mostRecent.asCommand},
-        MenuItem{ command = sys.commands.recent.asCommand},
         MenuItem{ command = sys.commands.prevMark.asCommand},
         MenuItem{ command = sys.commands.nextMark.asCommand},
         MenuItem{ command = sys.commands.find.asCommand},
         MenuItem{ command = sys.commands.findInSpace.asCommand},
         MenuItem{ command = sys.commands.goto.asCommand},
-        MenuItem{ command = sys.commands.searchDocs.asCommand},
       },
       Menu {
         text = "Process"
         MenuItem{ command = sys.commands.build.asCommand},
         MenuItem{ command = sys.commands.run.asCommand},
         MenuItem{ command = sys.commands.buildAndRun.asCommand},
-        MenuItem{ command = sys.commands.esc.asCommand},
         MenuItem{ command = sys.commands.terminate.asCommand},
+      },
+      Menu {
+        text = "Panels"
+        MenuItem{ command = sys.commands.consoleToggle.asCommand},
+        MenuItem{ command = sys.commands.docsToggle.asCommand},
+        MenuItem{ command = sys.commands.recentToggle.asCommand},
       },
       Menu {
         text = "Options"
@@ -75,6 +82,7 @@ class Frame : Window
     this.statusBar = StatusBar(this)
     this.console   = Console(this)
     this.helpPane = HelpPane(this)
+    this.recentPane = RecentPane(this)
     this.content = EdgePane
     {
       it.top = spaceBar
@@ -87,7 +95,13 @@ class Frame : Window
           orientation = Orientation.horizontal
           weights = [80, 20]
           spacePane,
-          helpPane,
+          SashPane
+          {
+            orientation = Orientation.vertical
+            weights = [30, 70]
+            recentPane,
+            helpPane,
+          }
         },
         console,
       }
@@ -136,6 +150,8 @@ class Frame : Window
   Console console { private set }
 
   HelpPane helpPane { private set }
+
+  RecentPane recentPane { private set }
 
   ** Navigation history
   History history := History() { private set }
@@ -352,8 +368,17 @@ class Frame : Window
   internal Void trapKeyDown(Event event)
   {
     cmd := sys.commands.findByKey(event.key)
-    if (cmd != null) cmd.invoke(event)
+    if (cmd != null)
+    {
+      cmd.invoke(event)
     }
+    if(event.keyChar >= '1'
+      && event.keyChar<='9'
+      && event.key.modifiers.toStr == sys.shortcuts.recentModifier)
+    {
+       sys.commands.recent.invoke(event)
+    }
+  }
 
   private Void doDrop(Obj data)
   {

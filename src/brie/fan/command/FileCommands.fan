@@ -11,8 +11,9 @@ internal const class ExitCmd : Cmd
   override Void invoke(Event event)
   {
     r := Dialog.openQuestion(frame, "Exit application?", null, Dialog.okCancel)
-    if (r != Dialog.ok) return
-      frame.saveSession
+    if (r != Dialog.ok)
+      return
+    frame.saveSession
     Env.cur.exit(0)
   }
   new make(|This| f) {f(this)}

@@ -35,8 +35,8 @@ class HelpPane : ContentPane
     {
       search = Text
       {
-        text="";
-        prefCols = 10;
+        text="Search"
+        prefCols = 15
         onAction.add |Event e|
         {
           showSearch(search.text)
@@ -44,11 +44,11 @@ class HelpPane : ContentPane
       }
       top = GridPane
       {
-        numCols = 4
+        numCols = 3
         Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`); onAction.add |Event e|
           {
             if( ! pageHistory.isEmpty) pageHistory.pop()
-              if( ! pageHistory.isEmpty)
+            if( ! pageHistory.isEmpty)
             {
               showPage(pageHistory.pop())
             }
@@ -56,14 +56,6 @@ class HelpPane : ContentPane
         },
         Button{image = gfx::Image(`fan://camembert/res/home.png`, false); onAction.add |Event e| {showPage("") }},
         search,
-        Button
-        {
-          text="close";
-          onAction.add |Event e|
-          {
-            hide
-          }
-        },
       }
       center = BorderPane
       {
@@ -91,7 +83,7 @@ class HelpPane : ContentPane
       // maybe support directly to a slot later (matchSlot)
       info := sys.index.matchTypes(uri[uri.index("#goto:") + 6 .. -1], MatchKind.exact).first
       if(info != null)
-      try{frame.goto(Item(info))}catch(Err err){}
+        try{frame.goto(Item(info))}catch(Err err){}
       e.data = null
     }
     if(uri.contains("://"))
@@ -114,7 +106,7 @@ class HelpPane : ContentPane
       browser.load(text.toUri)
       return
     }
-    search.text = text
+    search.text = text.trim
     pageHistory.clear
     browser.loadStr(find(search.text))
   }
@@ -123,12 +115,30 @@ class HelpPane : ContentPane
   {
     this.visible = false
     parent.relayout
+    if( ! frame.recentPane.visible)
+    {
+      parent.visible = false
+      parent.parent.relayout
+    }
+  }
+
+  Void toggle()
+  {
+    if(visible)
+      hide
+    else
+      show
   }
 
   private Void show()
   {
     this.visible = true
     parent.relayout
+    if(parent.visible == false)
+    {
+      parent.visible = true
+      parent.parent.relayout
+    }
   }
 
   private Void showPage(Str uri)
@@ -145,6 +155,7 @@ class HelpPane : ContentPane
   ** Search pods and types for items matching the query
   private Str find(Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := false)
   {
+    if(query.isEmpty) {showPage(""); return ""}
     index := sys.index
 
     results := "<h2>Pods:</h2>"

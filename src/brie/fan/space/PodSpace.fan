@@ -96,6 +96,7 @@ const class PodSpace : Space
 
   override Widget onLoad(Frame frame)
   {
+    frame.history.push(this, Item.makeFile(file))
     return EdgePane
     {
       left = EdgePane

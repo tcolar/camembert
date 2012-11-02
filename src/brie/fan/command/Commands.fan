@@ -20,8 +20,9 @@ const class Commands
     exit        = ExitCmd{}
     reload      = ReloadCmd{key = Key(sys.shortcuts.reloadFile)}
     save        = SaveCmd{key = Key(sys.shortcuts.saveFile)}
-    esc         = EscCmd{key = Key(sys.shortcuts.escape)}
-    recent      = RecentCmd{key = Key(sys.shortcuts.recent)}
+    consoleToggle=ToggleConsoleCmd{key = Key(sys.shortcuts.consoleToggle)}
+    recentToggle= ToggleRecentCmd{key = Key(sys.shortcuts.recentToggle)}
+    docsToggle  = ToggleHelpCmd{key = Key(sys.shortcuts.docsToggle)}
     mostRecent  = MostRecentCmd{key = Key(sys.shortcuts.mostRecent)}
     prevMark    = PrevMarkCmd{key = Key(sys.shortcuts.prevMark)}
     nextMark    = NextMarkCmd{key = Key(sys.shortcuts.nextMark)}
@@ -55,8 +56,9 @@ const class Commands
   const Cmd exit
   const Cmd reload
   const Cmd save
-  const Cmd esc
-  const Cmd recent
+  const Cmd consoleToggle
+  const Cmd recentToggle
+  const Cmd docsToggle
   const Cmd prevMark
   const Cmd nextMark
   const Cmd find
@@ -71,6 +73,7 @@ const class Commands
   const Cmd searchDocs
   const Cmd mostRecent
   const Cmd newFile
+  const Cmd recent := RecentCmd {}
 }
 
 **************************************************************************

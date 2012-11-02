@@ -124,7 +124,7 @@ internal class StatusBar : ContentPane
       MenuItem
       {
         it.text = "Close Console"
-        it.accelerator = sys.commands.esc.key
+        it.accelerator = sys.commands.consoleToggle.key
         it.onAction.add |e| { frame.console.close }
       },
       MenuItem

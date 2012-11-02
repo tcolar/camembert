@@ -14,15 +14,11 @@ internal const class RecentCmd : Cmd
   override const Str name := "Recent Files"
   override Void invoke(Event event)
   {
-    Dialog? dlg
-    picker := HistoryPicker(frame.history.items) |item, e|
-    {
-      frame.goto(item)
-      dlg.close
-    }
-    pane := ConstraintPane { minw = 300; maxh = 300; add(picker) }
-    dlg = Dialog(frame) { title="Recent"; body=pane; commands=[Dialog.ok, Dialog.cancel] }
-    dlg.open
+    index := event.keyChar - '0'
+    echo(index)
+    items := frame.history.items
+    if(index>=0 && items.size > index)
+      frame.goto(items[index])
   }
   new make(|This| f) {f(this)}
 }
