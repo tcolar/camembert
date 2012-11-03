@@ -21,7 +21,7 @@ const class PodSpace : Space
     if (!dir.isDir) throw Err("Not a dir: $dir")
       this.name = name
     this.dir  = dir.normalize
-    this.file = file ?: dir + `build.fan`
+    this.file = file ?: FileUtil.findBuildPod(dir, dir)
     Regex[] r := Regex[,]
     try
     {

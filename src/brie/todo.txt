@@ -4,8 +4,6 @@ duplicate file
 
 allow copy from console output
 
-slots/types nav -> sort
-
 space nav pill -> right click: find in space (so don't need to open file to do it)
 
 If file is opened in file view but file exists in pod view - open it in pod view ??

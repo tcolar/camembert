@@ -40,7 +40,8 @@ const class Item
   {
     this.dis  = p.name
     this.icon = sys.theme.iconPod
-    this.file = p.srcDir + `build.fan`
+    this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
+
     this.pod  = p
     if (f != null) f(this)
   }

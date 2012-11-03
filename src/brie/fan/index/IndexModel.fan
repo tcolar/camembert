@@ -9,6 +9,15 @@
 using compilerDoc
 using concurrent
 
+** Group is a dir with a BuilGroup type build file
+** And might contain multiple child pods
+/*const class PodGroup
+{
+   const Str name // folder name based
+   const File srcDir
+   const File builFile // Might be build.fan or buildall.fan ...
+} */
+
 const class PodInfo
 {
   new make(Str name, File? podFile, TypeInfo[] types, File? srcDir, File[] srcFiles)
@@ -19,6 +28,7 @@ const class PodInfo
     this.types      = types
     this.srcDir     = srcDir
     this.srcFiles   = srcFiles
+    // todo set parent if it's a group child
     types.each |t| { t.podRef.val = this }
   }
 
@@ -29,6 +39,7 @@ const class PodInfo
   const TypeInfo[] types
   const File? srcDir
   const File[] srcFiles
+  //const PodGroup? parent
 }
 
 const class TypeInfo

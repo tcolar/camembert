@@ -30,4 +30,49 @@ internal const class FileUtil
   {
     x.uri.toStr[dir.uri.toStr.size..-1].toUri
   }
+
+  ** Try to find a build file of type buildPod
+  ** first in dir/build.fan
+  ** Then in dir/src/build.fan
+  ** Then for a build pod up the directory tree but no further than upTo
+  static File? findBuildPod(File? dir, File? upTo)
+  {
+    if(dir == null)
+      return null
+    build :=  dir + `build.fan`
+    if(isBuildPod(build))
+     return build
+    build = dir + `src/build.fan`
+    if(isBuildPod(build))
+     return build
+    while(dir!=null && dir != upTo)
+    {
+      build = dir + `build.fan`
+      if(isBuildPod(build))
+       return build
+      dir = dir.parent
+    }
+    // not found
+    return null
+  }
+
+
+  private static Bool isBuildPod(File buildFile)
+  {
+    if(! buildFile.exists)
+      return false
+    try
+    {
+      in := buildFile.in
+      Str? line
+      while ((line = in.readLine) != null)
+      {
+        if (line.contains("class ")) break
+      }
+      in.close
+      return line.contains("BuildPod")
+    }
+    catch (Err e) e.trace
+    return false
+  }
 }

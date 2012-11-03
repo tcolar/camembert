@@ -19,6 +19,7 @@ internal class IndexCrawler
 
   const Index index
 
+  ** Reindex all pods
   Duration indexAll()
   {
     index.setIsIndexing(true)
@@ -34,6 +35,7 @@ internal class IndexCrawler
     finally index.setIsIndexing(false)
   }
 
+  ** Index a given pod (ie: after it's rebuilt)
   Obj? indexPod(PodInfo pod)
   {
     index.setIsIndexing(true)
@@ -49,6 +51,12 @@ internal class IndexCrawler
     finally index.setIsIndexing(false)
   }
 
+//////////////////////////////////////////////////////////////////////////
+// Private methods
+//////////////////////////////////////////////////////////////////////////
+
+
+  ** Index a folder of sources as provided by the user
   private Void indexSrcDir(File dir)
   {
     if (!dir.isDir) return
@@ -67,6 +75,7 @@ internal class IndexCrawler
     dir.listDirs.each |subDir| { indexSrcDir(subDir) }
   }
 
+  ** Index a folder of pods(libraries) as provided by the user
   private Void indexPodDir(File dir)
   {
     if (!dir.isDir) return
@@ -85,41 +94,33 @@ internal class IndexCrawler
     dir.listDirs.each |subDir| { indexPodDir(subDir) }
   }
 
+
   private Bool isPodSrcDir(File dir)
   {
-    build :=  dir + `build.fan`
-    if (!build.exists) return false
-
-    try
-    {
-      in := build.in
-      Str? line
-      while ((line = in.readLine) != null)
-      {
-        if (line.contains("class ")) break
-      }
-      in.close
-      return line.contains("BuildPod")
-    }
-    catch (Err e) e.trace
-    return false
+    return FileUtil.findBuildPod(dir, dir) != null
   }
 
   ** Relying on dir being == to podName is asking for troublee from build.fan
   ** So trying to lokup the real nam
   private Str getPodName(File buildDir)
   {
-    build :=  buildDir + `build.fan`
-    name := build.readAllLines.eachWhile |Str s -> Str?|
+    build :=  FileUtil.findBuildPod(buildDir, buildDir)
+    if(build == null)
+      return buildDir.name
+    Str? name
+    try
     {
-       line := s.trim
-       parts := line.split('=')
-       if(parts.size != 2) return null
-       val := parts[1].trim
-       if(val[0]=='"' && val[-1]=='"' && val[1].isAlpha) // (might start with $ or % -> variable)
-        return val[1..-2]
-       return null
-    }
+      name = build.readAllLines.eachWhile |Str s -> Str?|
+      {
+         line := s.trim
+         parts := line.split('=')
+         if(parts.size != 2) return null
+         val := parts[1].trim
+         if(val[0]=='"' && val[-1]=='"' && val[1].isAlpha) // (might start with $ or % -> variable)
+          return val[1..-2]
+         return null
+      }
+    } catch(Err e) {e.trace}
     if(name == null)
     {
       echo("Didn't find the podName in $build.osPath - Will use $buildDir.name")
@@ -127,6 +128,7 @@ internal class IndexCrawler
     return name ?: buildDir.name
   }
 
+  ** Index the sources of a pod
   private Void indexPodSrcDir(File dir, Str podName)
   {
     files := File[,]
@@ -153,6 +155,7 @@ internal class IndexCrawler
       dir.list.each |f| { if (f.ext == "pod") indexPodLib(f) }
   }
 
+  ** Index a pod file
   private Void indexPodLib(File podFile)
   {
     types := TypeInfo[,]
@@ -288,7 +291,7 @@ internal class IndexCrawler
     finally zip.close
   }
 
-  Int skipAttrs(InStream in, Str[] names)
+  private Int skipAttrs(InStream in, Str[] names)
   {
     lineNum := 0
     num := in.readU2
