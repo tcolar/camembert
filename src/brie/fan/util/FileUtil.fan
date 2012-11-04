@@ -40,15 +40,15 @@ internal const class FileUtil
     if(dir == null)
       return null
     build :=  dir + `build.fan`
-    if(isBuildPod(build))
+    if(isBuildPod(build, "BuildPod"))
      return build
     build = dir + `src/build.fan`
-    if(isBuildPod(build))
+    if(isBuildPod(build, "BuildPod"))
      return build
     while(dir!=null && dir != upTo)
     {
       build = dir + `build.fan`
-      if(isBuildPod(build))
+      if(isBuildPod(build, "BuildPod"))
        return build
       dir = dir.parent
     }
@@ -56,8 +56,25 @@ internal const class FileUtil
     return null
   }
 
+  ** Look for a buildgroup build file
+  static File? findBuildGroup(File dir)
+  {
+    build :=  dir + `buildall.fan`
+    if(isBuildPod(build, "BuildGroup"))
+     return build
+    build =  dir + `build.fan`
+    if(isBuildPod(build, "BuildGroup"))
+     return build
+    build =  dir + `src/build.fan`
+    if(isBuildPod(build, "BuildGroup"))
+     return build
+    build =  dir + `src/buildall.fan`
+    if(isBuildPod(build, "BuildGroup"))
+     return build
+    return null
+  }
 
-  private static Bool isBuildPod(File buildFile)
+  private static Bool isBuildPod(File buildFile, Str type)
   {
     if(! buildFile.exists)
       return false
@@ -70,9 +87,10 @@ internal const class FileUtil
         if (line.contains("class ")) break
       }
       in.close
-      return line.contains("BuildPod")
+      return line.contains(type)
     }
     catch (Err e) e.trace
     return false
   }
+
 }

@@ -86,7 +86,7 @@ const class PodSpace : Space
   override Int match(Item item)
   {
     if (!FileUtil.contains(this.dir, item.file)) return 0
-      return 100
+      return 1000
   }
 
   override This goto(Item item)

@@ -57,12 +57,19 @@ internal class IndexCrawler
 
 
   ** Index a folder of sources as provided by the user
-  private Void indexSrcDir(File dir)
+  private Void indexSrcDir(File dir, Str? curGroup := null)
   {
     if (!dir.isDir) return
     name := dir.name.lower
     if (name.startsWith(".")) return
     if (name == "temp" || name == "tmp" || name == "dist") return
+
+    // if buildgroup build file
+    if(isGroupSrcDir(dir))
+    {
+      index.cache.send(Msg("addGroup", dir, curGroup)).get
+      curGroup = dir.name
+    }
 
     // if build.fan with BuildPod
     if (isPodSrcDir(dir))
@@ -72,7 +79,7 @@ internal class IndexCrawler
     }
 
     // recurse
-    dir.listDirs.each |subDir| { indexSrcDir(subDir) }
+    dir.listDirs.each |subDir| { indexSrcDir(subDir, curGroup) }
   }
 
   ** Index a folder of pods(libraries) as provided by the user
@@ -95,8 +102,19 @@ internal class IndexCrawler
   }
 
 
+  ** Whether this is dir has a roup build file
+  private Bool isGroupSrcDir(File dir)
+  {
+    if(dir.name == "src")
+      return false
+    return FileUtil.findBuildGroup(dir) != null
+  }
+
+  ** Whether this is dir has a pod build file
   private Bool isPodSrcDir(File dir)
   {
+    if(dir.name == "src")
+      return false
     return FileUtil.findBuildPod(dir, dir) != null
   }
 

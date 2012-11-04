@@ -10,6 +10,8 @@ const class Shortcuts
   const Str newFile               := "Ctrl+N"
   @Setting
   const Str reloadFile            := "Ctrl+R"
+  @Setting
+  const Str openFolder            := "Ctrl+O"
 
   @Setting
   const Str build                 := "F4"

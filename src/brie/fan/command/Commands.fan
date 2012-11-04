@@ -20,6 +20,7 @@ const class Commands
     exit        = ExitCmd{}
     reload      = ReloadCmd{key = Key(sys.shortcuts.reloadFile)}
     save        = SaveCmd{key = Key(sys.shortcuts.saveFile)}
+    openFolder  = OpenFolderCmd{key = Key(sys.shortcuts.openFolder)}
     consoleToggle=ToggleConsoleCmd{key = Key(sys.shortcuts.consoleToggle)}
     recentToggle= ToggleRecentCmd{key = Key(sys.shortcuts.recentToggle)}
     docsToggle  = ToggleHelpCmd{key = Key(sys.shortcuts.docsToggle)}
@@ -73,6 +74,7 @@ const class Commands
   const Cmd searchDocs
   const Cmd mostRecent
   const Cmd newFile
+  const Cmd openFolder
   const Cmd recent := RecentCmd {}
 }
 

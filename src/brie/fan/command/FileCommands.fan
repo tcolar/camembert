@@ -56,11 +56,11 @@ internal const class NewFileCmd : Cmd
     }
 
     Str:Str tpls := [:] {ordered = true}
-    tpls["Empty File"] = ""
     Options.file.parent.listFiles.findAll |file->Bool|
       {return file.ext == "tpl"}
       .each{tpls[it.basename] = it.readAllStr
     }
+    tpls["Empty File"] = ""
 
     ok := Dialog.ok
     cancel := Dialog.cancel
@@ -106,6 +106,22 @@ internal const class NewFileCmd : Cmd
     frame.goto(Item(f))
 
     // TODO: contextual create file (from nav item)
+  }
+  new make(|This| f) {f(this)}
+}
+
+internal const class OpenFolderCmd : Cmd
+{
+  override const Str name := "OpenFolder"
+  override Void invoke(Event event)
+  {
+    File? f := FileDialog
+    {
+      mode = FileDialogMode.openDir
+    }.open(frame)
+
+    if(f!=null)
+      frame.goto(Item(f))
   }
   new make(|This| f) {f(this)}
 }

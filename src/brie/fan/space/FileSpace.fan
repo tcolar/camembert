@@ -86,6 +86,7 @@ const class FileSpace : Space
 
     // if path is file, make view for it
     Widget? view := null
+    echo(x.uri)
     if (!x.isDir) view = View.makeBest(frame, x)
 
     return EdgePane

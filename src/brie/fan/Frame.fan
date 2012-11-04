@@ -40,6 +40,7 @@ class Frame : Window
         MenuItem{ text= "Save File"; command = sys.commands.save.asCommand},
         MenuItem{ text= "New File"; command = sys.commands.newFile.asCommand},
         MenuItem{ text= "Reload File"; command = sys.commands.reload.asCommand},
+        MenuItem{ text= "Open Folder"; command = sys.commands.openFolder.asCommand},
         MenuItem{ text= "Exit"; command = sys.commands.exit.asCommand},
       },
       Menu {

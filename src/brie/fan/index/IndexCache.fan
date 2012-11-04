@@ -33,23 +33,47 @@ internal class IndexCache
 
   Obj? addPodSrc(Str name, File srcDir, File[] srcFiles)
   {
-    //echo("$name -> $srcDir.osPath")
-    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList)
+    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList, null)
     if(cur.srcDir != null && cur.srcDir.uri !=  srcDir.uri)
       echo("WARNING: Ignoring second source root for pod $name : $cur.srcDir.osPath .. $srcDir.osPath")
     else
-      pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles)
+      pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles, findGroup(srcDir))
     return null
+  }
+
+  ** If those pods are under a pod group, return it (ldeepest one)
+  private PodGroup? findGroup(File srcDir)
+  {
+    PodGroup? result := null
+    Str path := ""
+    groups.vals.each
+    {
+       cur := it.srcDir
+       if(srcDir.osPath.startsWith(cur.osPath))
+       {
+        if(cur.osPath.size > path.size)
+        {
+          path = cur.osPath
+          result = it
+        }
+       }
+    }
+    return result
   }
 
   Obj? addPodLib(Str name, File podFile, TypeInfo[] types)
   {
-    //echo("$name -> $podFile.osPath")
-    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList)
+    cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList, null)
     if(cur.podFile != null && cur.podFile.uri !=  podFile.uri)
       echo("WARNING: Ignoring second pod file for pod $name : $cur.podFile.osPath .. $podFile.osPath")
     else
-      pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles)
+      pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles, null)
+    return null
+  }
+
+  Obj? addGroup(File groupDir, Str? curGroup)
+  {
+    groups[groupDir.name] = PodGroup(groupDir, curGroup == null ? null : groups[curGroup])
     return null
   }
 
@@ -126,6 +150,7 @@ internal class IndexCache
   }
 
   private Str:PodInfo pods := [:]
+  private Str:PodGroup groups := [:]
 }
 
 enum class MatchKind
