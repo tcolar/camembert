@@ -55,6 +55,7 @@ class Frame : Window
       Menu {
         text = "Process"
         MenuItem{ command = sys.commands.build.asCommand},
+        MenuItem{ command = sys.commands.buildGroup.asCommand},
         MenuItem{ command = sys.commands.run.asCommand},
         MenuItem{ command = sys.commands.buildAndRun.asCommand},
         MenuItem{ command = sys.commands.terminate.asCommand},

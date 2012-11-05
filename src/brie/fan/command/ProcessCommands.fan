@@ -41,6 +41,34 @@ internal const class BuildCmd : Cmd
   }
 }
 
+internal const class BuildGroupCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "Build Group"
+  override Void invoke(Event event)
+  {
+    // save current file
+    frame.save
+
+    f := frame.process.findBuildGroup(frame.curFile)
+    if (f == null)
+    {
+      frame.process.warnNoBuildGroupFile(frame)
+      return
+    }
+
+    console.execFan([f.osPath], f.parent) |c|
+    {
+      sys.index.pods.each |p|
+      {
+        if(p.srcDir != null && FileUtil.contains(f.parent, p.srcDir))
+          sys.index.reindexPod(p)
+      }
+    }
+  }
+}
+
+
 **
 ** Command to run a pod
 **

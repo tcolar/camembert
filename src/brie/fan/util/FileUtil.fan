@@ -57,7 +57,7 @@ internal const class FileUtil
   }
 
   ** Look for a buildgroup build file
-  static File? findBuildGroup(File dir)
+  static File? findBuildGroup(File? dir, File? upTo:=dir)
   {
     build :=  dir + `buildall.fan`
     if(isBuildPod(build, "BuildGroup"))
@@ -71,6 +71,16 @@ internal const class FileUtil
     build =  dir + `src/buildall.fan`
     if(isBuildPod(build, "BuildGroup"))
      return build
+    while(dir!=null && dir != upTo)
+    {
+      build = dir + `build.fan`
+      if(isBuildPod(build, "BuildGroup"))
+       return build
+      build = dir + `buildall.fan`
+      if(isBuildPod(build, "BuildGroup"))
+       return build
+      dir = dir.parent
+    }
     return null
   }
 

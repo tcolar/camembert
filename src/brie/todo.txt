@@ -2,7 +2,7 @@ delete file
 rename file
 duplicate file
 
-line numbering needs to startat 1 not zero (bocce)
+Have the console scroll down automatically
 
 replace in file
 replace in space
@@ -11,22 +11,10 @@ allow copy from console output
 
 space nav pill -> right click: find in space (so don't need to open file to do it)
 
-If file is opened in file view but file exists in pod view - open it in pod view ??
--> or if opening  folder in file view that is a pod, the juts open it has a pod (show pod icon in file nav ?)
-
 when file nav is used, highlight current file and stay on it (not reset navbar each time)
 or when open file -> highlight in navbar / scroll to
 
 Bocce: Ctrl+A -> select all
 
-pod view -> Specific pod : customize root ? (for example from /camembert/src/brie/ to /camembert)
-
-If detecting a buildgroup type build.fan, present that as pod collection(folder) in podl ist, then can open if (file view)
-build group command ?
-if build group dir name is "src" use parent folder name / dir as root
-same for pod ? if src is the folder of build.fan then use the parent as root ?p
-
 stack trace links in console ?
-
-icons for pod group parent , pod group child
 

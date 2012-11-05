@@ -16,6 +16,8 @@ const class Shortcuts
   @Setting
   const Str build                 := "F4"
   @Setting
+  const Str buildGroup            := "Shift+F4"
+  @Setting
   const Str run                   := "F5"
   @Setting
   const Str buildAndRun           := "F6"

@@ -31,6 +31,7 @@ const class Commands
     findInSpace = FindInSpaceCmd{key = Key(sys.shortcuts.findInSpace)}
     goto        = GotoCmd{key = Key(sys.shortcuts.goto)}
     build       = BuildCmd{key = Key(sys.shortcuts.build)}
+    buildGroup  = BuildGroupCmd{key = Key(sys.shortcuts.buildGroup)}
     editConfig  = EditConfigCmd{}
     reloadConfig= ReloadConfigCmd{}
     run         = RunCmd{key = Key(sys.shortcuts.run)}
@@ -70,6 +71,7 @@ const class Commands
   const Cmd reloadConfig
   const Cmd run
   const Cmd buildAndRun
+  const Cmd buildGroup
   const Cmd terminate
   const Cmd searchDocs
   const Cmd mostRecent

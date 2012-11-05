@@ -32,6 +32,11 @@ class ProcessUtil
     return FileUtil.findBuildPod(f.parent, null)
   }
 
+  File? findBuildGroup(File? f)
+  {
+    return FileUtil.findBuildGroup(f.parent, null)
+  }
+
   ** Find build / run commands for a given pod
   ** If first time for this pod, ask user first
   RunArgs? findRunCmd(Frame frame)
@@ -92,7 +97,12 @@ class ProcessUtil
 
   Void warnNoBuildFile(Frame frame)
   {
-    Dialog.openErr(frame, "No build.fan file found")
+    Dialog.openErr(frame, "No build.fan BuildPod file found")
+  }
+
+  Void warnNoBuildGroupFile(Frame frame)
+  {
+    Dialog.openErr(frame, "No build.fan / buildall.fan BuildGroup file found")
   }
 
   Int waitForProcess(Console console, Duration timeout := 1min)

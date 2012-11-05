@@ -43,7 +43,8 @@ internal class IndexCrawler
     {
       t1 := Duration.now
       indexPodSrcDir(pod.srcDir, pod.name)
-      indexPodLib(pod.podFile)
+      if(pod.podFile != null)
+        indexPodLib(pod.podFile)
       t2 := Duration.now
       echo("Index pod '$pod.name' ${(t2-t1).toLocale}")
       return null
