@@ -217,7 +217,7 @@ class Frame : Window
     // current always trumps others
     if (curSpace.match(item) > 0) return curSpace
 
-      // find best match
+    // find best match
     Space? bestSpace := null
     Int bestPriority := 0
     this.spaces.each |s|
@@ -238,6 +238,9 @@ class Frame : Window
 
     pod := sys.index.podForFile(file)
     if (pod != null) return PodSpace(sys, pod.name, pod.srcDir)
+
+    group := sys.index.groupForFile(file)
+    if (group != null) return PodSpace(sys, group.name, group.srcDir)
 
     dir := file.isDir ? file : file.parent
     return FileSpace(sys, dir)

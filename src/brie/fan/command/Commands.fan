@@ -108,7 +108,7 @@ internal const class EditConfigCmd : Cmd
   override const Str name := "Edit config"
   override Void invoke(Event event)
   {
-    frame.goto(Item.makeFile(Options.file))
+    frame.goto(Item(Options.file))
   }
   new make(|This| f) {f(this)}
 }

@@ -33,6 +33,25 @@ const class Item
     this.dis  = file.name + (file.isDir ? "/" : "")
     this.icon = Theme.fileToIcon(file)
     this.file = file
+    // check if this is a pod / group root first
+    if(file.isDir)
+    {
+      g := sys.index.isGroupDir(file)
+      p := sys.index.isPodDir(file)
+      if(g != null)
+      {
+        this.dis  = g.name
+        this.icon = sys.theme.iconPodGroup
+        this.file = g.srcDir
+      }
+      else if(p != null)
+      {
+        this.dis  = p.name
+        this.icon = sys.theme.iconPod
+        this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
+        this.pod  = p
+      }
+    }
     if (f != null) f(this)
   }
 
@@ -43,6 +62,15 @@ const class Item
     this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
 
     this.pod  = p
+    if (f != null) f(this)
+  }
+
+  new makeGroup(PodGroup g, |This|? f := null)
+  {
+    this.dis  = g.name
+    this.icon = sys.theme.iconPodGroup
+    this.file = g.srcDir
+    this.group = g.name
     if (f != null) f(this)
   }
 
@@ -105,6 +133,8 @@ const class Item
   const Bool header
 
   const Int indent
+
+  const Str? group
 
   override Str toStr() { dis }
 

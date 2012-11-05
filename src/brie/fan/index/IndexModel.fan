@@ -35,7 +35,7 @@ const class PodInfo
     this.types      = types
     this.srcDir     = srcDir
     this.srcFiles   = srcFiles
-    this.group      = group
+    this.groupRef.val= group
     types.each |t| { t.podRef.val = this; }
   }
 
@@ -46,7 +46,8 @@ const class PodInfo
   const TypeInfo[] types
   const File? srcDir
   const File[] srcFiles
-  const PodGroup? group
+  PodGroup? group() { groupRef.val }
+  internal const AtomicRef groupRef := AtomicRef()
 }
 
 const class TypeInfo

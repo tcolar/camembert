@@ -21,7 +21,10 @@ const class PodSpace : Space
     if (!dir.isDir) throw Err("Not a dir: $dir")
       this.name = name
     this.dir  = dir.normalize
-    this.file = file ?: FileUtil.findBuildPod(dir, dir)
+    this.isGroup = sys.index.isGroupDir(dir) != null
+    this.file = isGroup ?
+                  (file ?: FileUtil.findBuildGroup(dir))
+                : (file ?: FileUtil.findBuildPod(dir, dir))
     Regex[] r := Regex[,]
     try
     {
@@ -49,9 +52,12 @@ const class PodSpace : Space
   ** Patterns of files to hide
   const Regex[] hideFiles
 
+  ** Whether this is a pod or a pod group
+  const Bool isGroup
+
   override Str dis() { name }
 
-  override Image icon() { sys.theme.iconPod }
+  override Image icon() { isGroup ? sys.theme.iconPodGroup : sys.theme.iconPod }
 
   override File? curFile() { file }
 
@@ -85,8 +91,12 @@ const class PodSpace : Space
 
   override Int match(Item item)
   {
+    // add 1000 so always preferred over filespace
+    // use length so the "Deepest" (sub)pod matches first
     if (!FileUtil.contains(this.dir, item.file)) return 0
-      return 1000
+    // Pods from groups should open in own space
+    if(isGroup && item.pod != null) return 0
+    return 1000 + dir.pathStr.size
   }
 
   override This goto(Item item)
@@ -96,7 +106,7 @@ const class PodSpace : Space
 
   override Widget onLoad(Frame frame)
   {
-    frame.history.push(this, Item.makeFile(file))
+    frame.history.push(this, Item(file))
     return EdgePane
     {
       left = EdgePane
@@ -110,41 +120,35 @@ const class PodSpace : Space
 
   private Widget makeFileNav(Frame frame)
   {
-    // get all the files
-    files := File[,]
-    dir.walk |f|
+    items := [Item(dir)]
+    findItems(dir, items)
+    return ItemList(frame, items)
+  }
+
+  private Void findItems(File dir, Item[] results, Str path := "")
+  {
+    dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
     {
       hidden := hideFiles.eachWhile |Regex r -> Bool?| {
         r.matches(f.uri.toStr) ? true : null} ?: false
-      if (!f.isDir && !hidden)
-        files.add(f)
-    }
-
-    // organize by dir
-    byDir := File:File[][:]
-    files.each |f|
-    {
-      bucket := byDir.getOrAdd(f.parent) { File[,] }
-      bucket.add(f)
-    }
-
-    // now map to items
-    items := Item[,]
-    items.add(Item(dir) { it.dis = FileUtil.pathDis(dir); it.header=true })
-    byDir.keys.sort.each |d|
-    {
-      indent := 0
-      if (d.path.size != this.dir.path.size)
+      if (! hidden)
       {
-        dirDis := d.path[this.dir.path.size..-1].join("/") + "/"
-        items.add(Item(d) { it.dis = dirDis; } )
-        indent = 1
+        results.add(Item(f) { it.indent = path.isEmpty ? 0 : 1 })
       }
-      bucket := byDir[d].sort |a,b| { a.name <=> b.name }
-      bucket.each |f| { items.add(Item(f) { it.indent = indent }) }
     }
 
-    return ItemList(frame, items)
+    dir.listDirs.sort |a, b| {a.name  <=> b.name}.each |f|
+    {
+      hidden := hideFiles.eachWhile |Regex r -> Bool?| {
+        r.matches(f.uri.toStr) ? true : null} ?: false
+      if (! hidden)
+      {
+        results.add(Item(f) { it.dis = "${path}$f.name/"})
+        // Not recursing in pods or pod groups
+        if(sys.index.isPodDir(f)==null && sys.index.isGroupDir(f) == null)
+          findItems(f, results, "${path}$f.name/")
+      }
+    }
   }
 
   private Widget? makeSlotNav(Frame frame)

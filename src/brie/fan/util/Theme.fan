@@ -90,6 +90,7 @@ const class Theme
   const Image iconDirty     := Image(`fan://camembert/res/dirty.png`)
   const Image iconNotDirty  := Image(`fan://camembert/res/notDirty.png`)
   const Image iconPod       := Image(`fan://icons/x16/database.png`)
+  const Image iconPodGroup  := Image(`fan://camembert/res/podGroup.png`)
   const Image iconType      := Image(`fan://camembert/res/type.png`)
   const Image iconField     := Image(`fan://camembert/res/field.png`)
   const Image iconMethod    := Image(`fan://camembert/res/method.png`)

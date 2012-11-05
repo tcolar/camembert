@@ -56,7 +56,9 @@ const class FileSpace : Space
   override Int match(Item item)
   {
     if (!FileUtil.contains(this.dir, item.file)) return 0
+    // if group or pod we don't want to open them here but in a pod space
     if (item.pod != null) return 0
+    if (item.group != null) return 0
     return this.dir.path.size
   }
 

@@ -91,6 +91,9 @@ const class Index
   ** List all pods found
   PodInfo[] pods() { ((Unsafe)cache.send(Msg("pods")).get(timeout)).val }
 
+  ** List all groups found
+  PodGroup[] groups() { ((Unsafe)cache.send(Msg("groups")).get(timeout)).val }
+
   ** Find given pod
   PodInfo? pod(Str name, Bool checked := true)
   {
@@ -103,6 +106,12 @@ const class Index
   PodInfo? podForFile(File file)
   {
     cache.send(Msg("podForFile", file)).get(timeout)
+  }
+
+  ** Find given pod
+  PodGroup? groupForFile(File file)
+  {
+    cache.send(Msg("groupForFile", file)).get(timeout)
   }
 
   ** Rebuild the entire index asynchronously
@@ -143,6 +152,31 @@ const class Index
     cache.send(Msg("matchFiles", pattern, kind)).get(timeout)->val
   }
 
+  ** Whether this is the srcDir(root) of a pod
+  ** Returns the matching pod or null if no match
+  PodInfo? isPodDir(File f)
+  {
+    return pods.eachWhile |p|
+    {
+      if(p.srcDir.normalize.uri == f.normalize.uri)
+        return p
+      return null
+    }
+  }
+
+  ** Whether this is the srcDir(root) of a group
+  ** Returns the matching group or null if no match
+  PodGroup? isGroupDir(File f)
+  {
+    return groups.eachWhile |g|
+    {
+      if(g.srcDir.normalize.uri == f.normalize.uri)
+        return g
+      return null
+    }
+  }
+
+
 //////////////////////////////////////////////////////////////////////////
 // Cache Actor
 //////////////////////////////////////////////////////////////////////////
@@ -154,8 +188,10 @@ const class Index
 
     id := msg.id
     if (id === "pods")        return Unsafe(c.listPods)
+    if (id === "groups")      return Unsafe(c.listGroups)
     if (id === "pod")         return c.pod(msg.a)
     if (id === "podForFile")  return c.podForFile(msg.a)
+    if (id === "groupForFile")  return c.groupForFile(msg.a)
     if (id === "matchTypes")  return Unsafe(c.matchTypes(msg.a, msg.b))
     if (id === "matchSlots")  return Unsafe(c.matchSlots(msg.a, msg.b, msg.c))
     if (id === "matchPods")  return Unsafe(c.matchPods(msg.a, msg.b))

@@ -19,6 +19,8 @@ internal class IndexCache
 
   PodInfo[] listPods() { pods.vals.sort }
 
+  PodGroup[] listGroups() { groups.vals.sort |g1, g2| {g1.name <=> g2.name}}
+
   PodInfo? pod(Str name) { pods[name] }
 
   PodInfo? podForFile(File file)
@@ -28,6 +30,16 @@ internal class IndexCache
     {
       if (pod.srcDir == null) return false
       return file.pathStr.startsWith(pod.srcDir.pathStr)
+    }
+  }
+
+  PodGroup? groupForFile(File file)
+  {
+    file = file.normalize
+    return groups.find |group|
+    {
+      echo("$file.pathStr  ->  $group.srcDir.pathStr")
+      return file.pathStr.startsWith(group.srcDir.pathStr)
     }
   }
 

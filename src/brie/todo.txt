@@ -2,6 +2,8 @@ delete file
 rename file
 duplicate file
 
+line numbering needs to startat 1 not zero (bocce)
+
 replace in file
 replace in space
 

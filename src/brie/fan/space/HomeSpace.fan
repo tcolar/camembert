@@ -40,32 +40,59 @@ const class HomeSpace : Space
 
   override Widget onLoad(Frame frame)
   {
-    podGroups := ItemList[,]
+    podRoots := ItemList[,]
     pods := sys.index.pods.dup
+    groups := sys.index.groups.dup
     sys.index.srcDirs.each |indexDir|
     {
       items := Item[,]
       items.add(Item(indexDir) { it.dis = FileUtil.pathDis(indexDir) })
-      podsInDir := pods.findAll |p|
-      {
-        p.srcDir != null && FileUtil.contains(indexDir, p.srcDir)
-      }
-      podsInDir.each |p|
-      {
-        pods.removeSame(p)
-        items.add(Item(p))
-      }
-      podGroups.add(ItemList(frame, items))
+
+      addItems(indexDir, groups, pods, items)
+
+      podRoots.add(ItemList(frame, items))
     }
 
     grid := GridPane
     {
-      numCols = podGroups.size
+      numCols = podRoots.size
       valignCells = Valign.fill
       expandRow = 0
     }
-    podGroups.each |g| { grid.add(g) }
+    podRoots.each |g| { grid.add(g) }
     return InsetPane(0, 5, 5, 5) { grid, }
+  }
+  Void addPod(PodInfo p, Item[] items)
+  {
+  }
+
+  Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
+  {
+      groupsInDir := groups.findAll |g|
+      {
+        return (g.parent?.name ?: "") == curGroup
+            && FileUtil.contains(indexDir, g.srcDir)
+      }
+      podsInDir := pods.findAll |p|
+      {
+        return (p.group?.name ?: "") == curGroup
+            && p.srcDir != null
+            && FileUtil.contains(indexDir, p.srcDir)
+      }
+      // pod groups
+      groupsInDir.each |g|
+      {
+        groups.removeSame(g)
+        items.add(Item(g) {indent = ind})
+        // Now recurse for what is in this group
+        addItems(g.srcDir, groups, pods, items, g.name, ind + 1)
+      }
+      // single pods
+      podsInDir.each |p|
+      {
+        pods.removeSame(p)
+        items.add(Item(p) {indent = ind})
+      }
   }
 }
 

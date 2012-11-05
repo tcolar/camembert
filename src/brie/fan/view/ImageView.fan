@@ -19,7 +19,7 @@ class ImageView : View
   new make(Frame frame, File file) : super(frame, file)
   {
     sys := Service.find(Sys#) as Sys
-    image = Image.makeFile(file)
+    image = Image(file)
     details := EdgePane
     {
       it.top = InsetPane(6)
