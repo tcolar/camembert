@@ -1,4 +1,5 @@
 using fwt
+using netColarUtils
 
 **************************************************************************
 ** ExitCmd
@@ -94,6 +95,8 @@ internal const class NewFileCmd : Cmd
 
     // open dialog
     if (dialog.open != Dialog.ok) return
+
+    FileUtils.mkDirs(path.text.toUri)
 
     f := File.os(path.text).createFile(name.text)
 

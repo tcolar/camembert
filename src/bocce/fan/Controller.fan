@@ -87,7 +87,7 @@ class Controller
     // that in navigation checks
     key := event.key
     navKey := key
-    if (navKey.isShift) navKey = navKey - Key.shift
+    if (navKey.isShift) navKey = Key(navKey.toStr.replace("Shift+", ""))
 
     // navigation
     switch (navKey.toStr)

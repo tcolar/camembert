@@ -34,44 +34,7 @@ class Frame : Window
     )
 
     // menu
-    menuBar = Menu{
-      Menu {
-        text = "File"
-        MenuItem{ text= "Save File"; command = sys.commands.save.asCommand},
-        MenuItem{ text= "New File"; command = sys.commands.newFile.asCommand},
-        MenuItem{ text= "Reload File"; command = sys.commands.reload.asCommand},
-        MenuItem{ text= "Open Folder"; command = sys.commands.openFolder.asCommand},
-        MenuItem{ text= "Exit"; command = sys.commands.exit.asCommand},
-      },
-      Menu {
-        text = "Navigation"
-        MenuItem{ command = sys.commands.mostRecent.asCommand},
-        MenuItem{ command = sys.commands.prevMark.asCommand},
-        MenuItem{ command = sys.commands.nextMark.asCommand},
-        MenuItem{ command = sys.commands.find.asCommand},
-        MenuItem{ command = sys.commands.findInSpace.asCommand},
-        MenuItem{ command = sys.commands.goto.asCommand},
-      },
-      Menu {
-        text = "Process"
-        MenuItem{ command = sys.commands.build.asCommand},
-        MenuItem{ command = sys.commands.buildGroup.asCommand},
-        MenuItem{ command = sys.commands.run.asCommand},
-        MenuItem{ command = sys.commands.buildAndRun.asCommand},
-        MenuItem{ command = sys.commands.terminate.asCommand},
-      },
-      Menu {
-        text = "Panels"
-        MenuItem{ command = sys.commands.consoleToggle.asCommand},
-        MenuItem{ command = sys.commands.docsToggle.asCommand},
-        MenuItem{ command = sys.commands.recentToggle.asCommand},
-      },
-      Menu {
-        text = "Options"
-        MenuItem{ command = sys.commands.editConfig.asCommand},
-        MenuItem{ command = sys.commands.reloadConfig.asCommand},
-      },
-    }
+    menuBar = MenuBar(sys)
 
     // eventing
     onClose.add |Event e| { e.consume; sys.commands.exit.invoke(e) }

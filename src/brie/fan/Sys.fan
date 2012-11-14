@@ -35,6 +35,10 @@ const class Sys : Service
   ** Logger
   const Log log := Log.get("camembert")
 
+  const Plugin[] plugins := [,]
+
+  new make(|This|? f) {if(f!=null) f(this)}
+
   override Void onStop()
   {
     index.cache.pool.stop
@@ -49,7 +53,7 @@ const class Sys : Service
     sys := Service.find(Sys#) as Sys
     sys.uninstall
 
-    sys = Sys()
+    sys = Sys {}
     sys.install
     sys.frame.updateSys()
   }
