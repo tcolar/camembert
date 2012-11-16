@@ -50,10 +50,26 @@ class MenuBar : Menu
         MenuItem{ it.command = sys.commands.recentToggle.asCommand},
       }
 
+
+      configs := Menu{
+        it.text = "Switch config"
+          MenuItem{ it.command = SwitchConfigCmd("default", Options.standard).asCommand
+                    it.mode = MenuItemMode.radio
+                    it.selected = true
+                  },
+      }
+      sys.configs.each |file, name|
+      {
+        configs.add(MenuItem{
+          it.command = SwitchConfigCmd(name, file).asCommand; it.mode = MenuItemMode.radio
+        })
+      }
+
       options = Menu {
         it.text = "Options"
         MenuItem{ it.command = sys.commands.editConfig.asCommand},
         MenuItem{ it.command = sys.commands.reloadConfig.asCommand},
+        configs,
       }
 
       add(file)

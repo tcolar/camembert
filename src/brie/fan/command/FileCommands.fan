@@ -50,14 +50,14 @@ internal const class NewFileCmd : Cmd
   override const Str name := "New File"
   override Void invoke(Event event)
   {
-    clazz := File(`${Options.file.parent}/class.tpl`)
+    clazz := File(`${Options.standard.parent}/class.tpl`)
     if(!clazz.exists)
     {
       clazz.create.out.print("// History:\n//   {date} Creation\n\n**\n** {name}\n**\nclass {name}\n{\n}\n").close
     }
 
     Str:Str tpls := [:] {ordered = true}
-    Options.file.parent.listFiles.findAll |file->Bool|
+    Options.standard.parent.listFiles.findAll |file->Bool|
       {return file.ext == "tpl"}
       .each{tpls[it.basename] = it.readAllStr
     }

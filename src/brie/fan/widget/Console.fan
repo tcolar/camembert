@@ -170,6 +170,7 @@ internal const class ConsoleProcess
         e.trace
       }
     }
+    console.list.scrollToLine(console.list.lineCount)
   }
 
   private Item parseLine(Str str)

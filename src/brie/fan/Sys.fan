@@ -18,16 +18,16 @@ const class Sys : Service
   const Shortcuts shortcuts := Shortcuts.load
 
   ** Configuration options
-  const Options options := Options.load
+  const Options options
 
   ** Theme
-  const Theme theme := Theme.load(options.theme)
+  const Theme theme
 
   ** Indexing service
-  const Index index := Index(this)
+  const Index index
 
   ** Application level commands
-  const Commands commands := Commands(this)
+  const Commands commands
 
   ** Top-level frame (only in UI thread)
   Frame frame() { Actor.locals["frame"] ?: throw Err("Not on UI thread") }
@@ -37,7 +37,13 @@ const class Sys : Service
 
   const Plugin[] plugins := [,]
 
-  new make(|This|? f) {if(f!=null) f(this)}
+  new make(|This|? f)
+  {
+    if(f!=null) f(this)
+    theme = Theme.load(options.theme)
+    index = Index(this)
+    commands = Commands(this)
+  }
 
   override Void onStop()
   {
@@ -48,14 +54,29 @@ const class Sys : Service
     index.crawler.pool.kill
   }
 
-  static Void reload()
+  static Void loadConfig(File config := Options.standard)
   {
     sys := Service.find(Sys#) as Sys
     sys.uninstall
 
-    sys = Sys {}
+    sys = Sys
+    {
+      options = Options.load(config)
+    }
     sys.install
     sys.frame.updateSys()
+  }
+
+  ** Look for alternate config files (options_xyz.props)
+  Str:File configs()
+  {
+    Str:File results := [:]
+    Options.standard.parent.listFiles.each |f|
+    {
+      if(f.name.startsWith("options_") && f.ext =="props")
+        results.add(f.basename[8 .. -1], f)
+    }
+    return results
   }
 }
 

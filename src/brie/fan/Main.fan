@@ -15,7 +15,7 @@ class Main
 {
   static Void main()
   {
-    sys := Sys {}
+    sys := Sys{options = Options.load}
     sys.install
     Frame(sys).open
   }

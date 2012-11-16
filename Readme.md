@@ -41,6 +41,12 @@ Then **Restart camembert** and you should see all your projects listed.
 * Better separation of runtime fantom env VS deploy/index env
 * Alt+Space for quicly switching between last 2 files
 * New File command
+* Recognzing projects structured as prj/src/.... (rebasing root)
+* Recognizing pod groups and pods and showing as such in navigators
+* Support for building pod groups
+* Sorted slot lists
+* Support for switching betwen multiple configs(Fantom envs) : configs_myenv1.props etc ...
+* Many bug fixes
 
 # Screenshot
 

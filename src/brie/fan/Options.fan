@@ -15,10 +15,10 @@ using netColarUtils
 @Serializable
 const class Options
 {
-  static const File file := Env.cur.workDir + `etc/camenbert/options.props`
+  static const File standard := Env.cur.workDir + `etc/camenbert/options.props`
 
   ** Reload options
-  static Options load()
+  static Options load(File file := standard)
   {
     return (Options) SettingUtils.load(file, Options#)
   }
@@ -30,11 +30,14 @@ const class Options
       fanHome = fanHomeUri.toFile.normalize
   }
 
-  @Setting{ help = ["Home directory to use for fan/build commands"] }
+  @Setting{ help = [
+  "Note that you can create alternate configs: options_foo.props, options_bar.props ...",
+  "",
+  "Home directory to use for fan/build commands"] }
   const Uri fanHomeUri := Env.cur.homeDir.uri
 
   @Setting{ help = ["Sources Directories to crawl"] }
-  const Uri[] srcDirs := [file.parent.uri]
+  const Uri[] srcDirs := [standard.parent.uri]
 
   @Setting{ help = ["Pod directories to crawl. Typically [fanHomeUri]/lib/fan/"] }
   const Uri[] podDirs := [Env.cur.homeDir.uri]

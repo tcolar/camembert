@@ -110,9 +110,25 @@ internal const class EditConfigCmd : Cmd
   override const Str name := "Edit config"
   override Void invoke(Event event)
   {
-    frame.goto(Item(Options.file))
+    frame.goto(Item(Options.standard))
   }
   new make(|This| f) {f(this)}
+}
+
+internal const class SwitchConfigCmd : Cmd
+{
+  override const Str name
+  const File conf
+
+  override Void invoke(Event event)
+  {
+    Sys.loadConfig(conf)
+  }
+  new make(Str name, File conf)
+  {
+    this.name = name
+    this.conf = conf
+  }
 }
 
 internal const class ReloadConfigCmd : Cmd
@@ -120,11 +136,10 @@ internal const class ReloadConfigCmd : Cmd
   override const Str name := "Reload Config"
   override Void invoke(Event event)
   {
-    Sys.reload
+    Sys.loadConfig
   }
   new make(|This| f) {f(this)}
 }
-
 internal const class HelpCmd : Cmd
 {
   override const Str name := "Search Docs"
