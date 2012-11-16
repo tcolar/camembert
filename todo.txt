@@ -1,0 +1,23 @@
+Nav -> right click: find in space (so don't need to open file to do it)
+delete file
+rename file
+duplicate file
+
+find/replace .. local / global
+
+when file/pd nav is used, highlight current file and stay on it (not reset navbar each time)
+or when open file -> highlight in navbar / scroll to
+
+Bocce: Ctrl+A -> select all
+
+Have the console scroll
+allow copy from console output
+stack trace links in console ?
+
+quick fantom env switcher ? env manager / (update config & reload)
+options -> switch config -> conf1, conf2, conf3 (fanHomeUri, srcDirs, podDirs)
+or juts options2.conf ?
+checkmark next to cur config
+
+
+
