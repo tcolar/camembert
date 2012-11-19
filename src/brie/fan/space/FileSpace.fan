@@ -85,6 +85,16 @@ const class FileSpace : Space
     // build dir listing
     lastDir := x.isDir ? x : x.parent
     lister := ItemList(frame, Item.makeFiles(lastDir.list))
+    lister.items.eachWhile |item, index -> Bool?|
+    {
+      if(item.toStr == path.name)
+      {
+        lister.highlight = item
+        lister.scrollToLine(index>=5 ? index-5 : 0)
+        return true
+      }
+      return null
+    }
 
     // if path is file, make view for it
     Widget? view := null

@@ -122,7 +122,18 @@ const class PodSpace : Space
   {
     items := [Item(dir)]
     findItems(dir, items)
-    return ItemList(frame, items)
+    list := ItemList(frame, items)
+    items.eachWhile |item, index -> Bool?|
+    {
+      if(item.toStr == Item.makeFile(file).toStr)
+      {
+        list.highlight = item
+        list.scrollToLine(index>=5 ? index-5 : 0)
+        return true
+      }
+      return null
+    }
+    return list
   }
 
   private Void findItems(File dir, Item[] results, Str path := "")

@@ -77,19 +77,19 @@ internal class SpaceBar : Canvas
   private Void onPopup(Event e, Space s)
   {
     if (s is HomeSpace) return
-      menu := Menu
+    menu := Menu
     {
       MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },
-      MenuItem { text="Close Others"; onAction.add{ 
-          frame.spaces.each {if(it != s) frame.closeSpace(it)} 
+      MenuItem { text="Close Others"; onAction.add{
+          frame.spaces.each {if(it != s) frame.closeSpace(it)}
         }},
       MenuItem { text="Close All"; onAction.add {
-          frame.spaces.each {frame.closeSpace(it)} 
+          frame.spaces.each {frame.closeSpace(it)}
         }},
     }
     menu.open(e.widget, e.pos)
   }
-  
+
   Sys? sys := Service.find(Sys#) as Sys
 
   Font font   := sys.theme.font
@@ -100,7 +100,7 @@ internal class SpaceBar : Canvas
 
   private Frame frame
   private SpaceTab[] tabs := [,]
-  
+
   Void updateSys(Sys sys)
   {
     this.sys = sys
@@ -108,7 +108,7 @@ internal class SpaceBar : Canvas
     bgBar = sys.theme.bg
     bgTab = sys.theme.spacePillBg
     bgCur = sys.theme.selectedItem
-    fg = sys.theme.fontColor   
+    fg = sys.theme.fontColor
     repaint
   }
 }

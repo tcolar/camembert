@@ -152,8 +152,8 @@ class Frame : Window
     // check if current view is on item
     if (curView?.file == item.file) { curView.onGoto(item); return }
 
-      // find best space to handle item, or create new one
-    best := matchSpace(item)
+    // find best space to handle item, or create new one
+    best:= matchSpace(item)
     if (best != null)
     {
       load(best.goto(item), spaceIndex(best), item)
@@ -246,7 +246,7 @@ class Frame : Window
     // save curItem and push into history
     if (item != null) history.push(space, item)
 
-      // relayout
+    // relayout
     spaceBar.relayout
     spacePane.relayout
     relayout
