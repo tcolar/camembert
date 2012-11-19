@@ -28,7 +28,9 @@ internal const class FileUtil
 
   static Uri pathIn(File dir, File x)
   {
-    x.uri.toStr[dir.uri.toStr.size..-1].toUri
+    if(dir.uri.toStr.size >= x.uri.toStr.size)
+      return ``
+    return x.uri.toStr[dir.uri.toStr.size..-1].toUri
   }
 
   ** Try to find a build file of type buildPod
