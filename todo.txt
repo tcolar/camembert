@@ -4,9 +4,6 @@ duplicate file
 
 find/replace .. local / global
 
-when file/pd nav is used, highlight current file and stay on it (not reset navbar each time)
-or when open file -> highlight in navbar / scroll to
-
 Bocce: Ctrl+A -> select all
 
 Bug: When going in the text area, the first keystroke is lost (gains focus but do not act on the keystroke)
