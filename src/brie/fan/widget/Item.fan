@@ -161,6 +161,24 @@ const class Item
         it.onAction.add |e|
           { (frame.sys.commands.newFile as NewFileCmd).newFile(dir, frame) }
       },
+      MenuItem
+      {
+        it.text = "Delete \"$file.name\""
+        it.onAction.add |e|
+        {
+          (frame.sys.commands.delete as DeleteFileCmd).delFile(file, frame)
+          frame.goto(this) // refresh
+        }
+      },
+      MenuItem
+      {
+        it.text = "Rename/Move \"$file.name\""
+        it.onAction.add |e|
+        {
+          (frame.sys.commands.move as MoveFileCmd).moveFile(file, frame)
+          frame.goto(this) // refresh
+        }
+      },
     }
   }
 

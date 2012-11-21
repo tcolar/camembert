@@ -78,6 +78,8 @@ const class Commands
   const Cmd newFile
   const Cmd openFolder
   const Cmd recent := RecentCmd {}
+  const Cmd delete := DeleteFileCmd {}
+  const Cmd move := MoveFileCmd {}
 }
 
 **************************************************************************

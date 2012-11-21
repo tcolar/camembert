@@ -44,10 +44,9 @@ internal const class SaveCmd : Cmd
 **************************************************************************
 ** New file
 **************************************************************************
-
 internal const class NewFileCmd : Cmd
 {
-  override const Str name := "New File"
+  override const Str name := "New File / Folder"
   override Void invoke(Event event)
   {
     newFile(frame.curFile?.parent, frame)
@@ -112,15 +111,84 @@ internal const class NewFileCmd : Cmd
     f.out.print(text).close
 
     frame.goto(Item(f))
+  }
+  new make(|This| f) {f(this)}
+}
 
-    // TODO: contextual create file (from nav item)
+**************************************************************************
+** Move / rename file
+**************************************************************************
+internal const class MoveFileCmd : Cmd
+{
+  override const Str name := "Move / Rename File"
+  override Void invoke(Event event)
+  {
+    // contextual only for now
+  }
+
+  Void moveFile(File file, Frame frame)
+  {
+    ok := Dialog.ok
+    cancel := Dialog.cancel
+    name := Text {text = file.name; prefCols = 60}
+    path := Text
+    {
+      prefCols = 60
+      text = file.parent.osPath + "/"
+    }
+
+    dialog := Dialog(frame)
+    {
+      title = "Move File"
+      commands = [ok, cancel]
+      body = GridPane
+      {
+        Label{ text = "File Name:" },
+        name,
+        Label{ text = "Folder: (Any new folders will get created automatically)" },
+        path,
+      }
+    }
+    name.focus
+
+    // open dialog
+    if (dialog.open != Dialog.ok) return
+
+    FileUtils.mkDirs(path.text.toUri)
+
+    dest := path.text.toUri.plusSlash + name.text.toUri
+    if(file.isDir)
+      dest = dest.plusSlash
+    file.moveTo(File(dest))
+  }
+  new make(|This| f) {f(this)}
+}
+
+**************************************************************************
+** Delete file
+**************************************************************************
+internal const class DeleteFileCmd : Cmd
+{
+  override const Str name := "Delete File / Folder"
+  override Void invoke(Event event)
+  {
+    // only used contextually. for now anyway
+  }
+
+  Void delFile(File file, Frame frame)
+  {
+    r := Dialog.openQuestion(frame, "Delete $file.name ?", "Full path : $file.pathStr", Dialog.okCancel)
+
+    if (r != Dialog.ok) return
+
+    file.delete
   }
   new make(|This| f) {f(this)}
 }
 
 internal const class OpenFolderCmd : Cmd
 {
-  override const Str name := "OpenFolder"
+  override const Str name := "Open Folder"
   override Void invoke(Event event)
   {
     File? f := FileDialog

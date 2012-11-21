@@ -1,5 +1,3 @@
-delete file/folder
-rename file/folder (& move)
 
 find/replace .. local / global
 
