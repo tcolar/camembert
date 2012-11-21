@@ -1,4 +1,6 @@
 Bug: When going in the text area, the first keystroke is lost (gains focus but do not act on the keystroke)
 
+podspace nav : always show pods first (top) ??
+
 
 
