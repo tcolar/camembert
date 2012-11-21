@@ -109,7 +109,10 @@ class HelpPane : ContentPane
     }
     search.text = text.trim
     pageHistory.clear
-    browser.loadStr(find(search.text))
+    if(search.text.isEmpty)
+      showPage("")
+    else
+      browser.loadStr(find(search.text))
   }
 
   private Void hide()

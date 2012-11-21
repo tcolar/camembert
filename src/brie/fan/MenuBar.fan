@@ -19,19 +19,20 @@ class MenuBar : Menu
         it.text = "File"
         MenuItem{ it.command = sys.commands.save.asCommand},
         MenuItem{ it.command = sys.commands.newFile.asCommand},
-        MenuItem{ it.command = sys.commands.reload.asCommand},
         MenuItem{ it.command = sys.commands.openFolder.asCommand},
+        MenuItem{ it.command = sys.commands.reload.asCommand},
         MenuItem{ it.command = sys.commands.exit.asCommand},
       }
 
       nav = Menu {
         it.text = "Navigation"
+        MenuItem{ it.command = sys.commands.searchDocs.asCommand},
         MenuItem{ it.command = sys.commands.mostRecent.asCommand},
-        MenuItem{ it.command = sys.commands.prevMark.asCommand},
-        MenuItem{ it.command = sys.commands.nextMark.asCommand},
         MenuItem{ it.command = sys.commands.find.asCommand},
         MenuItem{ it.command = sys.commands.findInSpace.asCommand},
         MenuItem{ it.command = sys.commands.goto.asCommand},
+        MenuItem{ it.command = sys.commands.prevMark.asCommand},
+        MenuItem{ it.command = sys.commands.nextMark.asCommand},
       }
 
       process = Menu {

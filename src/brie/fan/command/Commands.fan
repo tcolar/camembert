@@ -140,9 +140,10 @@ internal const class ReloadConfigCmd : Cmd
   }
   new make(|This| f) {f(this)}
 }
+
 internal const class HelpCmd : Cmd
 {
-  override const Str name := "Search Docs"
+  override const Str name := "Quick search on selection"
   override Void invoke(Event event)
   {
     selection := frame.curView?.curSelection ?: ""
