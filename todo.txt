@@ -1,8 +1,3 @@
-
-find/replace .. local / global
-
-Bocce: Ctrl+A -> select all
-
 Bug: When going in the text area, the first keystroke is lost (gains focus but do not act on the keystroke)
 
 

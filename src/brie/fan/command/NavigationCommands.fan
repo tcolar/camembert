@@ -135,6 +135,10 @@ internal const class GotoCmd : Cmd
         selected = matches.items.getSafe(table.selected.first ?: -1)
         dialog.close(ok)
       }
+      onSelect.add |e|
+      {
+        selected = matches.items.getSafe(table.selected.first ?: -1)
+      }
     }
 
     // open dialog
@@ -196,7 +200,7 @@ internal class GotoMatchModel : TableModel
 }
 
 **************************************************************************
-** FindCmd
+** FindCmd / Repace
 **************************************************************************
 
 internal const class FindCmd : Cmd
@@ -214,6 +218,7 @@ internal const class FindCmd : Cmd
     prompt := Text { }
     path := Text { text = FileUtil.pathDis(file) }
     matchCase := Button { mode = ButtonMode.check; text = "Match case"; selected = lastMatchCase.val }
+    replace := Button { mode = ButtonMode.check; text = "Replace (with preview)"; selected = false }
 
     selection := frame.curView?.curSelection ?: ""
     if (!selection.isEmpty && !selection.contains("\n"))
@@ -230,8 +235,8 @@ internal const class FindCmd : Cmd
       ConstraintPane { minw=300; maxw=300; add(prompt) },
       Label { text="File" },
       ConstraintPane { minw=300; maxw=300; add(path) },
-      Label {}, // spacer
       matchCase,
+      replace,
     }
     dlg := Dialog(frame)
     {
@@ -253,9 +258,63 @@ internal const class FindCmd : Cmd
       findMatches(matches, file, str, matchCase.selected)
     if (matches.isEmpty) { Dialog.openInfo(frame, "No matches: $str.toCode"); return }
 
-      // open in console
-    console.show(matches)
-    frame.goto(matches.first)
+    if(replace.selected)
+    {
+      // deal with replace
+      replaceAll(str, matches)
+    }
+    else
+    {
+      // show results in console
+      console.show(matches)
+      frame.goto(matches.first)
+    }
+  }
+
+  ** Replace dialog & action on matches
+  Void replaceAll(Str search, Item[] items)
+  {
+    font :=  ((Sys)Service.find(Sys#)).theme.font
+    matches := GotoMatchModel { itemFont = font; width = 800;}
+    matches.items = items
+    table := Table
+    {
+      it.headerVisible = false
+      it.model = matches
+      multi = true
+      selected = (0 .. items.size-1).toList // select all
+    }
+    newText := Text {it.text = search}
+    dialog := Dialog(frame)
+    {
+      title = "Replace All"
+      commands = [ok, cancel]
+      body = EdgePane
+      {
+        top = InsetPane(0, 0, 10, 0)
+        {
+          GridPane
+          {
+            numCols = 2
+            Label{it.text = "Replace with:"},
+            newText,
+          },
+        }
+        bottom = ConstraintPane
+        {
+          minw = maxw = matches.width+10
+          minh = maxh = 500
+          table,
+        }
+      }
+    }
+
+    // open dialog
+    if (dialog.open != Dialog.ok) return
+
+    // do replace
+    selectedItems := items.findAll |item, index| {table.selected.contains(index)}
+    FileUtil.replaceAll(selectedItems, search, newText.text, "\n")
   }
 
   Void findMatches(Item[] matches, File f, Str str, Bool matchCase)
@@ -278,8 +337,8 @@ internal const class FindCmd : Cmd
       col := chars.index(str)
       while (col != null)
       {
-        dis := "$f.name(${linei+1}): $line.trim"
         span := Span(linei, col, linei, col+str.size)
+        dis := "$f.name(${linei+1}) [${col+1}-${col+1+str.size}]: $line.trim"
         matches.add(Item(f)
           {
             it.line = linei
@@ -314,3 +373,4 @@ internal const class FindInSpaceCmd : Cmd
       if (dir != null) ((FindCmd)sys.commands.find).find(dir)
     }
 }
+

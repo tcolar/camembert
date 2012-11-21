@@ -105,4 +105,69 @@ internal const class FileUtil
     return false
   }
 
+  ** Replace found items with new text
+  static Void replaceAll(Item[] items, Str oldText, Str newText, Str delimiter)
+  {
+    // file currently worked on
+    File? curFile
+    //  text lines of file currently worked on
+    Str[]? lines
+    // Index of current line we are working on
+    Int curLine
+    // current offset in line (because item spans are "off" after mmultiple replaces in same line)
+    offset := 0
+    step := newText.size - oldText.size
+
+    items.each |item|
+    {
+      if(item.file != curFile)
+      {
+        if(curFile != null)
+          saveLines(curFile, lines, delimiter)
+        curFile = item.file
+        try
+          lines = curFile.readAllLines
+        catch(Err e) {e.trace; lines=null}
+        offset = 0
+      }
+      if(item.span.start.line != item.span.end.line)
+        throw Err("Replace only supported within a single line.")
+      line := item.span.start.line
+      if(line != curLine)
+      {
+        offset = 0
+        curLine = line
+      }
+      if(lines != null)
+      {
+        l := lines[line]
+        start :=  item.span.start.col + offset
+        end := item.span.end.col + offset
+        lines[line] = l[0 ..< start] + newText + l[end .. -1]
+        offset += step
+      }
+    }
+    // last file
+    if(curFile!=null)
+      saveLines(curFile, lines, delimiter)
+  }
+
+  static internal Void saveLines(File file, Str[] lines, Str delimiter)
+  {
+    lastLine := lines.size-1
+    out := file.out
+    try
+    {
+      lines.each |Str line, Int i|
+      {
+        out.print(line)
+        if (i != lines.size-1 || line.isEmpty)
+          out.print(delimiter)
+      }
+    }
+    catch(Err e)
+      e.trace
+    finally
+      out.close
+  }
 }

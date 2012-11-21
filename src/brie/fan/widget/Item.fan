@@ -150,7 +150,7 @@ const class Item
     {
       MenuItem
       {
-        it.text = "Find in \"$dis\""
+        it.text = "Find in \"$file.name\""
         it.onAction.add |e|
           { (frame.sys.commands.find as FindCmd).find(file) }
       },

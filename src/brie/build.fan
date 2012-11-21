@@ -30,7 +30,7 @@ class Build : BuildPod
                `fan/command/`,
                `fan/widget/`]
     resDirs = [`res/`]
-    version = Version("1.0.5")
+    version = Version("1.0.6")
     meta    =  ["license.name"   : "Academic License",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
     docSrc  = true
