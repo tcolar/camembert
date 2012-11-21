@@ -145,13 +145,21 @@ const class Item
   Menu? popup(Frame frame)
   {
     if (file == null) return null
-    FindCmd findCmd := frame.sys.commands.find
+    // File menus
     return Menu
     {
       MenuItem
       {
         it.text = "Find in \"$dis\""
-        it.onAction.add |e| { findCmd.find(file) }
+        it.onAction.add |e|
+          { (frame.sys.commands.find as FindCmd).find(file) }
+      },
+      MenuItem
+      {
+        dir := file.isDir ? file : file.parent
+        it.text = "New file in \"$dir.name\""
+        it.onAction.add |e|
+          { (frame.sys.commands.newFile as NewFileCmd).newFile(dir, frame) }
       },
     }
   }

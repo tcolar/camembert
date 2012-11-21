@@ -1,6 +1,5 @@
 delete file/folder
 rename file/folder (& move)
-duplicate file
 
 find/replace .. local / global
 

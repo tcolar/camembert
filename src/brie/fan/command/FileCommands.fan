@@ -50,6 +50,11 @@ internal const class NewFileCmd : Cmd
   override const Str name := "New File"
   override Void invoke(Event event)
   {
+    newFile(frame.curFile?.parent, frame)
+  }
+
+  Void newFile(File? dir, Frame frame)
+  {
     clazz := File(`${Options.standard.parent}/class.tpl`)
     if(!clazz.exists)
     {
@@ -69,7 +74,7 @@ internal const class NewFileCmd : Cmd
     path := Text
     {
       prefCols = 60
-      text = (frame.curFile?.parent?.osPath ?: Env.cur.workDir.osPath) + "/"
+      text = (dir?.osPath ?: Env.cur.workDir.osPath) + "/"
     }
 
     combo := Combo
