@@ -17,7 +17,7 @@ using fwt
 const class Theme
 {
   @Setting{help = ["Default font : for anyhting but the editor"]}
-  const Font font           := Font("9pt DejaVu Sans Mono", false) ?: Desktop.sysFont
+  const Font font           := bestFont(9)
 
   @Setting{help = ["Default font color : for anyhting but the editor"]}
   const Color fontColor     := Color.black
@@ -32,7 +32,7 @@ const class Theme
   const Color selectedItem := Color(0x99_ff_99)
 
   @Setting{help = ["Font used in editor pane'"]}
-  const Font edFont     := Font("11pt DejaVu Sans Mono", false) ?: Desktop.sysFont
+  const Font edFont     := bestFont(11)
 
   @Setting{help = ["Editor pane background color'"]}
   const Color edBg      := Color.white
@@ -125,6 +125,19 @@ const class Theme
   new make(|This|? f := null)
   {
     if (f != null) f(this)
-    }
+  }
 
+  ** Best programming fonts(IMO) available standard for the current os
+  Font bestFont(Int size)
+  {
+    Font? font
+    if(Env.cur.os == "win32")
+      font = Font("${size}pt Consolas", false)
+    else if(Env.cur.os == "macosx")
+      return Font("${size}pt Menlo", false)
+    else if(Env.cur.os == "linux")
+      return Font("${size}pt DejaVu Sans Mono", false)
+    // fallback to whatever java/SWT uses as the default
+    return font ?: Desktop.sysFont.toSize(size)
+  }
 }
