@@ -119,6 +119,7 @@ class HelpPane : ContentPane
   internal Void onHyperlink(Event e)
   {
     uri := e.data.toStr
+    echo("HL: $uri")
     if(uri.contains("#goto:"))
     {
       // goto: special link to open a given type source file in the editor
