@@ -182,7 +182,7 @@ class HelpPane : ContentPane
     doc = "<html><body>$doc</body></html>"
     file.create.open.print(doc).flush.close
     dest := `${file.uri}$anchor`
-
+echo("dest: $dest")
     browser.load(dest)
   }
 
