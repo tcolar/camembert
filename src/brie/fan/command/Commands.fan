@@ -149,7 +149,7 @@ internal const class HelpCmd : Cmd
   override Void invoke(Event event)
   {
     selection := frame.curView?.curSelection ?: ""
-    frame.helpPane.showSearch(selection)
+    frame.helpPane.render(selection)
   }
   new make(|This| f) {f(this)}
 }
