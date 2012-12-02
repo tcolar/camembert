@@ -19,6 +19,8 @@ class Build : BuildPod
                "syntax 1.0",
                "gfx 1.0",
                "fwt 1.0",
+               "web 1.0",
+               "wisp 1.0",
                "petanque 1.0.1+",
                "netColarUtils 1.0.0+"
     ]

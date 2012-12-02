@@ -8,6 +8,7 @@
 
 using gfx
 using concurrent
+using wisp
 
 **
 ** Sys manages references to system services
@@ -37,12 +38,15 @@ const class Sys : Service
 
   const Plugin[] plugins := [,]
 
+  const WispService docServer
+
   new make(|This|? f)
   {
     if(f!=null) f(this)
     theme = Theme.load(options.theme)
     index = Index(this)
     commands = Commands(this)
+    docServer = WispService { port = 8787; root = DocWebMod(this) }.start
   }
 
   override Void onStop()
