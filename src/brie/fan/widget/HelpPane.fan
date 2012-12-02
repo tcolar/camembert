@@ -40,23 +40,29 @@ class HelpPane : ContentPane
           render(search.text)
         }
       }
-      top = GridPane
+      top = EdgePane
       {
-        numCols = 3
-        Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`);
-        onAction.add |Event e|
-          {
-            browser.back
-            /*if( ! pageHistory.isEmpty) pageHistory.pop()
-            if( ! pageHistory.isEmpty)
+        top = GridPane
+        {
+          numCols = 3
+          Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`);
+          onAction.add |Event e|
             {
-              render(pageHistory.pop())
-            }*/
+              browser.back
+            }
+          },
+          Button{image = gfx::Image(`fan://camembert/res/home.png`, false);
+          onAction.add |Event e| {render("")}},
+          search,
+        }
+        center = Button
+        {
+          it.text = "Open in Editor"
+          onAction.add |Event e|
+          {
+            goto(search.text)
           }
-        },
-        Button{image = gfx::Image(`fan://camembert/res/home.png`, false);
-        onAction.add |Event e| {render("")}},
-        search,
+        }
       }
       center = BorderPane
       {
@@ -99,6 +105,24 @@ class HelpPane : ContentPane
       hide
     else
       show
+  }
+
+  Void goto(Str where)
+  {
+    if(where.contains("::"))
+    {
+      if(where.contains("#"))
+        where = where[0 ..< where.index("#")]
+      info := sys.index.matchTypes(where, MatchKind.exact).first
+      if(info != null)
+      {
+        try
+        {
+         frame.goto(Item(info))
+        }
+        catch(Err err){}
+      }
+    }
   }
 
   private Void show()
