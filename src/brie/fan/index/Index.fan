@@ -81,7 +81,7 @@ const class Index
         frame := sys.frame
         if (frame.curSpace is HomeSpace) frame.reload
         else frame.updateStatus
-        if(! val)  // done
+        if(! val)  // done indexing
           frame.helpPane.indexUpdated
       }
     }
@@ -159,7 +159,7 @@ const class Index
     return pods.eachWhile |p|
     {
       if(p.srcDir == null)
-	return null
+  return null
       if(p.srcDir.normalize.uri == f.normalize.uri)
         return p
       return null
@@ -233,7 +233,7 @@ const class Index
 //////////////////////////////////////////////////////////////////////////
 
   internal const Duration timeout := 10sec
-  internal const Actor cache   := Actor(ActorUtil.pool) |msg| { receiveCache(msg) }
-  internal const Actor crawler := Actor(ActorUtil.pool) |msg| { receiveCrawler(msg) }
+  internal const Actor cache   := Actor(ActorPool()) |msg| { receiveCache(msg) }
+  internal const Actor crawler := Actor(ActorPool()) |msg| { receiveCrawler(msg) }
   private const AtomicBool isIndexingRef := AtomicBool()
 }

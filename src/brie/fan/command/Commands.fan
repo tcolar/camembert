@@ -124,7 +124,12 @@ internal const class SwitchConfigCmd : Cmd
 
   override Void invoke(Event event)
   {
-    Sys.loadConfig(conf)
+    MenuItem mi := event.widget
+    // Note: we receive an event for the "deselected" item as well
+    if(mi.selected)
+    {
+      Desktop.callAsync |->| {Sys.loadConfig(conf)}
+    }
   }
   new make(Str name, File conf)
   {

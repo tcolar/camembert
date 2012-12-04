@@ -14,24 +14,26 @@ using compilerDoc
 **
 const class DocWebMod : WebMod
 {
-  const Sys sys
-
-  new make(Sys sys)
-  {
-    this.sys = sys
-  }
 
   override Void onGet()
   {
+    Sys sys := (Sys) Service.find(Sys#)
     text := req.uri.toStr[1..-1]
-    if(text.isEmpty)
-      showDoc(req, podList)
-    else if(text.contains("::"))
+    try
     {
-      showDoc(req, itemDoc(text))
+      if(text.isEmpty)
+        showDoc(req, podList(sys))
+      else if(text.contains("::"))
+      {
+        showDoc(req, itemDoc(sys, text))
+      }
+      else
+        showDoc(req, find(sys, text))
     }
-    else
-      showDoc(req, find(text))
+    catch(Err e)
+    {
+      showDoc(req, "$e")
+    }
   }
 
   Void showDoc(WebReq req, Str html)
@@ -43,7 +45,7 @@ const class DocWebMod : WebMod
   }
 
   ** List all pods
-  Str podList()
+  Str podList(Sys sys)
   {
     Str pods := "<h2>Pod List</h2>"
     sys.index.pods.each
@@ -54,7 +56,7 @@ const class DocWebMod : WebMod
   }
 
   ** Get doc for an item(pod, type etc..)
-  private Str itemDoc(Str fqn)
+  private Str itemDoc(Sys sys, Str fqn)
   {
     if(fqn.contains("::index")) fqn = fqn[0 ..< fqn.index("::")]
       if(fqn.contains("::pod-doc")) fqn = fqn[0 ..< fqn.index("::")]
@@ -65,7 +67,7 @@ const class DocWebMod : WebMod
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.name</h2>"
-      text += readPodDoc(info.podFile)
+      text += readPodDoc(sys, info.podFile)
       text += "<hr/>"
       info.types.each {text += "<br/> <a href='/$it.qname'>$it.name</a>"}
       return text
@@ -76,14 +78,14 @@ const class DocWebMod : WebMod
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.qname</h2>"
-      text += readTypeDoc(info.pod.podFile, info.name)
+      text += readTypeDoc(sys, info.pod.podFile, info.name)
       return text
     }
   }
 
   ** Search pods, types, slots for items matching the query
   ** And returns a search result page
-  private Str find(Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := false)
+  private Str find(Sys sys, Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := false)
   {
     index := sys.index
 
@@ -119,7 +121,7 @@ const class DocWebMod : WebMod
   }
 
   ** Read doc of a pod
-  private Str readPodDoc(File podFile)
+  private Str readPodDoc(Sys sys, File podFile)
   {
     result := "Failed to read pod doc !"
     try
@@ -135,7 +137,7 @@ const class DocWebMod : WebMod
   }
 
   ** Read doc of a type
-  private Str readTypeDoc(File podFile, Str typeName)
+  private Str readTypeDoc(Sys sys, File podFile, Str typeName)
   {
     result := "Failed to read pod doc !"
     try

@@ -9,14 +9,6 @@
 using concurrent
 
 **
-** ActorUtil
-**
-internal const class ActorUtil
-{
-  static const ActorPool pool := ActorPool()
-}
-
-**
 ** Generic message to use with Actors
 **
 internal const class Msg

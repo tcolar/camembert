@@ -35,7 +35,7 @@ internal class SpaceBar : Canvas
     x := 4
     tabs = spaces.map |s|
     {
-      tab := SpaceTab(s, s === curSpace, x)
+      tab := SpaceTab(sys, s, s === curSpace, x)
       x += tab.w + 4
       return tab
     }
@@ -115,12 +115,11 @@ internal class SpaceBar : Canvas
 
 internal class SpaceTab
 {
-  new make(Space space, Bool cur, Int x)
+  new make(Sys sys, Space space, Bool cur, Int x)
   {
     this.space = space
     this.cur = cur
     this.x = x
-    sys := Service.find(Sys#) as Sys
     this.w = 6 + 20 + sys.theme.font.width(space.dis) + 6
   }
 

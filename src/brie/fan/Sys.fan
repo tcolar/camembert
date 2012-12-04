@@ -30,9 +30,6 @@ const class Sys : Service
   ** Application level commands
   const Commands commands
 
-  ** Top-level frame (only in UI thread)
-  Frame frame() { Actor.locals["frame"] ?: throw Err("Not on UI thread") }
-
   ** Logger
   const Log log := Log.get("camembert")
 
@@ -40,27 +37,43 @@ const class Sys : Service
 
   const WispService docServer
 
+  ** Top-level frame (only in UI thread)
+  Frame frame() { Actor.locals["frame"] ?: throw Err("Not on UI thread") }
+
   new make(|This|? f)
   {
     if(f!=null) f(this)
     theme = Theme.load(options.theme)
     index = Index(this)
     commands = Commands(this)
-    docServer = WispService { port = 8787; root = DocWebMod(this) }.start
+    docServer = WispService { port = 8787; root = DocWebMod() }.start
   }
 
   override Void onStop()
   {
-    index.cache.pool.stop
-    index.crawler.pool.stop
-    Actor.sleep(1sec)
-    index.cache.pool.kill
-    index.crawler.pool.kill
+    if(docServer.isRunning)
+    {
+      docServer.stop
+      docServer.uninstall
+      index.cache.pool.stop
+      index.crawler.pool.stop
+      Actor.sleep(1sec)
+      index.cache.pool.kill
+      index.crawler.pool.kill
+      echo("Sys.onStop completed.")
+    }
   }
 
   static Void loadConfig(File config := Options.standard)
   {
     sys := Service.find(Sys#) as Sys
+    frame := sys.frame
+    frame.spaces.each {sys.frame.closeSpace(it)}
+
+    // Note : calling manually onStop to make sure it fully stops before we restart
+    // because sys.stop calls it asynchronously
+    sys.onStop
+
     sys.uninstall
 
     sys = Sys
@@ -68,7 +81,7 @@ const class Sys : Service
       options = Options.load(config)
     }
     sys.install
-    sys.frame.updateSys()
+    frame.updateSys(sys)
   }
 
   ** Look for alternate config files (options_xyz.props)

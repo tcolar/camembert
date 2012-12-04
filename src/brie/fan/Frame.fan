@@ -79,9 +79,9 @@ class Frame : Window
     load(curSpace, 0, null)
   }
 
-  Void updateSys()
+  Void updateSys(Sys newSys)
   {
-    this.sys = Service.find(Sys#) as Sys
+    this.sys = newSys
     spaces[0] = HomeSpace(sys)
     select(spaces[0])
     spaceBar.updateSys(sys)
