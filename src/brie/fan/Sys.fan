@@ -47,6 +47,8 @@ const class Sys : Service
     index = Index(this)
     commands = Commands(this)
     docServer = WispService { port = 8787; root = DocWebMod() }.start
+
+    PluginManager.cur.onConfigLoaded(this)
   }
 
   override Void onStop()

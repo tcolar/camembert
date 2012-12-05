@@ -93,7 +93,7 @@ const abstract class Cmd
   abstract Void invoke(Event event)
   const Key? key
 
-  internal const AtomicRef sysRef := AtomicRef(null)
+  const AtomicRef sysRef := AtomicRef(null)
   Sys sys() {sysRef.val }
 
   Options options() { sys.options }

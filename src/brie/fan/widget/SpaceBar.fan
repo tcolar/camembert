@@ -23,7 +23,8 @@ internal class SpaceBar : Canvas
       e.consume
       tab := posToTab(e.pos)
       if (tab == null) return
-        if (e.isPopupTrigger) { onPopup(e, tab.space); return }
+        if (e.id === EventId.mouseUp && e.button == 3 && e.count == 1)
+          { onPopup(e, tab.space); return }
         if (e.button == 1) { frame.select(tab.space); return }
       }
   }

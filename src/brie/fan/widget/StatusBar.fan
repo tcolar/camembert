@@ -30,14 +30,14 @@ internal class StatusBar : ContentPane
     {
       text="Console"
       it.onMouseDown.add |e| { if (e.button == 1) onConsoleToggle }
-      it.onMouseUp.add |e| { if (e.isPopupTrigger) onConsolePopup(e) }
+      it.onMouseUp.add |e| { if (e.id === EventId.mouseUp && e.button == 3 && e.count == 1) onConsolePopup(e) }
     }
 
     // index
     this.index = Label
     {
       it.text="Index"
-      it.onMouseUp.add |e| { if (e.isPopupTrigger) onIndexPopup(e) }
+      it.onMouseUp.add |e| { if (e.id === EventId.mouseUp && e.button == 3 && e.count == 1) onIndexPopup(e) }
     }
 
     // file label

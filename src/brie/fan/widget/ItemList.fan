@@ -145,7 +145,7 @@ class ItemList : Panel
       return
     }
 
-    if (event.isPopupTrigger)
+    if (event.id === EventId.mouseUp && event.button == 3 && event.count == 1)
     {
       event.consume
       menu := item?.popup(frame)

@@ -39,7 +39,7 @@ class Frame : Window
     // eventing
     onClose.add |Event e| { e.consume; sys.commands.exit.invoke(e) }
     onKeyDown.add |e| { trapKeyDown(e) }
-    onDrop = |data| { doDrop(data) }
+    //onDrop = |data| { doDrop(data) }
 
     // build UI
     this.spaceBar = SpaceBar(this)
@@ -77,6 +77,8 @@ class Frame : Window
     loadSession
     curSpace = spaces.first
     load(curSpace, 0, null)
+
+    PluginManager.cur.onFrameReady(this)
   }
 
   Void updateSys(Sys newSys)
