@@ -9,6 +9,7 @@
 using gfx
 using concurrent
 using wisp
+using netColarUtils
 
 **
 ** Sys manages references to system services
@@ -33,8 +34,6 @@ const class Sys : Service
   ** Logger
   const Log log := Log.get("camembert")
 
-  const Plugin[] plugins := [,]
-
   const WispService docServer
 
   ** Top-level frame (only in UI thread)
@@ -46,8 +45,8 @@ const class Sys : Service
     theme = Theme.load(options.theme)
     index = Index(this)
     commands = Commands(this)
-    docServer = WispService { port = 8787; root = DocWebMod() }.start
-
+    wPort := NetUtils.findAvailPort(8787)
+    docServer = WispService { port = wPort; root = DocWebMod() }.start
     PluginManager.cur.onConfigLoaded(this)
   }
 
@@ -97,6 +96,8 @@ const class Sys : Service
     }
     return results
   }
+
+  Str:Plugin plugins() {PluginManager.cur.plugins}
 }
 
 mixin SysListener

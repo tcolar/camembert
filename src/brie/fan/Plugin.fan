@@ -19,6 +19,15 @@ mixin Plugin
 
   ** Called at the end of shutdown for cleanup purposes
   virtual Void onShutdown() {}
+
+  ** If this plugin provides a custom space, return an instance if the file matches the space type
+  virtual Space? createSpace(Sys sys, File file) {return null}
+
+  ** If this plugin provides a custom space, return thempriority of this space (PosSpace is 50, Filespace is 0)
+  virtual Int? spacePriority() {return null}
+
+  ** Return an Item if the dir matches a project fro the plugin
+  virtual Item? projectItem(File dir, Int indent) {return null}
 }
 
 **

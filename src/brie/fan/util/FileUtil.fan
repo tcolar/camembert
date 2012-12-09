@@ -11,7 +11,7 @@ using concurrent
 **
 ** FileUtil
 **
-internal const class FileUtil
+const class FileUtil
 {
   static Str pathDis(File file)
   {

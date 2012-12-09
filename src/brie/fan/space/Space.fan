@@ -59,5 +59,7 @@ const abstract class Space
     return dis <=> that.dis
   }
 
+  ** called when space is closed
+  virtual Void onUnload() {}
 }
 

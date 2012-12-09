@@ -21,6 +21,8 @@ internal class IndexCache
 
   PodGroup[] listGroups() { groups.vals.sort |g1, g2| {g1.name <=> g2.name}}
 
+  Str:TrioInfo listTrioInfo() { trioInfo }
+
   PodInfo? pod(Str name) { pods[name] }
 
   PodInfo? podForFile(File file)
@@ -41,6 +43,11 @@ internal class IndexCache
       echo("$file.pathStr  ->  $group.srcDir.pathStr")
       return file.pathStr.startsWith(group.srcDir.pathStr)
     }
+  }
+
+  Obj? addTrioInfo(Str:TrioInfo info)
+  {
+    trioInfo = info
   }
 
   Obj? addPodSrc(Str name, File srcDir, File[] srcFiles)
@@ -131,6 +138,34 @@ internal class IndexCache
     return results
   }
 
+  FuncInfo[] matchFuncs(Str pattern, MatchKind kind)
+  {
+    results := FuncInfo[,]
+    trioInfo.each |info|
+    {
+      info.funcs.each |func, name|
+      {
+        if(match(name, pattern, kind))
+          results.add(func)
+      }
+    }
+    return results.sort |a, b| {a.name <=> b.name}
+  }
+
+  TagInfo[] matchTags(Str pattern, MatchKind kind)
+  {
+    results := TagInfo[,]
+    trioInfo.each |info|
+    {
+      info.tags.each |tag, name|
+      {
+        if(match(name, pattern, kind))
+          results.add(tag)
+      }
+    }
+    return results.sort |a, b| {a.name <=> b.name}
+  }
+
   Item[] matchFiles(Str pattern, MatchKind kind)
   {
     results := Item[,]
@@ -163,6 +198,8 @@ internal class IndexCache
 
   private Str:PodInfo pods := [:]
   private Str:PodGroup groups := [:]
+  ** Trio info / keyed by pod name
+  private Str:TrioInfo trioInfo := [:]
 }
 
 enum class MatchKind

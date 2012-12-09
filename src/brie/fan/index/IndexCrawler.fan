@@ -28,11 +28,27 @@ internal class IndexCrawler
       t1 := Duration.now
       index.podDirs.each |dir| { indexPodDir(dir) }
       index.srcDirs.each |dir| { indexSrcDir(dir) }
+
+      indexTrio
+
       t2 := Duration.now
       echo("Index all ${(t2-t1).toLocale}")
       return (t2-t1)
     }
     finally index.setIsIndexing(false)
+  }
+
+  ** Index trio func / tags if axonPlugin is avail
+  ** We only do  it on indexAll and not updating on pod modif (for now)
+  Void indexTrio()
+  {
+    axonPlugin := index.sys.plugins["camAxonPlugin"]
+    if(axonPlugin != null)
+    {
+      // Dynamic call for this (no proper plugin indexing infrastructure for now)
+      Str:TrioInfo info := axonPlugin->trioData(index.podDirs)
+      index.cache.send(Msg("addTrioInfo", info))
+    }
   }
 
   ** Index a given pod (ie: after it's rebuilt)
@@ -190,6 +206,19 @@ internal class IndexCrawler
     zip := Zip.open(file)
     try
     {
+      // look for axon lib
+      Str[] libs := [,]
+      index := zip.contents[`/index.props`]
+      if(index != null)
+      {
+        // can't use readProps because of duplicated keys sometimes !
+        index.readAllLines.findAll
+        {
+          it.trim.startsWith("skyspark.lib") || //skyspark 1.x
+          it.trim.startsWith("proj.lib") // skyspark 2.x
+        }.each |line| {libs.add(line[line.index("::")+2..-1].trim )}
+      }
+
       // read name.defs
       namesDef := zip.contents[`/fcode/names.def`]
       if (namesDef == null) return TypeInfo[,]
@@ -292,7 +321,8 @@ internal class IndexCrawler
         }
         in.close
 
-        type := TypeInfo(typeName, typeFile, typeLine-1)
+        isAxonLib := libs.contains(typeName)
+        type := TypeInfo(typeName, typeFile, typeLine-1, isAxonLib)
         slots := SlotInfo[,] { capacity = slotNames.size }
         slotNames.each |slotName, i|
         {

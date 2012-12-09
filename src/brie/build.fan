@@ -22,7 +22,7 @@ class Build : BuildPod
                "web 1.0",
                "wisp 1.0",
                "petanque 1.0.1+",
-               "netColarUtils 1.0.0+"
+               "netColarUtils 1.0.1+"
     ]
     srcDirs = [`fan/`,
                `fan/space/`,

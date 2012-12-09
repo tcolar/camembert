@@ -4,8 +4,6 @@ using gfx
 using fandoc
 using compilerDoc
 
-// TODO: when in axon file/prj search axon libs only ?
-
 ** Sidebar to search / display fandocs
 class HelpPane : ContentPane
 {
@@ -44,23 +42,32 @@ class HelpPane : ContentPane
       {
         top = GridPane
         {
-          numCols = 3
+          numCols = 2
           Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`);
           onAction.add |Event e|
             {
               browser.back
             }
           },
-          Button{image = gfx::Image(`fan://camembert/res/home.png`, false);
-          onAction.add |Event e| {render("")}},
           search,
         }
-        center = Button
+        center = EdgePane
         {
-          it.text = "Open in Editor"
-          onAction.add |Event e|
+          left = GridPane{
+            numCols = 2
+            Button{
+              image = gfx::Image(`fan://icons/x16/database.png`, false)
+              onAction.add |Event e| {render("")} // pod list
+            },
+            Button{
+              image = gfx::Image(`fan://icons/x16/func.png`, false)
+              onAction.add |Event e| {render("axon-home")} // Todo" lib list
+            },
+          }
+          right = Button
           {
-            goto(search.text)
+            text = "Edit File"//image = gfx::Image(`fan://icons/x16/fileFan.png`, false)
+            onAction.add |Event e| {goto(search.text)}
           }
         }
       }
@@ -120,7 +127,7 @@ class HelpPane : ContentPane
         {
          frame.goto(Item(info))
         }
-        catch(Err err){}
+        catch(Err err){err.trace}
       }
     }
   }
@@ -146,6 +153,7 @@ class HelpPane : ContentPane
   ** Delegates to the browser loading from DocWebMod
   internal Void render(Str text)
   {
+    port := sys.docServer.port
     if(browser == null)
       return
     if(visible == false)
@@ -159,7 +167,7 @@ class HelpPane : ContentPane
 
     search.text = text.trim
 
-    browser.load(`http://127.0.0.1:8787/$text`)
+    browser.load(`http://127.0.0.1:${port}/$text`)
   }
 }
 

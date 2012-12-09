@@ -80,6 +80,7 @@ const class Commands
   const Cmd recent := RecentCmd {}
   const Cmd delete := DeleteFileCmd {}
   const Cmd move := MoveFileCmd {}
+  const Cmd about := AboutCmd {}
 }
 
 **************************************************************************
@@ -155,6 +156,16 @@ internal const class HelpCmd : Cmd
   {
     selection := frame.curView?.curSelection ?: ""
     frame.helpPane.render(selection)
+  }
+  new make(|This| f) {f(this)}
+}
+
+internal const class AboutCmd : Cmd
+{
+  override const Str name := "About"
+  override Void invoke(Event event)
+  {
+    Dialog.openInfo(frame, "Camembert is a fork of Brie.\n\nBy Thibaut Colar.\n\nhttp://www.status302.com/",null)
   }
   new make(|This| f) {f(this)}
 }

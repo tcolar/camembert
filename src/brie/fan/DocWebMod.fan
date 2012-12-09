@@ -11,6 +11,9 @@ using compilerDoc
 ** Example: /sys::Str.upper
 **
 ** Using a "real" server because SWT browser with IE did not like in memory or in file uri's
+** Doesn't like "on the fly" redirects either
+**
+** TODO: This whole thing became a bit fugly ...
 **
 const class DocWebMod : WebMod
 {
@@ -23,6 +26,10 @@ const class DocWebMod : WebMod
     {
       if(text.isEmpty)
         showDoc(req, podList(sys))
+      else if(text == "axon-home")
+        showDoc(req, axonLibs(sys))
+      else if(text.contains("ext-"))
+        showDoc(req, axonDocs(sys, text))
       else if(text.contains("::"))
       {
         showDoc(req, itemDoc(sys, text))
@@ -32,7 +39,7 @@ const class DocWebMod : WebMod
     }
     catch(Err e)
     {
-      showDoc(req, "$e")
+      showDoc(req, "<b>$e</b><br/><pre>$e.traceToStr</pre>")
     }
   }
 
@@ -44,15 +51,129 @@ const class DocWebMod : WebMod
     out.print(html).close
   }
 
-  ** List all pods
+  ** List all pods except axon library pods
   Str podList(Sys sys)
   {
     Str pods := "<h2>Pod List</h2>"
     sys.index.pods.each
     {
-      pods+="<a href='/${it.name}::pod-doc'>$it.name</a> <br/>"
+      if( ! it.isAxonPod || it.name=="skyspark" || it.name=="proj")
+      {
+        pods+="<a href='/${it.name}::pod-doc'>$it.name</a> <br/>"
+      }
     }
     return pods
+  }
+
+  ** List axon libraries / extensions
+  Str axonLibs(Sys sys)
+  {
+    Str html := "<h2>Axon libraries</h2>"
+    Str[] pods := [,]
+    // axon libraries writen in Fantom
+    sys.index.pods.each |pod|
+    {
+      if(pod.isAxonPod)
+        pods.add(pod.name)
+    }
+    // axon extensions (trio sources)
+    sys.index.trioInfo.keys.each |pod|
+    {
+      if(!pods.contains(pod))
+        pods.add(pod)
+    }
+    pods.sort.each |pod|
+    {
+      link := toExtLink(pod)
+      html += "<a href='${link}index'>$pod</a><br/>"
+    }
+    return html
+  }
+
+  private Str toExtLink(Str podName)
+  {
+    if(! podName.endsWith("Ext"))
+      return "/ext-${podName}/"
+    return "/ext-${podName[0..-4]}/"
+  }
+
+  ** Axon extensions/libs docs
+  private Str axonDocs(Sys sys, Str text)
+  {
+    podName := text[0 ..< text.index("/")]
+    if(podName.startsWith("ext-"))
+    {
+      if(podName=="ext-skyspark" || podName=="ext-proj")
+        podName = podName[4 .. -1]
+      else
+        podName = "${podName[4 .. -1]}Ext"
+    }
+
+    item := text[text.index("/")+1 .. -1]
+
+    pod := sys.index.matchPods(podName.lower, MatchKind.exact).first
+    if(pod == null)
+      return "$podName not found !"
+    trioInfo := sys.index.trioInfo[podName]
+
+    if(item == "index")
+    {
+      html := "<h2>$podName - Index</h2><h3><b>Functions:</b></h3>"
+      // Axon libs functions
+      pod.types.findAll{isAxonLib}.each |type|
+      {
+        type.slots.each
+        {
+          html += "<a href='funcs#${it.name}'>$it.name</a><br/>"
+        }
+      }
+      if(trioInfo != null)
+      {
+        // axon extensions (trio sources)
+        trioInfo.funcs.each
+        {
+          html += "<a href='funcs#${it.name}'>$it.name</a><br/>"
+        }
+        // tags
+        html += "<h3><b>Tags:</b></h3>"
+        trioInfo.tags.each
+        {
+          html += "<a href='tags#${it.name}'>$it.name</a><br/>"
+        }
+      }
+      return html
+    }
+    else if(item == "funcs")
+    {
+      html := "<h2>$podName Funtions :</h2>"
+      // fantom funcs
+      html += readAxonTypeDoc(sys, pod, trioInfo)
+      return html
+    }
+    else if(item == "tags")
+    {
+      html := "<h2>$podName Tags :</h2>"
+      // fantom funcs
+      trioInfo.tags.each
+      {
+        html += "<div style='background-color:#ffeedd'><a name='$it.name'></a><b>${it.name}</b>"
+                    + "</div><div style='background-color:#ddffdd'>$it.kind</div>"
+                    + docStrToHtml(sys, it.doc, true)
+      }
+      return html
+    }
+    else if(item == "src")
+    {
+      html := "<h2>$podName Axon src :</h2>"
+      trioInfo.funcs.each
+      {
+        html += "<div style='background-color:#ffeedd'><a name='$it.name'></a><b>${it.name}</b></div>"
+             + "<pre>$it.src</pre>"
+      }
+      return html
+    }
+
+    return "TBD"
   }
 
   ** Get doc for an item(pod, type etc..)
@@ -67,9 +188,9 @@ const class DocWebMod : WebMod
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.name</h2>"
-      text += readPodDoc(sys, info.podFile)
+      info.types.each {text += "<a href='/$it.qname'>$it.name</a>, "}
       text += "<hr/>"
-      info.types.each {text += "<br/> <a href='/$it.qname'>$it.name</a>"}
+      text += readPodDoc(sys, info.podFile)
       return text
     }
     else
@@ -85,26 +206,66 @@ const class DocWebMod : WebMod
 
   ** Search pods, types, slots for items matching the query
   ** And returns a search result page
-  private Str find(Sys sys, Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := false)
+  private Str find(Sys sys, Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := true)
   {
     index := sys.index
 
-    results := "<h2>Pods:</h2>"
-    index.matchPods(query, kind).each
+    pods := index.matchPods(query, kind)
+    results := ""
+    if(! pods.isEmpty)
     {
-      results+="<a href='/${it.name}::index'>$it</a> <br/>"
-    }
-    results += "<h2>Types:</h2>"
-    index.matchTypes(query, kind).each
-    {
-      results+="<a href='/${it.qname}'>$it.qname</a> <br/>"
-    }
-    if(! inclSlots)
-    {
-      results += "<h2>Slots:</h2>"
-      index.matchSlots(query, kind).each
+      results += "<h2>Pods:</h2>"
+      pods.each
       {
-        results+="<a href='/${it.type.qname}#$it.name'>$it.qname</a> <br/>"
+        results+="<a href='/${it.name}::index'>$it</a> <br/>"
+      }
+    }
+    types := index.matchTypes(query, kind)
+    if(! types.isEmpty)
+    {
+      results += "<h2>Types:</h2>"
+      types.each
+      {
+        results+="<a href='/${it.qname}'>$it.qname</a> <br/>"
+      }
+    }
+    if(inclSlots)
+    { // TODO: not show axon funcs
+      slots := index.matchSlots(query, kind).findAll{ ! type.isAxonLib}
+      if(! slots.isEmpty)
+      {
+        results += "<h2>Slots:</h2>"
+        slots.each
+        {
+          results+="<a href='/${it.type.qname}#$it.name'>$it.qname</a> <br/>"
+        }
+      }
+    }
+    funcs := index.matchFuncs(query, kind)
+    slots := index.matchSlots(query, kind).findAll{ type.isAxonLib}
+    if( ! funcs.isEmpty || ! slots.isEmpty)
+    {
+      // TODO: add fantom axon funcs
+      results += "<h2>Funcs:</h2>"
+      slots.each |slot|
+      {
+        link := toExtLink(slot.type.pod.name)+"funcs#$slot.name"
+        results+="<a href='$link'>$slot.qname</a><br/>"
+      }
+      funcs.each |func|
+      {
+        link := toExtLink(func.pod)+"funcs#$func.name"
+        results+="<a href='$link'>$func.pod::$func.name</a><br/>"
+      }
+    }
+    tags := index.matchTags(query, kind)
+    if( ! tags.isEmpty)
+    {
+      results += "<h2>Tags:</h2>"
+      tags.each |tag|
+      {
+        link := toExtLink(tag.pod)+"tags#$tag.name"
+        results+="<a href='$link'>$tag.pod::$tag.name</a><br/>"
       }
     }
 
@@ -112,11 +273,19 @@ const class DocWebMod : WebMod
   }
 
   ** Parse Fandoc into HTML
-  private Str docToHtml(DocFandoc? doc)
+  private Str docToHtml(Sys sys, DocFandoc? doc, Bool forAxon := false)
   {
-    if(doc == null || doc.text.isEmpty) return "<br/>"
+    return docStrToHtml(sys, doc.text, forAxon)
+  }
+
+  private Str docStrToHtml(Sys sys, Str? doc, Bool forAxon := false)
+  {
+    if(doc == null || doc.isEmpty) return "<br/>"
       buf := Buf()
-    FandocParser.make.parseStr(doc.text).write(writer(req.uri.toStr, buf.out))
+    writer := forAxon ?
+        axonWriter(sys, req.uri.toStr, buf.out)
+        : writer(req.uri.toStr, buf.out)
+    FandocParser.make.parseStr(doc).write(writer)
     return buf.flip.readAllStr
   }
 
@@ -128,7 +297,7 @@ const class DocWebMod : WebMod
     {
       doc := DocPod(podFile)
       if(doc.podDoc != null)
-        result = docToHtml(doc.podDoc.doc)
+        result = docToHtml(sys, doc.podDoc.doc)
       else
        result = doc.summary
     }
@@ -146,7 +315,7 @@ const class DocWebMod : WebMod
 
       DocType? type := doc.type(typeName, false)
 
-      Str summary := type?.doc != null ? docToHtml(type.doc) : doc.summary
+      Str summary := type?.doc != null ? docToHtml(sys, type.doc) : doc.summary
 
       result = summary
       if(type!=null)
@@ -154,18 +323,64 @@ const class DocWebMod : WebMod
         result+="<hr/>Slots: "
         type.slots.each
         {
-          result += "<a href='/${type.qname}#${it.name}'>$it.name</a>, "
+          result += "<a href='#${it.name}'>$it.name</a>, "
         }
         result += "<hr/><div style='background-color:#ccccff'><b>Inheritance</b></div>"
         type.base.eachr{result += htmlType(it)+" - "}
         result += "<div style='background-color:#ccccff'><b>Local slots</b></div>"
         type.slots.each
         {
-          result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"+htmlSig(it) + "</div>" + docToHtml(it.doc)
+          result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
+                  +htmlSig(it) + "</div>"
+                  + docToHtml(sys,it.doc)
         }
       }
     }
     catch(Err e) {sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
+
+    return result
+  }
+
+  ** Read doc of a type
+  private Str readAxonTypeDoc(Sys sys, PodInfo pod, TrioInfo? info)
+  {
+    result := ""
+    try
+    {
+      doc := DocPod(pod.podFile)
+
+      libs := pod.types.findAll{it.isAxonLib}
+
+      libs.each |lib|
+      {
+        DocType? type := doc.type(lib.name, false)
+
+        if(type!=null)
+        {
+          type.slots.each
+          {
+            result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
+                    +htmlSig(it) + "</div>"
+                    + docToHtml(sys, it.doc, true)
+          }
+        }
+      }
+      if(info != null)
+      {
+        if( ! info.funcs.isEmpty)
+        {
+          link := toExtLink(pod.name)+"src"
+          result += "<a href='$link'><b>View Sources</b></a><br/><br/>"
+        }
+        info.funcs.each
+        {
+          result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
+                  +it.sig+ "</div>"
+                  + docStrToHtml(sys, it.doc, true)
+        }
+      }
+    }
+    catch(Err e) {sys.log.err("Failed reading Axon docs for $pod.name", e)}
 
     return result
   }
@@ -178,7 +393,7 @@ const class DocWebMod : WebMod
     if(slot is DocField)
     {
       field := slot as DocField
-      sig += htmlType(field.type)
+      sig += " "+ htmlType(field.type)
       sig += " <b>$slot.name </b>"
     }
     else if(slot is DocMethod)
@@ -187,7 +402,11 @@ const class DocWebMod : WebMod
       sig += " " + htmlType(method.returns)
       sig += " <b>$method.name</b>"
       sig += "(";
-      method.params.each{sig += htmlType(it.type) + (it.def != null ?" <i>${it.name}:=${it.def}</i>":" $it.name") + ", "}
+      method.params.each
+      {
+        sig += htmlType(it.type)
+          + (it.def != null ?" <i>${it.name}:=${it.def}</i>":" $it.name") + ", "
+      }
       sig += ")"
     }
     return sig
@@ -207,15 +426,71 @@ const class DocWebMod : WebMod
     writer.onLink = |Link? link|
     {
       uri := link.uri
-      if( ! uri.contains("::"))
+      if( ! uri.contains("::")) // relative links
       {
-        // make relative links absolute
-        if(curUri.contains("::"))
-          uri = curUri[1 .. curUri.index("::")+2]
+        if(uri.contains(".") && curUri.contains("::")) // to type in pod
+           uri = curUri[1 ..< curUri.index("::") + 2] + uri
+        else
+          uri = "#$uri" // to slot in type
       }
+      else
+        uri = "/$uri" // always start with the slash otherwise
+
       uri = uri.replace(".", "#") // slots are mapped into anchors
-      uri = "/$uri" // always start with the slash
       link.uri = uri;
+    }
+    return writer
+  }
+
+  ** Axon docs behave differently
+  internal HtmlDocWriter axonWriter(Sys sys, Str curUri, OutStream out)
+  {
+    HtmlDocWriter writer := HtmlDocWriter(out)
+    writer.onLink = |Link? link|
+    {
+      uri := link.uri
+      if(uri.startsWith("#")) return
+
+      uri = uri.replace(".", "#")
+
+      if(uri.startsWith("/")) return
+      if(uri.contains("::"))
+      {
+        //if(uri.startWith("docskyspark::")) -> meh
+        link.uri = "/$uri"
+        return
+      }
+
+     /* ok : ... "relative" link
+      with axon "relative" links could refer to a tab or function anywhere in the system
+      so look it up and make it an absoulte link
+      assume that tags/func names are unique across skyspark ... gotta be.*/
+
+      infos := sys.index.trioInfo.vals
+      // lookup fantom axon func
+      slot := sys.index.matchSlots(uri, MatchKind.exact).find
+      {
+        it.type.isAxonLib
+      }
+      if(slot != null)
+      {
+        link.uri = toExtLink(slot.type.pod.name)+"funcs#$uri"
+        return
+      }
+      // lookup trio func
+      info := infos.find {it.funcs.containsKey(uri)}
+      if(info != null)
+      {
+        link.uri = toExtLink(info.pod)+"funcs#$uri"
+        return
+      }
+      // lookup trio tag
+      info = infos.find {it.tags.containsKey(uri)}
+      if(info != null)
+      {
+        link.uri = toExtLink(info.pod)+"tags#$uri"
+        return
+      }
     }
     return writer
   }

@@ -94,6 +94,8 @@ const class Index
   ** List all groups found
   PodGroup[] groups() { ((Unsafe)cache.send(Msg("groups")).get(timeout)).val }
 
+  Str:TrioInfo trioInfo() { ((Unsafe)cache.send(Msg("trioInfo")).get(timeout)).val }
+
   ** Find given pod
   PodInfo? pod(Str name, Bool checked := true)
   {
@@ -140,10 +142,22 @@ const class Index
     cache.send(Msg("matchTypes", pattern, kind)).get(timeout)->val
   }
 
-  ** Match types
+  ** Match slots
   SlotInfo[] matchSlots(Str pattern, MatchKind kind := MatchKind.startsWith, Bool methodsOnly := true)
   {
     cache.send(Msg("matchSlots", pattern, kind, methodsOnly)).get(timeout)->val
+  }
+
+  ** Match funcs
+  FuncInfo[] matchFuncs(Str pattern, MatchKind kind := MatchKind.startsWith)
+  {
+    cache.send(Msg("matchFuncs", pattern, kind)).get(timeout)->val
+  }
+
+  ** Match tags
+  TagInfo[] matchTags(Str pattern, MatchKind kind := MatchKind.startsWith)
+  {
+    cache.send(Msg("matchTags", pattern, kind)).get(timeout)->val
   }
 
   ** Match files
@@ -192,16 +206,20 @@ const class Index
     if (id === "pods")        return Unsafe(c.listPods)
     if (id === "groups")      return Unsafe(c.listGroups)
     if (id === "pod")         return c.pod(msg.a)
+    if (id === "trioInfo")    return Unsafe(c.listTrioInfo())
     if (id === "podForFile")  return c.podForFile(msg.a)
     if (id === "groupForFile")  return c.groupForFile(msg.a)
     if (id === "matchTypes")  return Unsafe(c.matchTypes(msg.a, msg.b))
     if (id === "matchSlots")  return Unsafe(c.matchSlots(msg.a, msg.b, msg.c))
+    if (id === "matchFuncs")  return Unsafe(c.matchFuncs(msg.a, msg.b))
+    if (id === "matchTags")  return Unsafe(c.matchTags(msg.a, msg.b))
     if (id === "matchPods")  return Unsafe(c.matchPods(msg.a, msg.b))
     if (id === "matchFiles")  return Unsafe(c.matchFiles(msg.a, msg.b))
     if (id === "addPodSrc")   return c.addPodSrc(msg.a, msg.b, msg.c)
     if (id === "addPodLib")   return c.addPodLib(msg.a, msg.b, msg.c)
     if (id === "addGroup")   return c.addGroup(msg.a, msg.b)
     if (id === "clearAll")    return Actor.locals["cache"] = IndexCache(this)
+    if (id === "addTrioInfo")  return c.addTrioInfo(msg.a)
 
     echo("ERROR: Unknown msg: $msg.id")
     throw Err("Unknown msg: $msg.id")

@@ -36,7 +36,13 @@ const class PodInfo
     this.srcDir     = srcDir
     this.srcFiles   = srcFiles
     this.groupRef.val= group
-    types.each |t| { t.podRef.val = this; }
+    b := false
+    types.each |t|
+    {
+      t.podRef.val = this
+      if(t.isAxonLib) b = true
+    }
+    this.isAxonPod = b
   }
 
   const Str name
@@ -46,22 +52,25 @@ const class PodInfo
   const TypeInfo[] types
   const File? srcDir
   const File[] srcFiles
+  const Bool isAxonPod // contains axon lib
   PodGroup? group() { groupRef.val }
   internal const AtomicRef groupRef := AtomicRef()
 }
 
 const class TypeInfo
 {
-  new make(Str name, Str file, Int line)
+  new make(Str name, Str file, Int line, Bool isAxonLib)
   {
     this.name  = name
     this.file  = file
     this.line  = line
+    this.isAxonLib = isAxonLib
   }
 
   const Str name
   const Str file
   const Int line   // zero based
+  const Bool isAxonLib
 
   File? toFile() { pod.srcFiles.find |f| { f.name == file } }
 
@@ -94,6 +103,9 @@ const abstract class SlotInfo
   const TypeInfo type
   const Str name
   const Int line    // zero based
+
+  Bool isAxonFunc() {return type.isAxonLib}
+
   override Int compare(Obj that) { name <=> ((SlotInfo)that).name }
   override Str toStr() { name }
 }

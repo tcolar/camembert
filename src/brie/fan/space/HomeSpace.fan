@@ -48,6 +48,8 @@ const class HomeSpace : Space
       items := Item[,]
       items.add(Item(indexDir) { it.dis = FileUtil.pathDis(indexDir) })
 
+      addPluginProjects(indexDir, items)
+
       addItems(indexDir, groups, pods, items)
 
       podRoots.add(ItemList(frame, items))
@@ -62,37 +64,48 @@ const class HomeSpace : Space
     podRoots.each |g| { grid.add(g) }
     return InsetPane(0, 5, 5, 5) { grid, }
   }
-  Void addPod(PodInfo p, Item[] items)
-  {
-  }
 
   Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
   {
-      groupsInDir := groups.findAll |g|
-      {
-        return (g.parent?.name ?: "") == curGroup
-            && FileUtil.contains(indexDir, g.srcDir)
-      }
-      podsInDir := pods.findAll |p|
-      {
-        return (p.group?.name ?: "") == curGroup
-            && p.srcDir != null
-            && FileUtil.contains(indexDir, p.srcDir)
-      }
-      // pod groups
-      groupsInDir.each |g|
-      {
-        groups.removeSame(g)
-        items.add(Item(g) {indent = ind})
-        // Now recurse for what is in this group
-        addItems(g.srcDir, groups, pods, items, g.name, ind + 1)
-      }
-      // single pods
-      podsInDir.each |p|
-      {
-        pods.removeSame(p)
-        items.add(Item(p) {indent = ind})
-      }
+    groupsInDir := groups.findAll |g|
+    {
+      return (g.parent?.name ?: "") == curGroup
+          && FileUtil.contains(indexDir, g.srcDir)
+    }
+    podsInDir := pods.findAll |p|
+    {
+      return (p.group?.name ?: "") == curGroup
+          && p.srcDir != null
+          && FileUtil.contains(indexDir, p.srcDir)
+    }
+    // pod groups
+    groupsInDir.each |g|
+    {
+      groups.removeSame(g)
+      items.add(Item(g) {indent = ind})
+      // Now recurse for what is in this group
+      addItems(g.srcDir, groups, pods, items, g.name, ind + 1)
+    }
+    // single pods
+    podsInDir.each |p|
+    {
+      pods.removeSame(p)
+      items.add(Item(p) {indent = ind})
+    }
+  }
+
+  Void addPluginProjects(File dir, Item[] items, Int ind:=0)
+  {
+    // look for plugin projects
+    sys.plugins.vals.each |p|
+    {
+      item := p.projectItem(dir, ind)
+      if(item != null)
+        items.add(item)
+    }
+    // recurse
+    dir.listDirs.sort |a, b| { a <=> b }
+      .each {addPluginProjects(it, items, ind + 1)}
   }
 }
 

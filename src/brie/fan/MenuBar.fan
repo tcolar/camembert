@@ -12,6 +12,8 @@ class MenuBar : Menu
   Menu process
   Menu panels
   Menu options
+  Menu help
+  Menu plugins
 
   new make(Sys sys)
   {
@@ -73,10 +75,19 @@ class MenuBar : Menu
         configs,
       }
 
+      help = Menu {
+        it.text = "Help"
+        MenuItem{ it.command = sys.commands.about.asCommand},
+      }
+
+      plugins = Menu{it.text="Plugins"}
+
       add(file)
       add(nav)
       add(process)
       add(panels)
       add(options)
+      add(plugins)
+      add(help)
     }
 }

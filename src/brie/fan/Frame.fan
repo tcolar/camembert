@@ -139,7 +139,7 @@ class Frame : Window
   Void reload() { load(curSpace, spaceIndex(curSpace), null) }
 
   ** Route to best open space or open new one for given item.
-  Void goto(Item? item)
+  Void goto(Item? item, Bool forceNewSpace := false)
   {
     if(item == null)
       return
@@ -156,7 +156,7 @@ class Frame : Window
 
     // find best space to handle item, or create new one
     best:= matchSpace(item)
-    if (best != null)
+    if (best != null && ! forceNewSpace)
     {
       load(best.goto(item), spaceIndex(best), item)
     }
@@ -172,7 +172,9 @@ class Frame : Window
   {
     i := spaceIndex(space)
     if (i == 0) return
-      spaces = spaces.dup { removeAt(i) }.toImmutable
+
+    space.onUnload
+    spaces = spaces.dup { removeAt(i) }.toImmutable
     if (curSpace == space)
       curSpace = spaces.getSafe(i) ?: spaces.last
     reload
@@ -191,7 +193,7 @@ class Frame : Window
       priority := s.match(item)
       if (priority == 0) return
         if (priority > bestPriority) { bestSpace = s; bestPriority = priority }
-      }
+    }
     return bestSpace
   }
 
@@ -202,14 +204,36 @@ class Frame : Window
     file := item.file
     if (file == null) return null
 
+    pSpace := createPluginSpace(sys, file, 51)
+    if(pSpace != null)
+      return pSpace
+
+    // Pod spaces is considered prio 50
     pod := sys.index.podForFile(file)
     if (pod != null) return PodSpace(sys, pod.name, pod.srcDir)
 
     group := sys.index.groupForFile(file)
     if (group != null) return PodSpace(sys, group.name, group.srcDir)
 
+    pSpace = createPluginSpace(sys, file, 1)
+    if(pSpace != null)
+      return pSpace
+
+    // File space is considered prio 0
     dir := file.isDir ? file : file.parent
     return FileSpace(sys, dir)
+  }
+
+  private Space? createPluginSpace(Sys sys, File file, Int minPrio)
+  {
+    Plugin? match
+    sys.plugins.vals.each |p|
+    {
+      if(p.spacePriority != null && p.spacePriority >= minPrio)
+        if(match == null || p.spacePriority > match.spacePriority)
+          match = p
+    }
+    return match?.createSpace(sys, file)
   }
 
   ** Load current space
