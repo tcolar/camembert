@@ -216,7 +216,7 @@ internal const class FindCmd : Cmd
   Void find(File file)
   {
     prompt := Text { }
-    path := Text { text = FileUtil.pathDis(file) }
+    path := Text { text = file.osPath }
     matchCase := Button { mode = ButtonMode.check; text = "Match case"; selected = lastMatchCase.val }
     replace := Button { mode = ButtonMode.check; text = "Replace (with preview)"; selected = false }
 

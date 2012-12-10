@@ -73,7 +73,7 @@ internal const class NewFileCmd : Cmd
     path := Text
     {
       prefCols = 60
-      text = (dir?.osPath ?: Env.cur.workDir.osPath) + "/"
+      text = (dir?.osPath ?: Env.cur.workDir.osPath) + File.pathSep
     }
 
     combo := Combo
@@ -100,7 +100,8 @@ internal const class NewFileCmd : Cmd
     // open dialog
     if (dialog.open != Dialog.ok) return
 
-    FileUtils.mkDirs(path.text.toUri)
+    uri := File.os(path.text).normalize.uri
+    FileUtils.mkDirs(uri)
 
     f := File.os(path.text).createFile(name.text)
 
@@ -134,7 +135,7 @@ internal const class MoveFileCmd : Cmd
     path := Text
     {
       prefCols = 60
-      text = file.parent.osPath + "/"
+      text = file.parent.osPath + File.sep
     }
 
     dialog := Dialog(frame)
@@ -154,12 +155,16 @@ internal const class MoveFileCmd : Cmd
     // open dialog
     if (dialog.open != Dialog.ok) return
 
-    FileUtils.mkDirs(path.text.toUri)
+    uri := File.os(path.text).normalize.uri
+    FileUtils.mkDirs(uri)
 
-    dest := path.text.toUri.plusSlash + name.text.toUri
+    dest := uri.plusSlash + name.text.toUri
     if(file.isDir)
       dest = dest.plusSlash
-    file.moveTo(File(dest))
+    to := (File(dest)).normalize
+    file.moveTo(to)
+
+    frame.goto(Item(to))
   }
   new make(|This| f) {f(this)}
 }
@@ -182,6 +187,8 @@ internal const class DeleteFileCmd : Cmd
     if (r != Dialog.ok) return
 
     file.delete
+
+    //TODO: if cur file deleted, close the view / reload space
   }
   new make(|This| f) {f(this)}
 }
