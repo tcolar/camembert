@@ -73,7 +73,7 @@ internal const class NewFileCmd : Cmd
     path := Text
     {
       prefCols = 60
-      text = (dir?.osPath ?: Env.cur.workDir.osPath) + File.pathSep
+      text = (dir?.osPath ?: Env.cur.workDir.osPath) + File.sep
     }
 
     combo := Combo
