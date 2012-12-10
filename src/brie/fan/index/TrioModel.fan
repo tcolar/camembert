@@ -45,6 +45,12 @@ const class FuncInfo
     else
      return "<b>${name}</b>(?)"
   }
+
+  override Int compare(Obj that)
+  {
+    if(! (that is FuncInfo)) throw Err("Can't compare $typeof with $that.typeof")
+    return (that as FuncInfo).name <=> name
+  }
 }
 
 **
@@ -60,6 +66,12 @@ const class TagInfo
   Str name() {data["tag"] ?: ""}
   Str doc() {data["doc"] ?: ""}
   Str kind() {data["kind"] ?: ""}
+
+  override Int compare(Obj that)
+  {
+    if(! (that is TagInfo)) throw Err("Can't compare $typeof with $that.typeof")
+    return (that as TagInfo).name <=> name
+  }
 }
 
 

@@ -130,13 +130,13 @@ const class DocWebMod : WebMod
       if(trioInfo != null)
       {
         // axon extensions (trio sources)
-        trioInfo.funcs.each
+        trioInfo.funcs.vals.sort.each
         {
           html += "<a href='funcs#${it.name}'>$it.name</a><br/>"
         }
         // tags
         html += "<h3><b>Tags:</b></h3>"
-        trioInfo.tags.each
+        trioInfo.tags.vals.sort.each
         {
           html += "<a href='tags#${it.name}'>$it.name</a><br/>"
         }
