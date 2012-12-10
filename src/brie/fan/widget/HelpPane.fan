@@ -61,7 +61,13 @@ class HelpPane : ContentPane
             },
             Button{
               image = gfx::Image(`fan://icons/x16/func.png`, false)
-              onAction.add |Event e| {render("axon-home")} // Todo" lib list
+              onAction.add |Event e|
+              {
+                if( ! sys.plugins.containsKey("camA"+"xonPl"+"ugin"))
+                  browser.loadStr("Axon plugin is not installed.")
+                else
+                  render("axon-home")
+              }
             },
           }
           right = Button
