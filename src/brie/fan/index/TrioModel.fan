@@ -49,7 +49,7 @@ const class FuncInfo
   override Int compare(Obj that)
   {
     if(! (that is FuncInfo)) throw Err("Can't compare $typeof with $that.typeof")
-    return (that as FuncInfo).name <=> name
+    return name <=> (that as FuncInfo).name
   }
 }
 
@@ -70,7 +70,7 @@ const class TagInfo
   override Int compare(Obj that)
   {
     if(! (that is TagInfo)) throw Err("Can't compare $typeof with $that.typeof")
-    return (that as TagInfo).name <=> name
+    return name <=> (that as TagInfo).name
   }
 }
 
