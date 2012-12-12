@@ -9,6 +9,7 @@ class HelpPane : ContentPane
 {
   WebBrowser? browser
   Text? search
+  Combo searchType := Combo{items = ["term*","*term*","exact"]}
   private Frame frame
   private Sys sys
 
@@ -32,23 +33,25 @@ class HelpPane : ContentPane
       search = Text
       {
         text=""
-        prefCols = 15
         onAction.add |Event e|
         {
           render(search.text)
         }
       }
+
       top = EdgePane
       {
         top = GridPane
         {
-          numCols = 2
+          numCols = 3
+          expandCol = 3
           Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`);
           onAction.add |Event e|
             {
               browser.back
             }
           },
+          searchType,
           search,
         }
         center = EdgePane
@@ -171,8 +174,15 @@ class HelpPane : ContentPane
     }
     text = text.trim
 
-    search.text = text.trim
+    search.text = text
 
+    if(! text.isEmpty)
+    {
+      if(searchType.selectedIndex == 1)
+        text += "?type=contains"
+      else if(searchType.selectedIndex == 2)
+        text += "?type=exact"
+    }
     browser.load(`http://127.0.0.1:${port}/$text`)
   }
 }

@@ -21,7 +21,14 @@ const class DocWebMod : WebMod
   override Void onGet()
   {
     Sys sys := (Sys) Service.find(Sys#)
-    text := req.uri.toStr[1..-1]
+    text := req.uri.pathStr[1..-1]
+    query := req.uri.query
+    MatchKind matchKind := MatchKind.startsWith
+    if(query.containsKey("type"))
+    {
+      matchKind = MatchKind(query["type"])
+    }
+
     try
     {
       if(text.isEmpty)
@@ -35,7 +42,7 @@ const class DocWebMod : WebMod
         showDoc(req, itemDoc(sys, text))
       }
       else
-        showDoc(req, find(sys, text))
+        showDoc(req, find(sys, text, matchKind))
     }
     catch(Err e)
     {
