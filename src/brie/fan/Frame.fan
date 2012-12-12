@@ -337,7 +337,7 @@ class Frame : Window
   Void save()
   {
     if (curView == null) return
-      if (curView.dirty) curView.onSave
+      /*if (curView.dirty)*/ curView.onSave
       curView.dirty = false
     updateStatus
   }
