@@ -155,7 +155,10 @@ class ItemList : Panel
     {
       event.consume
       menu := item.popup(frame)
-      if (menu != null) menu.open(event.widget, event.pos)
+      if (menu != null)
+      {
+        menu.open(event.widget, event.pos)
+      }
       return
     }
   }

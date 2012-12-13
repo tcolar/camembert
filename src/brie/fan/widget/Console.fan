@@ -17,6 +17,14 @@ using concurrent
 **
 class Console : InsetPane
 {
+  Menu menu := Menu
+  {
+    MenuItem
+    {
+      it.text = "Clear console"
+      it.onAction.add |Event e| {clear}
+    },
+  }
 
   new make(Frame frame) : super(3, 5, 0, 5)
   {
@@ -25,6 +33,11 @@ class Console : InsetPane
     this.list = ItemList(frame, Item[,])
     this.content = this.list
     this.visible = false
+    content.onMouseDown.add |Event event|
+    {
+      if(event.button == 3)
+       menu.open(event.widget, event.pos)
+    }
   }
 
   Void updateSys(Sys sys)
@@ -75,6 +88,12 @@ class Console : InsetPane
   Void log(Str line)
   {
     list.addItem(Item(line))
+  }
+
+  Void clear()
+  {
+    frame.marks = [,]
+    list.update(frame.marks)
   }
 
   Void kill()
