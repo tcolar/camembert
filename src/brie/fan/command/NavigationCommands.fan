@@ -3,6 +3,7 @@ using fwt
 using gfx
 using petanque
 using concurrent
+using netColarUtils
 
 
 **************************************************************************
@@ -255,7 +256,7 @@ internal const class FindCmd : Cmd
     // find all matches
     matches := Item[,]
     if (!matchCase.selected) str = str.lower
-      findMatches(matches, file, str, matchCase.selected)
+      findMatches(matches, File.os(path.text), str, matchCase.selected)
     if (matches.isEmpty) { Dialog.openInfo(frame, "No matches: $str.toCode"); return }
 
     if(replace.selected)
@@ -319,6 +320,8 @@ internal const class FindCmd : Cmd
 
   Void findMatches(Item[] matches, File f, Str str, Bool matchCase)
   {
+    if(! f.exists) return
+
     // recurse dirs
     if (f.isDir)
     {
@@ -328,10 +331,9 @@ internal const class FindCmd : Cmd
       return
     }
 
-    // skip non-text files
-    if (f.mimeType?.mediaType != "text") return
+    if ( ! FileUtils.isTextFile(f)) return
 
-      f.readAllLines.each |line, linei|
+    f.readAllLines.each |line, linei|
     {
       chars := matchCase ? line : line.lower
       col := chars.index(str)
@@ -368,9 +370,8 @@ internal const class FindInSpaceCmd : Cmd
   {
     File? dir
     cs := frame.curSpace
-    if (cs is PodSpace)  dir = ((PodSpace)cs).dir
-      if (cs is FileSpace) dir = ((FileSpace)cs).dir
-      if (dir != null) ((FindCmd)sys.commands.find).find(dir)
-    }
+    dir = cs.root
+    if (dir != null) ((FindCmd)sys.commands.find).find(dir)
+  }
 }
 
