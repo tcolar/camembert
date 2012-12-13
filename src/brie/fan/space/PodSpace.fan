@@ -43,7 +43,6 @@ const class PodSpace : Space
   ** Pod name
   const Str name
 
-  ** Top of source directory
   const File dir
 
   ** Active file
@@ -54,6 +53,8 @@ const class PodSpace : Space
 
   ** Whether this is a pod or a pod group
   const Bool isGroup
+
+  override File? root() {dir}
 
   override Str dis() { name }
 

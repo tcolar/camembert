@@ -37,6 +37,9 @@ const abstract class Space
   ** Return active pod for this space
   abstract PodInfo? curPod()
 
+  ** Return the space root directory
+  virtual File? root() {null}
+
   ** Current type being view/edited
   virtual TypeInfo? curType() { null }
 

@@ -26,11 +26,13 @@ const class FileSpace : Space
     this.curFile = dir + path
   }
 
-  const File dir
-
   const Uri path
 
+  const File dir
+
   override const Str dis
+
+  override File? root() {dir}
 
   override Image icon() { sys.theme.iconDir }
 
