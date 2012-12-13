@@ -142,7 +142,14 @@ const class Item
 
   Pos pos() { Pos(line, col) }
 
-  Menu? popup(Frame frame)
+  ** Called when this item is left clicked
+  virtual Void selected(Frame frame)
+  {
+    frame.goto(this)
+  }
+
+  ** call when item is right clicked
+  virtual Menu? popup(Frame frame)
   {
     if (file == null) return null
     // File menus

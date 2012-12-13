@@ -1,6 +1,8 @@
-Bug: When going in the text area, the first keystroke is lost (gains focus but do not act on the keystroke)
+- Bocce bug: When going in the text area, the first keystroke is often lost (gains focus but do not act on the keystroke)
 
-podspace nav : always show pods first (top) ??
+- When deleting a file/folder, if the currently selected one was deleted / close the view
+- Also when deleting make sure the "nav" gets refreshed.
 
+- help pane: allow to pick search kind: exact, startswith, contains
 
 

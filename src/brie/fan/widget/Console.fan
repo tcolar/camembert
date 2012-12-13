@@ -55,6 +55,13 @@ class Console : InsetPane
     open
   }
 
+  Void append(Item[] marks)
+  {
+    marks.each {list.addItem(it)}
+    list.scrollToLine(list.lineCount)
+    open
+  }
+
   Void close()
   {
     isOpen = false

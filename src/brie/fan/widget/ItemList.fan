@@ -138,17 +138,23 @@ class ItemList : Panel
   private Void doMouseUp(Event event)
   {
     item := items.getSafe(yToLine(event.pos.y))
+    if(item==null)
+    {
+      event.consume
+      return
+    }
+
     if (event.count == 1 && event.button == 1)
     {
       event.consume
-      if (item != null) frame.goto(item)
+      item.selected(frame)
       return
     }
 
     if (event.id === EventId.mouseUp && event.button == 3 && event.count == 1)
     {
       event.consume
-      menu := item?.popup(frame)
+      menu := item.popup(frame)
       if (menu != null) menu.open(event.widget, event.pos)
       return
     }
