@@ -18,6 +18,11 @@ class TextView : View
 {
   new make(Frame frame, File file) : super(frame, file)
   {
+    if( ! file.exists)
+    {
+      this.fileTimeAtLoad = DateTime.now
+      return
+    }
 
     this.fileTimeAtLoad = file.modified
 

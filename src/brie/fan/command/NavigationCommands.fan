@@ -204,7 +204,7 @@ internal class GotoMatchModel : TableModel
 ** FindCmd / Repace
 **************************************************************************
 
-internal const class FindCmd : Cmd
+const class FindCmd : Cmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Find"

@@ -44,7 +44,7 @@ internal const class SaveCmd : Cmd
 **************************************************************************
 ** New file
 **************************************************************************
-internal const class NewFileCmd : Cmd
+const class NewFileCmd : Cmd
 {
   override const Str name := "New File / Folder"
   override Void invoke(Event event)
@@ -119,7 +119,7 @@ internal const class NewFileCmd : Cmd
 **************************************************************************
 ** Move / rename file
 **************************************************************************
-internal const class MoveFileCmd : Cmd
+const class MoveFileCmd : Cmd
 {
   override const Str name := "Move / Rename File"
   override Void invoke(Event event)
@@ -172,7 +172,7 @@ internal const class MoveFileCmd : Cmd
 **************************************************************************
 ** Delete file
 **************************************************************************
-internal const class DeleteFileCmd : Cmd
+const class DeleteFileCmd : Cmd
 {
   override const Str name := "Delete File / Folder"
   override Void invoke(Event event)
@@ -188,7 +188,9 @@ internal const class DeleteFileCmd : Cmd
 
     file.delete
 
-    //TODO: if cur file deleted, close the view / reload space
+    //if cur file was deleted, got to view default
+    if(! frame.curFile.exists)
+      frame.goto(Item(frame.curSpace.root))
   }
   new make(|This| f) {f(this)}
 }
