@@ -24,6 +24,11 @@ class Console : InsetPane
       it.text = "Clear console"
       it.onAction.add |Event e| {clear}
     },
+    MenuItem
+    {
+      it.text = "Copy all text"
+      it.onAction.add |Event e| {copyText}
+    },
   }
 
   new make(Frame frame) : super(3, 5, 0, 5)
@@ -94,6 +99,14 @@ class Console : InsetPane
   {
     frame.marks = [,]
     list.update(frame.marks)
+  }
+
+  ** Copy all the text from the console to the clipboard
+  Void copyText()
+  {
+    text := ""
+    list.items.each {text += "${it.dis}\n"}
+    Desktop.clipboard.setText(text)
   }
 
   Void kill()
