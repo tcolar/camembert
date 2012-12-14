@@ -49,37 +49,37 @@ const class NewFileCmd : Cmd
   override const Str name := "New File / Folder"
   override Void invoke(Event event)
   {
-    newFile(frame.curFile?.parent, frame)
+    newFile(frame.curFile?.parent, "NewFile.fan", frame)
   }
 
-  Void newFile(File? dir, Frame frame)
+  Void newFile(File? dir, Str filename, Frame frame)
   {
-    clazz := File(`${Options.standard.parent}/class.tpl`)
-    if(!clazz.exists)
-    {
-      clazz.create.out.print("// History:\n//   {date} Creation\n\n**\n** {name}\n**\nclass {name}\n{\n}\n").close
-    }
-
     Str:Str tpls := [:] {ordered = true}
     Options.standard.parent.listFiles.findAll |file->Bool|
-      {return file.ext == "tpl"}
-      .each{tpls[it.basename] = it.readAllStr
+    {
+      return file.ext == "tpl"}
+        .each{tpls[it.basename] = it.readAllStr
     }
     tpls["Empty File"] = ""
 
     ok := Dialog.ok
     cancel := Dialog.cancel
-    name := Text {text = "newfile.fan"; prefCols = 60}
+
+    name := Text {text = filename; prefCols = 60}
+    combo := Combo
+    {
+      items = tpls.keys
+    }
+
     path := Text
     {
       prefCols = 60
       text = (dir?.osPath ?: Env.cur.workDir.osPath) + File.sep
     }
 
-    combo := Combo
-    {
-      items = tpls.keys
-    }
+    name.onKeyUp.add |Event e| {adjustCombo(combo, name)}
+
+    adjustCombo(combo, name) // preselect item according to default file name
 
     dialog := Dialog(frame)
     {
@@ -106,13 +106,25 @@ const class NewFileCmd : Cmd
     f := File.os(path.text).createFile(name.text)
 
     text := tpls[combo.selected]
-      .replace("{date}", DateTime.now.toLocale("M D YY"))
+      .replace("{date}", DateTime.now.toLocale("MMM DD YY"))
       .replace("{name}", f.basename)
+      .replace("{user}", Env.cur.user)
 
     f.out.print(text).close
 
     frame.goto(Item(f))
   }
+
+  internal Void adjustCombo(Combo combo, Text text)
+  {
+    name := text.text
+    ext := (name.contains(".") ? name[name.index(".") .. -1] : ".")[1 .. -1]
+    if(combo.index(ext) != null)
+      combo.selected = ext
+    else
+      combo.selected = combo.items[-1] // empty file tpl
+  }
+
   new make(|This| f) {f(this)}
 }
 

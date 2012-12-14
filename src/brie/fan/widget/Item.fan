@@ -166,7 +166,7 @@ const class Item
         dir := file.isDir ? file : file.parent
         it.text = "New file in \"$dir.name\""
         it.onAction.add |e|
-          { (frame.sys.commands.newFile as NewFileCmd).newFile(dir, frame) }
+          { (frame.sys.commands.newFile as NewFileCmd).newFile(dir, "NewFile.fan", frame) }
       },
       MenuItem
       {

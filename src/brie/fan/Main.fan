@@ -18,11 +18,23 @@ class Main
     pluginManager := PluginManager()
     pluginManager.start // will call plugins init
 
+    init
+
     sys := Sys{options = Options.load}
     sys.install
     Frame(sys).open
 
     pluginManager.stop // will call plugins shutdown
+  }
+
+  static Void init()
+  {
+    // Create .fan files template
+    fan := File(`${Options.standard.parent}/fan.tpl`)
+    if(!fan.exists)
+    {
+      fan.create.out.print("// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nclass {name}\n{\n}\n").close
+    }
   }
 }
 
