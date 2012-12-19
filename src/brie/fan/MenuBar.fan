@@ -41,7 +41,8 @@ class MenuBar : Menu
         it.text = "Process"
         MenuItem{ it.command = sys.commands.build.asCommand},
         MenuItem{ it.command = sys.commands.buildGroup.asCommand},
-        MenuItem{ it.command = sys.commands.run.asCommand},
+        MenuItem{ it.command = sys.commands.runPod.asCommand},
+        MenuItem{ it.command = sys.commands.runSingle.asCommand},
         MenuItem{ it.command = sys.commands.buildAndRun.asCommand},
         MenuItem{ it.command = sys.commands.terminate.asCommand},
       }

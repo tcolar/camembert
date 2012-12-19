@@ -20,6 +20,8 @@ const class Shortcuts
   @Setting
   const Str run                   := "F5"
   @Setting
+  const Str runSingle             := "Shift+F5"
+  @Setting
   const Str buildAndRun           := "F6"
 
   @Setting{help = ["Escape (close console / panel)"]}

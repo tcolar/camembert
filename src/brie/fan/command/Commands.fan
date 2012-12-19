@@ -34,7 +34,8 @@ const class Commands
     buildGroup  = BuildGroupCmd{key = Key(sys.shortcuts.buildGroup)}
     editConfig  = EditConfigCmd{}
     reloadConfig= ReloadConfigCmd{}
-    run         = RunCmd{key = Key(sys.shortcuts.run)}
+    runPod      = RunPodCmd{key = Key(sys.shortcuts.run)}
+    runSingle   = RunSingleCmd{key = Key(sys.shortcuts.runSingle)}
     buildAndRun = BuildAndRunCmd{key = Key(sys.shortcuts.buildAndRun)}
     terminate   = TerminateCmd{}
     searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
@@ -69,7 +70,8 @@ const class Commands
   const Cmd build
   const Cmd editConfig
   const Cmd reloadConfig
-  const Cmd run
+  const Cmd runPod
+  const Cmd runSingle
   const Cmd buildAndRun
   const Cmd buildGroup
   const Cmd terminate

@@ -12,8 +12,12 @@ using concurrent
 **
 class ProcessUtil
 {
+  ** Build pod args -> saved in memory and persisted in file
   private [Str:RunArgs]? runArgs
   private File runArgsFile := Env.cur.workDir + `etc/camenbert/run.fog`
+
+  ** Single run args -> just kep in memory for session
+  private File:RunArgs runSingleArgs := [:]
 
   new make()
   {
@@ -117,6 +121,59 @@ class ProcessUtil
         return c.lastResult
       }).send(Unsafe(console)).get(timeout)
   }
+
+  RunArgs? findRunSingleCmd(Frame frame)
+  {
+    f := frame.curFile
+    if(f==null)
+      return null
+
+    folder := findBuildFile(f)?.parent ?: f.parent
+    pod := frame.sys.index.podForFile(f)?.name
+    target := pod == null ? f.basename : "${pod}::$f.basename"
+    cmd := runSingleArgs[f]
+
+    command := Text{text = cmd?.arg(0) ?: "fan"}
+    arg1 := Text{text= cmd?.arg(1) ?: target}
+    arg2 := Text{text = cmd?.arg(2) ?: ""}
+    arg3 := Text{text = cmd?.arg(3) ?: ""}
+    arg4 := Text{text = cmd?.arg(4) ?: ""}
+    arg5 := Text{text = cmd?.arg(5) ?: ""}
+    arg6 := Text{text = cmd?.arg(6) ?: ""}
+    dir := Text{text = folder.osPath}
+    dialog := Dialog(frame)
+    {
+      title = "Run"
+      commands = [ok, cancel]
+      body = EdgePane
+      {
+        it.center = GridPane
+        {
+          numCols = 2
+          Label{text="Command"}, command,
+          Label{text="arg1"}, arg1,
+          Label{text="arg2"}, arg2,
+          Label{text="arg3"}, arg3,
+          Label{text="arg4"}, arg4,
+          Label{text="arg5"}, arg5,
+          Label{text="arg6"}, arg6,
+          Label{text="Run in"}, dir,
+        }
+      }
+    }
+
+    if (Dialog.ok != dialog.open) return null
+
+    d := (dir.text.trim == folder.osPath) ? null : dir.text.trim
+    params := Str[,]
+    [command.text, arg1.text, arg2.text, arg3.text, arg4.text, arg5.text, arg6.text].each
+    {
+      if( ! it.trim.isEmpty) {params.add(it.trim)}
+    }
+    runSingleArgs[f] = RunArgs.makeManual(pod, params, d)
+
+    return runSingleArgs[f]
+  }
 }
 
 @Serializable
@@ -146,6 +203,11 @@ const class RunArgs
       console.execFan(args[1 .. -1], folder)
     else
       console.exec(args, folder)
+  }
+
+  Str? arg(Int index)
+  {
+    args.size > index ? args[index] : null
   }
 }
 

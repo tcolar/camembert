@@ -72,10 +72,10 @@ internal const class BuildGroupCmd : Cmd
 **
 ** Command to run a pod
 **
-internal const class RunCmd : Cmd
+internal const class RunPodCmd : Cmd
 {
   new make(|This| f) {f(this)}
-  override const Str name := "Run"
+  override const Str name := "Run Pod"
   override Void invoke(Event event)
   {
     cmd := frame.process.findRunCmd(frame)
@@ -96,7 +96,26 @@ internal const class BuildAndRunCmd : Cmd
     Desktop.callAsync |->|{
       frame.process.waitForProcess(console, 3min)
       if(console.lastResult == 0 )
-        sys.commands.run.invoke(event)
+        sys.commands.runPod.invoke(event)
     }
   }
 }
+
+**
+** Command to run a single file
+**
+internal const class RunSingleCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "Run Single"
+  override Void invoke(Event event)
+  {
+    cmd := frame.process.findRunSingleCmd(frame)
+    f := frame.curFile
+    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
+
+    cmd?.execute(console, defaultDir)
+  }
+}
+
+
