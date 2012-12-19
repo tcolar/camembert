@@ -44,6 +44,8 @@ class MenuBar : Menu
         MenuItem{ it.command = sys.commands.runPod.asCommand},
         MenuItem{ it.command = sys.commands.runSingle.asCommand},
         MenuItem{ it.command = sys.commands.buildAndRun.asCommand},
+        MenuItem{ it.command = sys.commands.testPod.asCommand},
+        MenuItem{ it.command = sys.commands.testSingle.asCommand},
         MenuItem{ it.command = sys.commands.terminate.asCommand},
       }
 

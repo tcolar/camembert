@@ -23,6 +23,10 @@ const class Shortcuts
   const Str runSingle             := "Shift+F5"
   @Setting
   const Str buildAndRun           := "F6"
+  @Setting
+  const Str test                  := "F7"
+  @Setting
+  const Str testSingle            := "Shift+F7"
 
   @Setting{help = ["Escape (close console / panel)"]}
   const Str consoleToggle         := "Alt+C"

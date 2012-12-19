@@ -18,6 +18,7 @@ class ProcessUtil
 
   ** Single run args -> just kep in memory for session
   private File:RunArgs runSingleArgs := [:]
+  private File:RunArgs testSingleArgs := [:]
 
   new make()
   {
@@ -174,6 +175,40 @@ class ProcessUtil
 
     return runSingleArgs[f]
   }
+
+  RunArgs? findTestSingleCmd(Frame frame)
+  {
+    f := frame.curFile
+    if(f==null)
+      return null
+
+    pod := frame.sys.index.podForFile(f)?.name
+    target := pod == null ? f.basename : "${pod}::$f.basename"
+    cmd := testSingleArgs[f]
+
+    command := Text{text = cmd?.arg(0) ?: "fant"}
+    arg1 := Text{text= cmd?.arg(1) ?: target}
+    dialog := Dialog(frame)
+    {
+      title = "Test"
+      commands = [ok, cancel]
+      body = EdgePane
+      {
+        it.center = GridPane
+        {
+          numCols = 2
+          Label{text="Fant target:"}, arg1,
+        }
+      }
+    }
+
+    if (Dialog.ok != dialog.open) return null
+
+    params := ["fant", arg1.text.trim]
+    testSingleArgs[f] = RunArgs.makeManual(pod, params, null)
+
+    return testSingleArgs[f]
+  }
 }
 
 @Serializable
@@ -201,6 +236,8 @@ const class RunArgs
     folder := runDir != null ? File.os(runDir) : defaultDir
     if(args[0]=="fan" || args[0] == "fan.exe")
       console.execFan(args[1 .. -1], folder)
+    else if(args[0]=="fant" || args[0] == "fant.exe")
+      console.execFan(args[1 .. -1], folder, null, "fant")
     else
       console.exec(args, folder)
   }

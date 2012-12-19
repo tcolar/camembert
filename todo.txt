@@ -1,3 +1,4 @@
-- Bocce bug: When going in the text area, the first keystroke is often lost (gains focus but do not act on the keystroke)
+- Bocce bug: When going in the text area, the first keystroke is often lost, especially if backspace/delete ?
+   (gains focus but do not act on the keystroke)
 
-- test pod / test file commands
+- goto command :-> go to sots

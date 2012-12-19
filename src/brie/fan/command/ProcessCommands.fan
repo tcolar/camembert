@@ -79,6 +79,7 @@ internal const class RunPodCmd : Cmd
   override Void invoke(Event event)
   {
     cmd := frame.process.findRunCmd(frame)
+
     f := frame.curFile
     defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
 
@@ -102,7 +103,7 @@ internal const class BuildAndRunCmd : Cmd
 }
 
 **
-** Command to run a single file
+** Command to run a single item
 **
 internal const class RunSingleCmd : Cmd
 {
@@ -111,6 +112,45 @@ internal const class RunSingleCmd : Cmd
   override Void invoke(Event event)
   {
     cmd := frame.process.findRunSingleCmd(frame)
+    f := frame.curFile
+    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
+
+    cmd?.execute(console, defaultDir)
+  }
+}
+
+**
+** Command to test a single item
+**
+internal const class TestPodCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "Test Pod"
+  override Void invoke(Event event)
+  {
+    f := frame.curFile
+    pod := frame.sys.index.podForFile(f)?.name
+
+    if(pod == null)
+     return
+
+    folder := frame.process.findBuildFile(f)?.parent ?: f.parent
+
+    RunArgs.makeManual(pod, ["fant", pod], null).execute(console, folder)
+  }
+}
+
+
+**
+** Command to test a single item
+**
+internal const class TestSingleCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "Test Single"
+  override Void invoke(Event event)
+  {
+    cmd := frame.process.findTestSingleCmd(frame)
     f := frame.curFile
     defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
 
