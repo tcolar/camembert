@@ -180,6 +180,12 @@ internal const class GotoCmd : Cmd
     if (text.startsWith("f ") && text.size >= 3)
       acc.addAll(sys.index.matchFiles(text[2..-1]))
 
+    // all matching slots from other types
+    acc.addAll(sys.index.matchSlots(text)
+      .findAll |s| {s.type.qname != curType?.qname}
+      .findAll |s| {s.name.size>0 && text.size>0 && s.name[0] == text[0]}
+      .map |s->Item| { Item(s) })
+
     return acc
   }
 }

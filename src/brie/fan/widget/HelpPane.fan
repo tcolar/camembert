@@ -7,6 +7,11 @@ using compilerDoc
 ** Sidebar to search / display fandocs
 class HelpPane : ContentPane
 {
+  static const gfx::Image fanIcon  := gfx::Image(`fan://icons/x16/database.png`, false)
+  static const gfx::Image axonIcon := gfx::Image(`fan://icons/x16/func.png`, false)
+  static const gfx::Image backIcon := gfx::Image(`fan://icons/x16/arrowLeft.png`, false)
+  static const gfx::Image viewIcon := gfx::Image(`fan://camembert/res/binoculars.png`, false)
+
   WebBrowser? browser
   Text? search
   Combo searchType := Combo{items = ["term*","*term*","exact"]}
@@ -45,7 +50,8 @@ class HelpPane : ContentPane
         {
           numCols = 3
           expandCol = 3
-          Button{image = gfx::Image(`fan://icons/x16/arrowLeft.png`);
+          Button{
+          image = backIcon
           onAction.add |Event e|
             {
               browser.back
@@ -59,11 +65,11 @@ class HelpPane : ContentPane
           left = GridPane{
             numCols = 2
             Button{
-              image = gfx::Image(`fan://icons/x16/database.png`, false)
+              image = fanIcon
               onAction.add |Event e| {render("")} // pod list
             },
             Button{
-              image = gfx::Image(`fan://icons/x16/func.png`, false)
+              image = axonIcon
               onAction.add |Event e|
               {
                 if( ! sys.plugins.containsKey("camA"+"xonPl"+"ugin"))
@@ -73,10 +79,14 @@ class HelpPane : ContentPane
               }
             },
           }
-          right = Button
-          {
-            text = "Edit File"//image = gfx::Image(`fan://icons/x16/fileFan.png`, false)
-            onAction.add |Event e| {goto(search.text)}
+          right = GridPane{
+            numCols = 2
+            Label{it.text = "View src:"},
+            Button
+            {
+              image = viewIcon
+              onAction.add |Event e| {goto(search.text)}
+            },
           }
         }
       }
