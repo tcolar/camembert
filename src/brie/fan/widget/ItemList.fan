@@ -16,11 +16,9 @@ using petanque
 **
 class ItemList : Panel
 {
-  Sys? sys := (Sys)Service.find(Sys#) as Sys
-
-//////////////////////////////////////////////////////////////////////////
-// Constructor
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Constructor
+  //////////////////////////////////////////////////////////////////////////
 
   new make(Frame frame, Item[] items, Int width := 200)
   {
@@ -28,26 +26,17 @@ class ItemList : Panel
     this.width = width
     update(items)
     onMouseUp.add |e| { doMouseUp(e) }
-    updateSys(frame.sys)
   }
 
-  Void updateSys(Sys sys)
-  {
-    this.sys = sys
-    wallpaperColor = sys.theme.bg
-    viewportColor = sys.theme.bg
-    repaint
-  }
-
-//////////////////////////////////////////////////////////////////////////
-// Config
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Config
+  //////////////////////////////////////////////////////////////////////////
 
   Frame? frame { private set }
 
   Item[] items := [,] { private set  }
 
-  Font font := sys.theme.font
+  Font font := Sys.cur.theme.font
 
   Item? highlight { set { &highlight = it; repaint } }
 
@@ -120,11 +109,11 @@ class ItemList : Panel
   {
     if (item === this.highlight)
     {
-      g.brush = sys.theme.selectedItem
+      g.brush = Sys.cur.theme.selectedItem
       g.fillRect(0, y, size.w, itemh)
     }
     x += item.indent*20
-    g.brush = sys.theme.fontColor
+    g.brush = Sys.cur.theme.fontColor
     if (item.icon != null) g.drawImage(item.icon, x, y)
     g.drawText(item.dis, x+20, y)
   }

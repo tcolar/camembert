@@ -25,7 +25,6 @@ const class Index
   ** Construct with directories to crawl
   new make(Sys sys)
   {
-    this.sys = sys
     dirs := File[,]
     sys.options.srcDirs.each |uri|
     {
@@ -52,14 +51,11 @@ const class Index
       catch (Err e) echo("Invalid podDir: $uri\n  $e")
     }
     this.podDirs = dirs
-    reindexAll
   }
 
-  const Sys sys
-
-//////////////////////////////////////////////////////////////////////////
-// Access
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // Access
+  //////////////////////////////////////////////////////////////////////////
 
   ** Source directories to crawl and maintain synchronization
   const File[] srcDirs
@@ -78,8 +74,8 @@ const class Index
     {
       Desktop.callAsync |->|
       {
-        frame := sys.frame
-        if (frame.curSpace is HomeSpace) frame.reload
+        frame := Sys.cur.frame
+        if (frame.curSpace is ProjectSpace) frame.reload
         else frame.updateStatus
         if(! val)  // done indexing
           frame.helpPane.indexUpdated

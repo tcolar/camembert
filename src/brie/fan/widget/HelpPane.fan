@@ -16,12 +16,10 @@ class HelpPane : ContentPane
   Text? search
   Combo searchType := Combo{items = ["term*","*term*","exact"]}
   private Frame frame
-  private Sys sys
 
   new make(Frame frame)
   {
     this.frame = frame
-    sys = frame.sys
     try
     {
       // This can fail because of SWT / native browser incompatibilities
@@ -72,7 +70,7 @@ class HelpPane : ContentPane
               image = axonIcon
               onAction.add |Event e|
               {
-                if( ! sys.plugins.containsKey("camA"+"xonPl"+"ugin"))
+                if( ! Sys.cur.plugins.containsKey("camA"+"xonPl"+"ugin"))
                   browser.loadStr("Axon plugin is not installed.")
                 else
                   render("axon-home")
@@ -101,11 +99,6 @@ class HelpPane : ContentPane
       onHyperlink(e)
     }
     render("")
-  }
-
-  Void updateSys(Sys newSys)
-  {
-    sys = newSys
   }
 
   private Void hide()
@@ -139,7 +132,7 @@ class HelpPane : ContentPane
     {
       if(where.contains("#"))
         where = where[0 ..< where.index("#")]
-      info := sys.index.matchTypes(where, MatchKind.exact).first
+      info := Sys.cur.index.matchTypes(where, MatchKind.exact).first
       if(info != null)
       {
         try
@@ -172,7 +165,7 @@ class HelpPane : ContentPane
   ** Delegates to the browser loading from DocWebMod
   internal Void render(Str text)
   {
-    port := sys.docServer.port
+    port := Sys.cur.docServer.port
     if(browser == null)
       return
     if(visible == false)

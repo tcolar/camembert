@@ -42,7 +42,7 @@ internal class IndexCrawler
   ** We only do  it on indexAll and not updating on pod modif (for now)
   Void indexTrio()
   {
-    axonPlugin := index.sys.plugins["camAxonPlugin"]
+    axonPlugin := Sys.cur.plugins["camAxonPlugin"]
     if(axonPlugin != null)
     {
       // Dynamic call for this (no proper plugin indexing infrastructure for now)

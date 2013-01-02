@@ -16,7 +16,6 @@ const class Commands
 {
   new make(Sys sys)
   {
-    this.sys = sys
     exit        = ExitCmd{}
     reload      = ReloadCmd{key = Key(sys.shortcuts.reloadFile)}
     save        = SaveCmd{key = Key(sys.shortcuts.saveFile)}
@@ -49,14 +48,12 @@ const class Commands
       if ( ! field.type.fits(Cmd#)) return
         Cmd cmd := field.get(this)
       list.add(cmd)
-      cmd.sysRef.val = sys
     }
     this.list = list
   }
 
   Cmd? findByKey(Key key) { list.find |cmd| { cmd.key == key } }
 
-  const Sys sys
   const Cmd[] list
   const Cmd exit
   const Cmd reload
@@ -100,11 +97,11 @@ const abstract class Cmd
   abstract Void invoke(Event event)
   const Key? key
 
-  const AtomicRef sysRef := AtomicRef(null)
-  Sys sys() {sysRef.val }
+  //const AtomicRef sysRef := AtomicRef(null)
+  Sys sys() {Sys.cur}
 
-  Options options() { sys.options }
-  Frame frame() { sys.frame }
+  Options options() { Sys.cur.options }
+  Frame frame() { Sys.cur.frame }
   Console console() { frame.console }
 
   Command asCommand()
@@ -171,7 +168,8 @@ internal const class AboutCmd : Cmd
   override const Str name := "About"
   override Void invoke(Event event)
   {
-    Dialog.openInfo(frame, "Camembert is a fork of Brie.\n\nBy Thibaut Colar.\n\nhttp://www.status302.com/",null)
+    version := Pod.of(this).version.toStr
+    Dialog.openInfo(frame, "Camembert is a fork of Brie.\n\nVersion:$version\n\nBy Thibaut Colar.\n\nhttp://www.status302.com/",null)
   }
   new make(|This| f) {f(this)}
 }

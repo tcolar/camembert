@@ -100,8 +100,7 @@ const class Theme
 
   static Image fileToIcon(File f)
   {
-    Sys? sys := Service.find(Sys#) as Sys
-    t := sys.theme
+    t := Sys.cur.theme
 
     if (f.isDir) return t.iconDir
       if (f.mimeType?.mediaType == "image") return t.iconImage

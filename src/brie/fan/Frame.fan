@@ -22,10 +22,9 @@ class Frame : Window
   //////////////////////////////////////////////////////////////////////////
 
   ** Construct for given system
-  new make(Sys sys) : super(null)
+  new make() : super(null)
   {
     // initialize
-    this.sys = sys
     this.icon = Image(`fan://icons/x32/blueprints.png`)
     Actor.locals["frame"] = this
 
@@ -34,10 +33,10 @@ class Frame : Window
     )
 
     // menu
-    menuBar = MenuBar(sys)
+    menuBar = MenuBar()
 
     // eventing
-    onClose.add |Event e| { e.consume; sys.commands.exit.invoke(e) }
+    onClose.add |Event e| { e.consume; Sys.cur.commands.exit.invoke(e) }
     onKeyDown.add |e| { trapKeyDown(e) }
     //onDrop = |data| { doDrop(data) }
 
@@ -81,31 +80,15 @@ class Frame : Window
     PluginManager.cur.onFrameReady(this)
   }
 
-  Void updateSys(Sys newSys)
-  {
-    this.sys = newSys
-    spaces[0] = HomeSpace(sys)
-    select(spaces[0])
-    spaceBar.updateSys(sys)
-    console.updateSys(sys)
-    helpPane.updateSys(sys)
-  }
-
   //////////////////////////////////////////////////////////////////////////
   // Access
   //////////////////////////////////////////////////////////////////////////
-
-  ** System services
-  Sys? sys
 
   ** Current space
   Space curSpace
 
   ** Current space file
   File? curFile() { curSpace.curFile }
-
-  ** Current space pod
-  PodInfo? curPod() { curSpace.curPod }
 
   ** If current space has loaded a view
   View? curView { private set }
@@ -158,13 +141,15 @@ class Frame : Window
     best:= matchSpace(item)
     if (best != null && ! forceNewSpace)
     {
-      load(best.goto(item), spaceIndex(best), item)
+      best.goto(item)
+      load(best, spaceIndex(best), item)
     }
     else
     {
       c := create(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
-        load(c.goto(item), null, item)
+      c.goto(item)
+      load(c, null, item)
     }
   }
 
@@ -173,8 +158,7 @@ class Frame : Window
     i := spaceIndex(space)
     if (i == 0) return
 
-    space.onUnload
-    spaces = spaces.dup { removeAt(i) }.toImmutable
+    spaces.removeAt(i)
     if (curSpace == space)
       curSpace = spaces.getSafe(i) ?: spaces.last
     reload
@@ -204,36 +188,36 @@ class Frame : Window
     file := item.file
     if (file == null) return null
 
-    pSpace := createPluginSpace(sys, file, 51)
+    pSpace := createPluginSpace(file, 51)
     if(pSpace != null)
       return pSpace
 
     // Pod spaces is considered prio 50
-    pod := sys.index.podForFile(file)
-    if (pod != null) return PodSpace(sys, pod.name, pod.srcDir)
+    pod := Sys.cur.index.podForFile(file)
+    if (pod != null) return PodSpace(this, pod.name, pod.srcDir)
 
-    group := sys.index.groupForFile(file)
-    if (group != null) return PodSpace(sys, group.name, group.srcDir)
+    group := Sys.cur.index.groupForFile(file)
+    if (group != null) return PodSpace(this, group.name, group.srcDir)
 
-    pSpace = createPluginSpace(sys, file, 1)
+    pSpace = createPluginSpace(file, 1)
     if(pSpace != null)
       return pSpace
 
     // File space is considered prio 0
     dir := file.isDir ? file : file.parent
-    return FileSpace(sys, dir)
+    return FileSpace(this, dir)
   }
 
-  private Space? createPluginSpace(Sys sys, File file, Int minPrio)
+  private Space? createPluginSpace(File file, Int minPrio)
   {
     Plugin? match
-    sys.plugins.vals.each |p|
+    Sys.cur.plugins.vals.each |p|
     {
       if(p.spacePriority != null && p.spacePriority >= minPrio)
         if(match == null || p.spacePriority > match.spacePriority)
           match = p
     }
-    return match?.createSpace(sys, file)
+    return match?.createSpace(file)
   }
 
   ** Load current space
@@ -250,23 +234,23 @@ class Frame : Window
     try
       curView?.onUnload
     catch (Err e)
-      sys.log.err("View.onUnload", e)
+      Sys.cur.log.err("View.onUnload", e)
     curView = null
 
     // update space references
     oldSpace := curSpace
     this.curSpace = space
     if (index == null)
-      this.spaces = spaces.add(space).sort
+      spaces.add(space).sort
     else
-      this.spaces = spaces.dup.set(index, space).sort
+      spaces.set(index, space).sort
 
     // load space
     spaceBar.onLoad
-    spacePane.content = space.onLoad(this)
+    spacePane.content = space.ui
 
     // see if current space content has view
-    this.curView = findView(spacePane.content)
+    this.curView = space.view
     updateStatus
 
     // save curItem and push into history
@@ -287,12 +271,6 @@ class Frame : Window
         }
       if (item != null) curView.onGoto(item)
       }
-  }
-
-  private static View? findView(Widget w)
-  {
-    if (w is View) return w
-      return w.children.eachWhile |kid| { findView(kid) }
   }
 
   private Int spaceIndex(Space space)
@@ -361,16 +339,16 @@ class Frame : Window
 
   internal Void trapKeyDown(Event event)
   {
-    cmd := sys.commands.findByKey(event.key)
+    cmd := Sys.cur.commands.findByKey(event.key)
     if (cmd != null)
     {
       cmd.invoke(event)
     }
     if(event.keyChar >= '1'
       && event.keyChar<='9'
-      && event.key.modifiers.toStr == sys.shortcuts.recentModifier)
+      && event.key.modifiers.toStr == Sys.cur.shortcuts.recentModifier)
     {
-       sys.commands.recent.invoke(event)
+       Sys.cur.commands.recent.invoke(event)
     }
   }
 
@@ -393,7 +371,7 @@ class Frame : Window
     try
       if (sessionFile.exists) props = sessionFile.readProps
       catch (Err e)
-      sys.log.err("Cannot load session: $sessionFile", e)
+      Sys.cur.log.err("Cannot load session: $sessionFile", e)
 
     // read bounds
     this.bounds = Rect(props["frame.bounds"] ?: "100,100,600,500")
@@ -420,18 +398,18 @@ class Frame : Window
       try
       {
         loader := Type.find(type).method("loadSession")
-        Space space := loader.callList([sys, spaceProps])
+        Space space := loader.callList([this, spaceProps])
         spaces.add(space)
       }
-      catch (Err e) sys.log.err("ERROR: Cannot load space $type", e)
+      catch (Err e) Sys.cur.log.err("ERROR: Cannot load space $type", e)
       }
 
-    // always insert HomeSpace
-    if (spaces.first isnot HomeSpace)
-      spaces.insert(0, HomeSpace(sys))
+    // always insert ProjectSpace
+    if (spaces.first isnot ProjectSpace)
+      spaces.insert(0, ProjectSpace(this))
 
     // save spaces
-    this.spaces = spaces.toImmutable
+    this.spaces = spaces
   }
 
   internal Void saveSession()
@@ -458,7 +436,7 @@ class Frame : Window
     try
       sessionFile.writeProps(props)
     catch (Err e)
-      sys.log.err("Cannot save $sessionFile", e)
+      Sys.cur.log.err("Cannot save $sessionFile", e)
   }
 
   //////////////////////////////////////////////////////////////////////////

@@ -34,9 +34,9 @@ internal const class BuildCmd : Cmd
 
     console.execFan([f.osPath], f.parent) |c|
     {
-      pod := sys.index.podForFile(f)
+      pod := Sys.cur.index.podForFile(f)
       if (pod != null)
-        sys.index.reindexPod(pod)
+        Sys.cur.index.reindexPod(pod)
     }
   }
 }
@@ -59,10 +59,10 @@ internal const class BuildGroupCmd : Cmd
 
     console.execFan([f.osPath], f.parent) |c|
     {
-      sys.index.pods.each |p|
+      Sys.cur.index.pods.each |p|
       {
         if(p.srcDir != null && FileUtil.contains(f.parent, p.srcDir))
-          sys.index.reindexPod(p)
+          Sys.cur.index.reindexPod(p)
       }
     }
   }
@@ -93,11 +93,11 @@ internal const class BuildAndRunCmd : Cmd
   override const Str name := "BuildAndRun"
   override Void invoke(Event event)
   {
-    sys.commands.build.invoke(event)
+    Sys.cur.commands.build.invoke(event)
     Desktop.callAsync |->|{
       frame.process.waitForProcess(console, 3min)
       if(console.lastResult == 0 )
-        sys.commands.runPod.invoke(event)
+        Sys.cur.commands.runPod.invoke(event)
     }
   }
 }
@@ -129,7 +129,7 @@ internal const class TestPodCmd : Cmd
   override Void invoke(Event event)
   {
     f := frame.curFile
-    pod := frame.sys.index.podForFile(f)?.name
+    pod := Sys.cur.index.podForFile(f)?.name
 
     if(pod == null)
      return

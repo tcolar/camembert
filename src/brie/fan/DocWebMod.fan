@@ -20,7 +20,6 @@ const class DocWebMod : WebMod
 
   override Void onGet()
   {
-    Sys sys := (Sys) Service.find(Sys#)
     text := req.uri.pathStr[1..-1]
     query := req.uri.query
     MatchKind matchKind := MatchKind.startsWith
@@ -32,17 +31,17 @@ const class DocWebMod : WebMod
     try
     {
       if(text.isEmpty)
-        showDoc(req, podList(sys))
+        showDoc(req, podList())
       else if(text == "axon-home")
-        showDoc(req, axonLibs(sys))
+        showDoc(req, axonLibs())
       else if(text.contains("ext-"))
-        showDoc(req, axonDocs(sys, text))
+        showDoc(req, axonDocs(text))
       else if(text.contains("::"))
       {
-        showDoc(req, itemDoc(sys, text))
+        showDoc(req, itemDoc(text))
       }
       else
-        showDoc(req, find(sys, text, matchKind))
+        showDoc(req, find(text, matchKind))
     }
     catch(Err e)
     {
@@ -59,10 +58,10 @@ const class DocWebMod : WebMod
   }
 
   ** List all pods except axon library pods
-  Str podList(Sys sys)
+  Str podList()
   {
     Str pods := "<h2>Pod List</h2>"
-    sys.index.pods.each
+    Sys.cur.index.pods.each
     {
       if( ! it.isAxonPod || it.name=="skyspark" || it.name=="proj")
       {
@@ -73,18 +72,18 @@ const class DocWebMod : WebMod
   }
 
   ** List axon libraries / extensions
-  Str axonLibs(Sys sys)
+  Str axonLibs()
   {
     Str html := "<h2>Axon libraries</h2>"
     Str[] pods := [,]
     // axon libraries writen in Fantom
-    sys.index.pods.each |pod|
+    Sys.cur.index.pods.each |pod|
     {
       if(pod.isAxonPod)
         pods.add(pod.name)
     }
     // axon extensions (trio sources)
-    sys.index.trioInfo.keys.each |pod|
+    Sys.cur.index.trioInfo.keys.each |pod|
     {
       if(!pods.contains(pod))
         pods.add(pod)
@@ -105,7 +104,7 @@ const class DocWebMod : WebMod
   }
 
   ** Axon extensions/libs docs
-  private Str axonDocs(Sys sys, Str text)
+  private Str axonDocs(Str text)
   {
     podName := text[0 ..< text.index("/")]
     if(podName.startsWith("ext-"))
@@ -118,10 +117,10 @@ const class DocWebMod : WebMod
 
     item := text[text.index("/")+1 .. -1]
 
-    pod := sys.index.matchPods(podName.lower, MatchKind.exact).first
+    pod := Sys.cur.index.matchPods(podName.lower, MatchKind.exact).first
     if(pod == null)
       return "$podName not found !"
-    trioInfo := sys.index.trioInfo[podName]
+    trioInfo := Sys.cur.index.trioInfo[podName]
 
     if(item == "index")
     {
@@ -154,7 +153,7 @@ const class DocWebMod : WebMod
     {
       html := "<h2>$podName Funtions :</h2>"
       // fantom funcs
-      html += readAxonTypeDoc(sys, pod, trioInfo)
+      html += readAxonTypeDoc(pod, trioInfo)
       return html
     }
     else if(item == "tags")
@@ -165,7 +164,7 @@ const class DocWebMod : WebMod
       {
         html += "<div style='background-color:#ffeedd'><a name='$it.name'></a><b>${it.name}</b>"
                     + "</div><div style='background-color:#ddffdd'>$it.kind</div>"
-                    + docStrToHtml(sys, it.doc, true)
+                    + docStrToHtml(it.doc, true)
       }
       return html
     }
@@ -184,38 +183,38 @@ const class DocWebMod : WebMod
   }
 
   ** Get doc for an item(pod, type etc..)
-  private Str itemDoc(Sys sys, Str fqn)
+  private Str itemDoc(Str fqn)
   {
     if(fqn.contains("::index")) fqn = fqn[0 ..< fqn.index("::")]
       if(fqn.contains("::pod-doc")) fqn = fqn[0 ..< fqn.index("::")]
       if(! fqn.contains("::"))
     {
       // pod
-      info := sys.index.matchPods(fqn.lower, MatchKind.exact).first
+      info := Sys.cur.index.matchPods(fqn.lower, MatchKind.exact).first
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.name</h2>"
       info.types.each {text += "<a href='/$it.qname'>$it.name</a>, "}
       text += "<hr/>"
-      text += readPodDoc(sys, info.podFile)
+      text += readPodDoc(info.podFile)
       return text
     }
     else
     {
-      info := sys.index.matchTypes(fqn.lower, MatchKind.exact).first
+      info := Sys.cur.index.matchTypes(fqn.lower, MatchKind.exact).first
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.qname</h2>"
-      text += readTypeDoc(sys, info.pod.podFile, info.name)
+      text += readTypeDoc(info.pod.podFile, info.name)
       return text
     }
   }
 
   ** Search pods, types, slots for items matching the query
   ** And returns a search result page
-  private Str find(Sys sys, Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := true)
+  private Str find(Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := true)
   {
-    index := sys.index
+    index := Sys.cur.index
 
     pods := index.matchPods(query, kind)
     results := ""
@@ -280,40 +279,40 @@ const class DocWebMod : WebMod
   }
 
   ** Parse Fandoc into HTML
-  private Str docToHtml(Sys sys, DocFandoc? doc, Bool forAxon := false)
+  private Str docToHtml(DocFandoc? doc, Bool forAxon := false)
   {
-    return docStrToHtml(sys, doc.text, forAxon)
+    return docStrToHtml(doc.text, forAxon)
   }
 
-  private Str docStrToHtml(Sys sys, Str? doc, Bool forAxon := false)
+  private Str docStrToHtml(Str? doc, Bool forAxon := false)
   {
     if(doc == null || doc.isEmpty) return "<br/>"
       buf := Buf()
     writer := forAxon ?
-        axonWriter(sys, req.uri.toStr, buf.out)
+        axonWriter(req.uri.toStr, buf.out)
         : writer(req.uri.toStr, buf.out)
     FandocParser.make.parseStr(doc).write(writer)
     return buf.flip.readAllStr
   }
 
   ** Read doc of a pod
-  private Str readPodDoc(Sys sys, File podFile)
+  private Str readPodDoc(File podFile)
   {
     result := "Failed to read pod doc !"
     try
     {
       doc := DocPod(podFile)
       if(doc.podDoc != null)
-        result = docToHtml(sys, doc.podDoc.doc)
+        result = docToHtml(doc.podDoc.doc)
       else
        result = doc.summary
     }
-    catch(Err e) {sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
+    catch(Err e) {Sys.cur.log.err("Failed reading pod doc for $podFile.osPath", e)}
     return result
   }
 
   ** Read doc of a type
-  private Str readTypeDoc(Sys sys, File podFile, Str typeName)
+  private Str readTypeDoc(File podFile, Str typeName)
   {
     result := "Failed to read pod doc !"
     try
@@ -322,7 +321,7 @@ const class DocWebMod : WebMod
 
       DocType? type := doc.type(typeName, false)
 
-      Str summary := type?.doc != null ? docToHtml(sys, type.doc) : doc.summary
+      Str summary := type?.doc != null ? docToHtml(type.doc) : doc.summary
 
       result = summary
       if(type!=null)
@@ -339,17 +338,17 @@ const class DocWebMod : WebMod
         {
           result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
                   +htmlSig(it) + "</div>"
-                  + docToHtml(sys,it.doc)
+                  + docToHtml(it.doc)
         }
       }
     }
-    catch(Err e) {sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
+    catch(Err e) {Sys.cur.log.err("Failed reading pod doc for $podFile.osPath", e)}
 
     return result
   }
 
   ** Read doc of a type
-  private Str readAxonTypeDoc(Sys sys, PodInfo pod, TrioInfo? info)
+  private Str readAxonTypeDoc(PodInfo pod, TrioInfo? info)
   {
     result := ""
     try
@@ -368,7 +367,7 @@ const class DocWebMod : WebMod
           {
             result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
                     +htmlSig(it) + "</div>"
-                    + docToHtml(sys, it.doc, true)
+                    + docToHtml(it.doc, true)
           }
         }
       }
@@ -383,11 +382,11 @@ const class DocWebMod : WebMod
         {
           result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
                   +it.sig+ "</div>"
-                  + docStrToHtml(sys, it.doc, true)
+                  + docStrToHtml(it.doc, true)
         }
       }
     }
-    catch(Err e) {sys.log.err("Failed reading Axon docs for $pod.name", e)}
+    catch(Err e) {Sys.cur.log.err("Failed reading Axon docs for $pod.name", e)}
 
     return result
   }
@@ -450,7 +449,7 @@ const class DocWebMod : WebMod
   }
 
   ** Axon docs behave differently
-  internal HtmlDocWriter axonWriter(Sys sys, Str curUri, OutStream out)
+  internal HtmlDocWriter axonWriter(Str curUri, OutStream out)
   {
     HtmlDocWriter writer := HtmlDocWriter(out)
     writer.onLink = |Link? link|
@@ -473,9 +472,9 @@ const class DocWebMod : WebMod
       so look it up and make it an absoulte link
       assume that tags/func names are unique across skyspark ... gotta be.*/
 
-      infos := sys.index.trioInfo.vals
+      infos := Sys.cur.index.trioInfo.vals
       // lookup fantom axon func
-      slot := sys.index.matchSlots(uri, MatchKind.exact).find
+      slot := Sys.cur.index.matchSlots(uri, MatchKind.exact).find
       {
         it.type.isAxonLib
       }

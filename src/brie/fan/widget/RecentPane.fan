@@ -95,8 +95,6 @@ class RecentPicker : EdgePane
 
 class RecentPickerModel : TableModel
 {
-  Sys? sys := Service.find(Sys#) as Sys
-
   new make(Item[] items) { this.items = items }
 
   override Int numCols() { return 3 }
@@ -124,8 +122,8 @@ class RecentPickerModel : TableModel
     }
   }
   Item[] items
-  Image def := sys.theme.iconFile
-  Font accFont := sys.theme.font.toSize(sys.theme.font.size - 1)
+  Image def := Sys.cur.theme.iconFile
+  Font accFont := Sys.cur.theme.font.toSize(Sys.cur.theme.font.size - 1)
   Color accColor := Color("#666")
 
   Void update(History history)

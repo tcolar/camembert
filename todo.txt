@@ -1,4 +1,22 @@
 - Bocce bug: When going in the text area, the first keystroke is often lost, especially if backspace/delete ?
    (gains focus but do not act on the keystroke)
 
-- goto command :-> go to sots
+console: process tabs, repeat command etc ... ?
+
+build group icon should stay yellow in space bar
+
+allow folding/unfolding folders in pod space nav
+allow to use patterns for folders to autoexpand (ie: fan/** test/**)
+
+separate fantom config from editor config
+make support fantom a plugin ?
+
+better plugin speration
+
+"pluginize" help pane -> allow search in html, javascript, java docs etc ...
+
+Move away from const space to allow more efficient refresh and not having to rebuild space constantly.
+
+Copy and use the syntax files in config folder
+
+

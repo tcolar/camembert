@@ -21,8 +21,8 @@ class Main
     init
 
     sys := Sys{options = Options.load}
-    sys.install
-    Frame(sys).open
+    sys.start
+    Frame().open
 
     pluginManager.stop // will call plugins shutdown
   }

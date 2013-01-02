@@ -15,10 +15,8 @@ using petanque
 ** Item represents an active item such as file or type
 ** that has an icon, display string, and popup
 **
-const class Item
+class Item
 {
-  const Sys? sys := Service.find(Sys#) as Sys
-
   static Item[] makeFiles(File[] files)
   {
     acc := Item[,]
@@ -36,18 +34,18 @@ const class Item
     // check if this is a pod / group root first
     if(file.isDir)
     {
-      g := sys.index.isGroupDir(file)
-      p := sys.index.isPodDir(file)
+      g := Sys.cur.index.isGroupDir(file)
+      p := Sys.cur.index.isPodDir(file)
       if(g != null)
       {
         this.dis  = g.name
-        this.icon = sys.theme.iconPodGroup
+        this.icon = Sys.cur.theme.iconPodGroup
         this.file = g.srcDir
       }
       else if(p != null)
       {
         this.dis  = p.name
-        this.icon = sys.theme.iconPod
+        this.icon = Sys.cur.theme.iconPod
         this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
         this.pod  = p
       }
@@ -58,7 +56,7 @@ const class Item
   new makePod(PodInfo p, |This|? f := null)
   {
     this.dis  = p.name
-    this.icon = sys.theme.iconPod
+    this.icon = Sys.cur.theme.iconPod
     this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
 
     this.pod  = p
@@ -68,7 +66,7 @@ const class Item
   new makeGroup(PodGroup g, |This|? f := null)
   {
     this.dis  = g.name
-    this.icon = sys.theme.iconPodGroup
+    this.icon = Sys.cur.theme.iconPodGroup
     this.file = g.srcDir
     this.group = g.name
     if (f != null) f(this)
@@ -77,7 +75,7 @@ const class Item
   new makeType(TypeInfo t, |This|? f := null)
   {
     this.dis  = t.qname
-    this.icon = sys.theme.iconType
+    this.icon = Sys.cur.theme.iconType
     this.file = t.toFile
     this.line = t.line
     this.pod  = t.pod
@@ -88,7 +86,7 @@ const class Item
   new makeSlot(SlotInfo s, |This|? f := null)
   {
     this.dis  = s.qname
-    this.icon = s is FieldInfo ? sys.theme.iconField : sys.theme.iconMethod
+    this.icon = s is FieldInfo ? Sys.cur.theme.iconField : Sys.cur.theme.iconMethod
     this.file = s.type.toFile
     this.line = s.line
     this.col  = 2
@@ -102,19 +100,11 @@ const class Item
 
   new make(|This| f) { f(this) }
 
-  static Item makeDupSpace(Item orig, Space space)
-  {
-    map := Field:Obj?[:]
-    orig.typeof.fields.each |f| { if (!f.isStatic) map[f] = f.get(orig) }
-    map[#space] = space
-    return make(Field.makeSetFunc(map))
-  }
-
   const Str dis
 
   const Image? icon
 
-  const Space? space
+  Space? space
 
   const File? file
 
@@ -159,21 +149,21 @@ const class Item
       {
         it.text = "Find in \"$file.name\""
         it.onAction.add |e|
-          { (frame.sys.commands.find as FindCmd).find(file) }
+          { (Sys.cur.commands.find as FindCmd).find(file) }
       },
       MenuItem
       {
         dir := file.isDir ? file : file.parent
         it.text = "New file in \"$dir.name\""
         it.onAction.add |e|
-          { (frame.sys.commands.newFile as NewFileCmd).newFile(dir, "NewFile.fan", frame) }
+          { (Sys.cur.commands.newFile as NewFileCmd).newFile(dir, "NewFile.fan", frame) }
       },
       MenuItem
       {
         it.text = "Delete \"$file.name\""
         it.onAction.add |e|
         {
-          (frame.sys.commands.delete as DeleteFileCmd).delFile(file, frame)
+          (Sys.cur.commands.delete as DeleteFileCmd).delFile(file, frame)
           frame.goto(this) // refresh
         }
       },
@@ -182,7 +172,7 @@ const class Item
         it.text = "Rename/Move \"$file.name\""
         it.onAction.add |e|
         {
-          (frame.sys.commands.move as MoveFileCmd).moveFile(file, frame)
+          (Sys.cur.commands.move as MoveFileCmd).moveFile(file, frame)
           frame.goto(this) // refresh
         }
       },

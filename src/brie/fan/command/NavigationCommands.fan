@@ -162,29 +162,7 @@ internal const class GotoCmd : Cmd
     if (line != null && file != null)
       return [Item { it.dis= "Line $line"; it.file = file; it.line = line-1 }]
 
-    /// slots in current type
-    curType := frame.curSpace.curType
-    if (curType != null)
-    {
-      curType.slots.each |s|
-      {
-        if (s.name.startsWith(text)) acc.add(Item(s) { dis = s.name })
-        }
-    }
-
-    // match types
-    if (!text.isEmpty)
-      acc.addAll(sys.index.matchTypes(text).map |t->Item| { Item(t) })
-
-    // f <file>
-    if (text.startsWith("f ") && text.size >= 3)
-      acc.addAll(sys.index.matchFiles(text[2..-1]))
-
-    // all matching slots from other types
-    acc.addAll(sys.index.matchSlots(text)
-      .findAll |s| {s.type.qname != curType?.qname}
-      .findAll |s| {s.name.size>0 && text.size>0 && s.name[0] == text[0]}
-      .map |s->Item| { Item(s) })
+    acc.addAll(frame.curSpace.findGotoMatches(text))
 
     return acc
   }
@@ -353,7 +331,7 @@ const class FindCmd : Cmd
             it.col  = col
             it.span = span
             it.dis  = dis
-            it.icon = this.sys.theme.iconMark
+            it.icon = Sys.cur.theme.iconMark
           })
         col = chars.index(str, col+str.size)
       }
@@ -377,7 +355,7 @@ internal const class FindInSpaceCmd : Cmd
     File? dir
     cs := frame.curSpace
     dir = cs.root
-    if (dir != null) ((FindCmd)sys.commands.find).find(dir)
+    if (dir != null) ((FindCmd)Sys.cur.commands.find).find(dir)
   }
 }
 

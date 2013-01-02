@@ -38,20 +38,20 @@ class TextView : View
     editor = Editor
     {
       it.rules = rules
-      it.options.bg = sys.theme.edBg
-      it.options.font = sys.theme.edFont
-      it.options.bgCurLine = sys.theme.edCurLineBg
-      it.options.highlight = sys.theme.edSelectBg
-      it.options.showCols = sys.theme.edCols
-      it.options.showColColor = sys.theme.edColsColor
-      it.options.bracket = sys.theme.edBracket
-      it.options.bracketMatch = sys.theme.edBracketMatch
-      it.options.comment = sys.theme.edComment
-      it.options.keyword = sys.theme.edKeyword
-      it.options.numLiteral = sys.theme.edNum
-      it.options.strLiteral = sys.theme.edStr
-      it.options.text = sys.theme.edText
-      it.options.lineNumberColor = sys.theme.lineNumberColor
+      it.options.bg = Sys.cur.theme.edBg
+      it.options.font = Sys.cur.theme.edFont
+      it.options.bgCurLine = Sys.cur.theme.edCurLineBg
+      it.options.highlight = Sys.cur.theme.edSelectBg
+      it.options.showCols = Sys.cur.theme.edCols
+      it.options.showColColor = Sys.cur.theme.edColsColor
+      it.options.bracket = Sys.cur.theme.edBracket
+      it.options.bracketMatch = Sys.cur.theme.edBracketMatch
+      it.options.comment = Sys.cur.theme.edComment
+      it.options.keyword = Sys.cur.theme.edKeyword
+      it.options.numLiteral = Sys.cur.theme.edNum
+      it.options.strLiteral = Sys.cur.theme.edStr
+      it.options.text = Sys.cur.theme.edText
+      it.options.lineNumberColor = Sys.cur.theme.lineNumberColor
     }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }
@@ -134,8 +134,8 @@ class TextView : View
 
     switch (event.key.toStr)
     {
-      case sys.shortcuts.insertCommentSection : event.consume; insertSection
-      case sys.shortcuts.toggleComment        : event.consume; toggleCommentBlock
+      case Sys.cur.shortcuts.insertCommentSection : event.consume; insertSection
+      case Sys.cur.shortcuts.toggleComment        : event.consume; toggleCommentBlock
     }
   }
 

@@ -50,6 +50,11 @@ const class Sys : Service
     PluginManager.cur.onConfigLoaded(this)
   }
 
+  override Void onStart()
+  {
+    index.reindexAll
+  }
+
   override Void onStop()
   {
     if(docServer.isRunning)
@@ -67,22 +72,20 @@ const class Sys : Service
 
   static Void loadConfig(File config := Options.standard)
   {
-    sys := Service.find(Sys#) as Sys
-    frame := sys.frame
-    frame.spaces.each {sys.frame.closeSpace(it)}
+    frame := Sys.cur.frame
+    frame.spaces.each {Sys.cur.frame.closeSpace(it)}
 
     // Note : calling manually onStop to make sure it fully stops before we restart
     // because sys.stop calls it asynchronously
-    sys.onStop
+    Sys.cur.onStop
 
-    sys.uninstall
+    Sys.cur.uninstall
 
-    sys = Sys
+    Sys sys := Sys
     {
       options = Options.load(config)
     }
-    sys.install
-    frame.updateSys(sys)
+    sys.start
   }
 
   ** Look for alternate config files (options_xyz.props)
@@ -98,10 +101,10 @@ const class Sys : Service
   }
 
   Str:Plugin plugins() {PluginManager.cur.plugins}
+
+  static Sys cur()
+  {
+    return (Sys) Service.find(Sys#)
+  }
 }
 
-mixin SysListener
-{
-  ** Called whne sys chnages
-  abstract Void updateSys(Sys sys)
-}

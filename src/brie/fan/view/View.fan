@@ -26,13 +26,10 @@ abstract class View : ContentPane
   new make(Frame frame, File file)
   {
     this.frame = frame
-    this.sys = frame.sys
     this.file = file
   }
 
   Frame frame { private set }
-
-  const Sys sys
 
   const File file
 

@@ -23,7 +23,6 @@ internal class StatusBar : ContentPane
   new make(Frame frame)
   {
     this.frame = frame
-    this.sys = frame.sys
 
     // console label
     this.console = Label
@@ -81,17 +80,17 @@ internal class StatusBar : ContentPane
   Void update()
   {
     // console up/down
-    console.image = frame.console.isOpen ? sys.theme.iconSlideDown : sys.theme.iconSlideUp
+    console.image = frame.console.isOpen ? Sys.cur.theme.iconSlideDown : Sys.cur.theme.iconSlideUp
 
     // indexing
-    index.image = sys.index.isIndexing ? sys.theme.iconIndexing : sys.theme.iconOk
+    index.image = Sys.cur.index.isIndexing ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
     // view file
     v := frame.curView
     if (v != null)
     {
       file.text = FileUtil.pathDis(v.file)
-      file.image = v.dirty ? sys.theme.iconDirty : sys.theme.iconNotDirty
+      file.image = v.dirty ? Sys.cur.theme.iconDirty : Sys.cur.theme.iconNotDirty
       view.text = v.curStatus
     }
     else
@@ -124,7 +123,7 @@ internal class StatusBar : ContentPane
       MenuItem
       {
         it.text = "Close Console"
-        it.accelerator = sys.commands.consoleToggle.key
+        it.accelerator = Sys.cur.commands.consoleToggle.key
         it.onAction.add |e| { frame.console.close }
       },
       MenuItem
@@ -141,7 +140,7 @@ internal class StatusBar : ContentPane
   {
     menu := Menu
     {
-      MenuItem { text="Reindex All"; onAction.add |e| { sys.index.reindexAll } },
+      MenuItem { text="Reindex All"; onAction.add |e| { Sys.cur.index.reindexAll } },
     }
     menu.open(index, event.pos)
   }
@@ -151,7 +150,6 @@ internal class StatusBar : ContentPane
 //////////////////////////////////////////////////////////////////////////
 
   private Frame frame
-  private Sys sys
   private Label index
   private Label console
   private Label file

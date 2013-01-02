@@ -15,45 +15,45 @@ class MenuBar : Menu
   Menu help
   Menu plugins
 
-  new make(Sys sys)
+  new make()
   {
       file = Menu {
         it.text = "File"
-        MenuItem{ it.command = sys.commands.save.asCommand},
-        MenuItem{ it.command = sys.commands.newFile.asCommand},
-        MenuItem{ it.command = sys.commands.openFolder.asCommand},
-        MenuItem{ it.command = sys.commands.reload.asCommand},
-        MenuItem{ it.command = sys.commands.exit.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.save.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.newFile.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.openFolder.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.reload.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.exit.asCommand},
       }
 
       nav = Menu {
         it.text = "Navigation"
-        MenuItem{ it.command = sys.commands.searchDocs.asCommand},
-        MenuItem{ it.command = sys.commands.mostRecent.asCommand},
-        MenuItem{ it.command = sys.commands.find.asCommand},
-        MenuItem{ it.command = sys.commands.findInSpace.asCommand},
-        MenuItem{ it.command = sys.commands.goto.asCommand},
-        MenuItem{ it.command = sys.commands.prevMark.asCommand},
-        MenuItem{ it.command = sys.commands.nextMark.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.searchDocs.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.mostRecent.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.find.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.findInSpace.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.goto.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.prevMark.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.nextMark.asCommand},
       }
 
       process = Menu {
         it.text = "Process"
-        MenuItem{ it.command = sys.commands.build.asCommand},
-        MenuItem{ it.command = sys.commands.buildGroup.asCommand},
-        MenuItem{ it.command = sys.commands.runPod.asCommand},
-        MenuItem{ it.command = sys.commands.runSingle.asCommand},
-        MenuItem{ it.command = sys.commands.buildAndRun.asCommand},
-        MenuItem{ it.command = sys.commands.testPod.asCommand},
-        MenuItem{ it.command = sys.commands.testSingle.asCommand},
-        MenuItem{ it.command = sys.commands.terminate.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.build.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.buildGroup.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.runPod.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.runSingle.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.buildAndRun.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.testPod.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.testSingle.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.terminate.asCommand},
       }
 
       panels = Menu {
         it.text = "Panels"
-        MenuItem{ it.command = sys.commands.consoleToggle.asCommand},
-        MenuItem{ it.command = sys.commands.docsToggle.asCommand},
-        MenuItem{ it.command = sys.commands.recentToggle.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.consoleToggle.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.docsToggle.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.recentToggle.asCommand},
       }
 
 
@@ -64,7 +64,7 @@ class MenuBar : Menu
                     it.selected = true
                   },
       }
-      sys.configs.each |file, name|
+      Sys.cur.configs.each |file, name|
       {
         configs.add(MenuItem{
           it.command = SwitchConfigCmd(name, file).asCommand; it.mode = MenuItemMode.radio
@@ -73,14 +73,14 @@ class MenuBar : Menu
 
       options = Menu {
         it.text = "Options"
-        MenuItem{ it.command = sys.commands.editConfig.asCommand},
-        MenuItem{ it.command = sys.commands.reloadConfig.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.editConfig.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.reloadConfig.asCommand},
         configs,
       }
 
       help = Menu {
         it.text = "Help"
-        MenuItem{ it.command = sys.commands.about.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.about.asCommand},
       }
 
       plugins = Menu{it.text="Plugins"}

@@ -12,65 +12,22 @@ using fwt
 **
 ** File system space
 **
-@Serializable
-const class FileSpace : Space
+class FileSpace : Space
 {
-  new make(Sys sys, File dir, Str dis:= FileUtil.pathDis(dir), Uri path := ``)
-    : super(sys)
+  override Widget ui
+  override View? view
+  override Nav? nav
+  Frame frame
+
+  new make(Frame frame, File dir, Str dis:= FileUtil.pathDis(dir), Uri path := ``)
   {
+    this.frame = frame
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
     if (!dir.isDir) throw Err("Not a dir: $dir")
     this.dir = dir.normalize
     this.dis = dis
     this.path = path
     this.curFile = dir + path
-  }
-
-  const Uri path
-
-  const File dir
-
-  override const Str dis
-
-  override File? root() {dir}
-
-  override Image icon() { sys.theme.iconDir }
-
-  override Str:Str saveSession()
-  {
-    props := ["dir": dir.uri.toStr, "dis":dis]
-    if (!path.path.isEmpty) props["path"] = path.toStr
-    return props
-  }
-
-  static Space loadSession(Sys sys, Str:Str props)
-  {
-    make(sys,
-         File(props.getOrThrow("dir").toUri, false),
-         props.getOrThrow("dis"),
-         props.get("path", "").toUri)
-  }
-
-  override const File? curFile
-
-  override PodInfo? curPod() { sys.index.podForFile(curFile) }
-
-  override Int match(Item item)
-  {
-    if (!FileUtil.contains(this.dir, item.file)) return 0
-    // if group or pod we don't want to open them here but in a pod space
-    if (item.pod != null) return 0
-    if (item.group != null) return 0
-    return this.dir.path.size
-  }
-
-  override This goto(Item item)
-  {
-    make(sys, dir, dis, FileUtil.pathIn(dir, item.file))
-  }
-
-  override Widget onLoad(Frame frame)
-  {
     // build path bar
     pathBar := GridPane
     {
@@ -99,15 +56,55 @@ const class FileSpace : Space
     }
 
     // if path is file, make view for it
-    Widget? view := null
     if (!x.isDir) view = View.makeBest(frame, x)
 
-    return EdgePane
+    ui = EdgePane
     {
       top = InsetPane(0, 4, 6, 2) { pathBar, }
       left = lister
       center = view
     }
+  }
+
+  const Uri path
+
+  const File dir
+
+  override const Str dis
+
+  override File? root() {dir}
+
+  override Image icon() { Sys.cur.theme.iconDir }
+
+  override Str:Str saveSession()
+  {
+    props := ["dir": dir.uri.toStr, "dis":dis]
+    if (!path.path.isEmpty) props["path"] = path.toStr
+    return props
+  }
+
+  static Space loadSession(Frame frame, Str:Str props)
+  {
+    make(frame, File(props.getOrThrow("dir").toUri, false),
+         props.getOrThrow("dis"),
+         props.get("path", "").toUri)
+  }
+
+  override const File? curFile
+
+  override Int match(Item item)
+  {
+    if (!FileUtil.contains(this.dir, item.file)) return 0
+    // if group or pod we don't want to open them here but in a pod space
+    if (item.pod != null) return 0
+    if (item.group != null) return 0
+    return this.dir.path.size
+  }
+
+  override Void goto(Item item)
+  {
+    // TODO
+    //make(sys, dir, dis, FileUtil.pathIn(dir, item.file))
   }
 
   private Button makePathButton(Frame frame, File file)

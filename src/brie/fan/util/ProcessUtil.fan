@@ -48,7 +48,7 @@ class ProcessUtil
   {
     f := frame.curFile
     folder := findBuildFile(f)?.parent ?: f.parent
-    pod := frame.sys.index.podForFile(f)?.name
+    pod := Sys.cur.index.podForFile(f)?.name
     if(pod == null)
     {
       Dialog.openErr(frame, "Could not find pod for $f, not built ?")
@@ -130,7 +130,7 @@ class ProcessUtil
       return null
 
     folder := findBuildFile(f)?.parent ?: f.parent
-    pod := frame.sys.index.podForFile(f)?.name
+    pod := Sys.cur.index.podForFile(f)?.name
     target := pod == null ? f.basename : "${pod}::$f.basename"
     cmd := runSingleArgs[f]
 
@@ -182,7 +182,7 @@ class ProcessUtil
     if(f==null)
       return null
 
-    pod := frame.sys.index.podForFile(f)?.name
+    pod := Sys.cur.index.podForFile(f)?.name
     target := pod == null ? f.basename : "${pod}::$f.basename"
     cmd := testSingleArgs[f]
 

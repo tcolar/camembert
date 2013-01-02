@@ -21,7 +21,7 @@ mixin Plugin
   virtual Void onShutdown() {}
 
   ** If this plugin provides a custom space, return an instance if the file matches the space type
-  virtual Space? createSpace(Sys sys, File file) {return null}
+  virtual Space? createSpace(File file) {return null}
 
   ** If this plugin provides a custom space, return thempriority of this space (PosSpace is 50, Filespace is 0)
   virtual Int? spacePriority() {return null}
@@ -54,7 +54,7 @@ const class PluginManager : Service
       {
         try
         {
-          temp[pod.name] = (Plugin) type.make
+          //temp[pod.name] = (Plugin) type.make
           echo("Found plugin : ${pod.name}.$typeName")
         }
         catch(Err e)

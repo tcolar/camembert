@@ -12,32 +12,46 @@ using fwt
 **
 ** Fantom pod space
 **
-@Serializable
-const class PodSpace : Space
+class PodSpace : Space
 {
-  new make(Sys sys, Str name, File dir, File? file := null) : super(sys)
+  override Widget ui
+  override View? view
+  override Nav? nav
+
+  new make(Frame frame, Str name, File dir, File? file := null)
   {
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
     if (!dir.isDir) throw Err("Not a dir: $dir")
       this.name = name
     this.dir  = dir.normalize
-    this.isGroup = sys.index.isGroupDir(dir) != null
+    this.isGroup = Sys.cur.index.isGroupDir(dir) != null
     this.file = isGroup ?
                   (file ?: FileUtil.findBuildGroup(dir))
                 : (file ?: FileUtil.findBuildPod(dir, dir))
     Regex[] r := Regex[,]
     try
     {
-      sys.options.hidePatterns.each
+      Sys.cur.options.hidePatterns.each
       {
         r.add(Regex.fromStr(it))
       }
     }
     catch(Err e)
     {
-      sys.log.err("Failed to load the hidden file patterns !", e)
+      Sys.cur.log.err("Failed to load the hidden file patterns !", e)
     }
     hideFiles = r
+
+    view = View.makeBest(frame, file)
+    ui = EdgePane
+    {
+      left = EdgePane
+      {
+        left = InsetPane(0, 5, 0, 5) { makeFileNav(frame), }
+        right = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
+      }
+      center = InsetPane(0, 5, 0, 0) { view, }
+    }
   }
 
   ** Pod name
@@ -46,7 +60,7 @@ const class PodSpace : Space
   const File dir
 
   ** Active file
-  const File file
+  File file
 
   ** Patterns of files to hide
   const Regex[] hideFiles
@@ -58,13 +72,13 @@ const class PodSpace : Space
 
   override Str dis() { name }
 
-  override Image icon() { isGroup ? sys.theme.iconPodGroup : sys.theme.iconPod }
+  override Image icon() { isGroup ? Sys.cur.theme.iconPodGroup : Sys.cur.theme.iconPod }
 
   override File? curFile() { file }
 
-  override PodInfo? curPod() { sys.index.pod(name, false) }
+  PodInfo? curPod() { Sys.cur.index.pod(name, false) }
 
-  override TypeInfo? curType()
+  TypeInfo? curType()
   {
     pod := curPod
     if (pod == null) return null
@@ -72,7 +86,7 @@ const class PodSpace : Space
     if (types.size == 0) return null
       if (types.size == 1) return types.first
       types.sort |a, b| { a.line <=> b.line }
-    curLine := sys.frame.curView?.curPos?.line ?: 0
+    curLine := Sys.cur.frame.curView?.curPos?.line ?: 0
     for (i := 1; i<types.size; ++i)
       if (types[i].line > curLine) return types[i-1]
       return types.first
@@ -83,11 +97,41 @@ const class PodSpace : Space
     ["pod":name, "dir":dir.uri.toStr, "file":file.uri.toStr]
   }
 
-  static Space loadSession(Sys sys, Str:Str props)
+  static Space loadSession(Frame frame, Str:Str props)
   {
-    make(sys, props.getOrThrow("pod"),
+    make(frame, props.getOrThrow("pod"),
       props.getOrThrow("dir").toUri.toFile,
       props.get("file")?.toUri?.toFile)
+  }
+
+  override Item[] findGotoMatches(Str text)
+  {
+    Item[] acc := [,]
+
+    /// slots in current type
+    if (curType != null)
+    {
+      curType.slots.each |s|
+      {
+        if (s.name.startsWith(text)) acc.add(Item(s) { it.dis = s.name })
+        }
+    }
+
+    // match types
+    if (!text.isEmpty)
+      acc.addAll(Sys.cur.index.matchTypes(text).map |t->Item| { Item(t) })
+
+    // f <file>
+    if (text.startsWith("f ") && text.size >= 3)
+      acc.addAll(Sys.cur.index.matchFiles(text[2..-1]))
+
+    // all matching slots from other types
+    acc.addAll(Sys.cur.index.matchSlots(text)
+      .findAll |s| {s.type.qname != curType?.qname}
+      .findAll |s| {s.name.size>0 && text.size>0 && s.name[0] == text[0]}
+      .map |s->Item| { Item(s) })
+
+    return acc
   }
 
   override Int match(Item item)
@@ -100,23 +144,12 @@ const class PodSpace : Space
     return 1000 + dir.pathStr.size
   }
 
-  override This goto(Item item)
+  override Void goto(Item item)
   {
-    make(sys, name, dir, item.file)
-  }
-
-  override Widget onLoad(Frame frame)
-  {
-    frame.history.push(this, Item(file))
-    return EdgePane
-    {
-      left = EdgePane
-      {
-        left = InsetPane(0, 5, 0, 5) { makeFileNav(frame), }
-        right = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
-      }
-      center = InsetPane(0, 5, 0, 0) { View.makeBest(frame, file), }
-    }
+    //frame.history.push(this, Item(file))
+    file = item.file
+    //refreshNav(item)
+    // TODO: make(name, dir, item.file)
   }
 
   private Widget makeFileNav(Frame frame)
@@ -157,7 +190,7 @@ const class PodSpace : Space
       {
         results.add(Item(f) { it.dis = "${path}$f.name/"})
         // Not recursing in pods or pod groups
-        if(sys.index.isPodDir(f)==null && sys.index.isGroupDir(f) == null)
+        if(Sys.cur.index.isPodDir(f)==null && Sys.cur.index.isGroupDir(f) == null)
           findItems(f, results, "${path}$f.name/")
       }
     }
@@ -166,7 +199,7 @@ const class PodSpace : Space
   private Widget? makeSlotNav(Frame frame)
   {
     if (file.ext != "fan") return null
-    pod := sys.index.pod(this.name, false)
+    pod := Sys.cur.index.pod(this.name, false)
     if (pod == null) return null
 
     types := pod.types.findAll |t| { return t.file == file.name }

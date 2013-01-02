@@ -10,40 +10,25 @@ using gfx
 using fwt
 
 **
-** HomeSpace
+** ProjectSpace
 **
-@Serializable
-const class HomeSpace : Space
+class ProjectSpace : Space
 {
-  new make(Sys sys) : super(sys) {}
+  override Widget ui
+  override View? view
+  override Nav? nav
+  Frame frame
 
   override Str dis() { "home" }
-  override Image icon() { sys.theme.iconHome }
+  override Image icon() { Sys.cur.theme.iconHome }
 
-  override Str:Str saveSession()
+  new make(Frame frame)
   {
-    Str:Str[:]
-  }
-
-  static Space loadSession(Sys sys, Str:Str props)
-  {
-    make(sys)
-  }
-
-  override File? curFile() { null }
-
-  override PodInfo? curPod() { null }
-
-  override Int match(Item item) { 0 }
-
-  override This goto(Item item) { this }
-
-  override Widget onLoad(Frame frame)
-  {
+    this.frame = frame
     podRoots := ItemList[,]
-    pods := sys.index.pods.dup
-    groups := sys.index.groups.dup
-    sys.index.srcDirs.each |indexDir|
+    pods := Sys.cur.index.pods.dup
+    groups := Sys.cur.index.groups.dup
+    Sys.cur.index.srcDirs.each |indexDir|
     {
       items := Item[,]
       items.add(Item(indexDir) { it.dis = FileUtil.pathDis(indexDir) })
@@ -62,8 +47,24 @@ const class HomeSpace : Space
       expandRow = 0
     }
     podRoots.each |g| { grid.add(g) }
-    return InsetPane(0, 5, 5, 5) { grid, }
+    ui = InsetPane(0, 5, 5, 5) { grid, }
   }
+
+  override Str:Str saveSession()
+  {
+    Str:Str[:]
+  }
+
+  static Space loadSession(Frame frame, Str:Str props)
+  {
+    return ProjectSpace(frame)
+  }
+
+  override File? curFile() { null }
+
+  override Int match(Item item) { 0 }
+
+  override Void goto(Item item) {}
 
   Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
   {
@@ -97,7 +98,7 @@ const class HomeSpace : Space
   Void addPluginProjects(File dir, Item[] items, Int ind:=0)
   {
     // look for plugin projects
-    sys.plugins.vals.each |p|
+    Sys.cur.plugins.vals.each |p|
     {
       item := p.projectItem(dir, ind)
       if(item != null)

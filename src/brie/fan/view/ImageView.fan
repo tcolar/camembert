@@ -18,7 +18,6 @@ class ImageView : View
 {
   new make(Frame frame, File file) : super(frame, file)
   {
-    sys := Service.find(Sys#) as Sys
     image = Image(file)
     details := EdgePane
     {
@@ -27,7 +26,7 @@ class ImageView : View
         GridPane
         {
           numCols = 2
-          Label { text="Size"; font=sys.theme.font.toBold },
+          Label { text="Size"; font=Sys.cur.theme.font.toBold },
           Label { text="${this.image.size.w}px x ${this.image.size.h}px" },
         },
       }

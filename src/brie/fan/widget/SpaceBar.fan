@@ -36,7 +36,7 @@ internal class SpaceBar : Canvas
     x := 4
     tabs = spaces.map |s|
     {
-      tab := SpaceTab(sys, s, s === curSpace, x)
+      tab := SpaceTab(s, s === curSpace, x)
       x += tab.w + 4
       return tab
     }
@@ -77,54 +77,41 @@ internal class SpaceBar : Canvas
 
   private Void onPopup(Event e, Space s)
   {
-    if (s is HomeSpace) return
+    if (s is ProjectSpace) return
     menu := Menu
     {
       MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },
       MenuItem { text="Close Others"; onAction.add{
-          frame.spaces.each {if(it != s) frame.closeSpace(it)}
+          frame.spaces.each {if(it != s) this.frame.closeSpace(it)}
         }},
       MenuItem { text="Close All"; onAction.add {
-          frame.spaces.each {frame.closeSpace(it)}
+          frame.spaces.each {this.frame.closeSpace(it)}
         }},
     }
     menu.open(e.widget, e.pos)
   }
 
-  Sys? sys := Service.find(Sys#) as Sys
-
-  Font font   := sys.theme.font
-  Color bgBar := sys.theme.bg
-  Color bgTab := sys.theme.spacePillBg
-  Color bgCur := sys.theme.selectedItem
-  Color fg := sys.theme.fontColor
+  Font font   := Sys.cur.theme.font
+  Color bgBar := Sys.cur.theme.bg
+  Color bgTab := Sys.cur.theme.spacePillBg
+  Color bgCur := Sys.cur.theme.selectedItem
+  Color fg := Sys.cur.theme.fontColor
 
   private Frame frame
   private SpaceTab[] tabs := [,]
-
-  Void updateSys(Sys sys)
-  {
-    this.sys = sys
-    font   = sys.theme.font
-    bgBar = sys.theme.bg
-    bgTab = sys.theme.spacePillBg
-    bgCur = sys.theme.selectedItem
-    fg = sys.theme.fontColor
-    repaint
-  }
 }
 
 internal class SpaceTab
 {
-  new make(Sys sys, Space space, Bool cur, Int x)
+  new make(Space space, Bool cur, Int x)
   {
     this.space = space
     this.cur = cur
     this.x = x
-    this.w = 6 + 20 + sys.theme.font.width(space.dis) + 6
+    this.w = 6 + 20 + Sys.cur.theme.font.width(space.dis) + 6
   }
 
-  const Space space
+  Space space
   const Bool cur
   const Int x
   const Int w

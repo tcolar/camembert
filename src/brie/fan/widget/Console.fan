@@ -34,7 +34,6 @@ class Console : InsetPane
   new make(Frame frame) : super(3, 5, 0, 5)
   {
     this.frame = frame
-    this.sys = frame.sys
     this.list = ItemList(frame, Item[,])
     this.content = this.list
     this.visible = false
@@ -43,13 +42,6 @@ class Console : InsetPane
       if(event.button == 3)
        menu.open(event.widget, event.pos)
     }
-  }
-
-  Void updateSys(Sys sys)
-  {
-    this.sys = sys
-    list.updateSys(sys)
-    repaint
   }
 
   Bool isBusy() { proc != null }
@@ -120,7 +112,7 @@ class Console : InsetPane
 
   Void execFan(Str[] args, File dir, |Console|? onDone := null, Str bin := "fan")
   {
-    fanHome := sys.options.fanHome
+    fanHome := Sys.cur.options.fanHome
     fan := fanHome + (Desktop.isWindows ? `bin/${bin}.exe` : `bin/${bin}`)
     args = args.dup.insert(0, fan.osPath)
     exec(args, dir, onDone)
@@ -156,7 +148,6 @@ class Console : InsetPane
 
   Frame frame { private set }
   ItemList list { private set}
-  Sys? sys
   Int lastResult := 0
   private ConsoleProcess? proc
   private Bool inKill
@@ -229,6 +220,7 @@ internal const class ConsoleProcess
     p1 := str.index("(", 4); if (p1 == null) return null
     c  := str.index(",", p1); if (c == null) return null
     p2 := str.index(")", p1); if (p2 == null) return null
+    if(p1 > c || c > p2) return null
     file := File.os(str[0..<p1])
     line := str[p1+1..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
@@ -238,7 +230,7 @@ internal const class ConsoleProcess
       it.dis  = text
       it.line = line-1
       it.col  = col-1
-      it.icon = sys.theme.iconErr
+      it.icon = Sys.cur.theme.iconErr
     }
   }
 
@@ -254,7 +246,7 @@ internal const class ConsoleProcess
     {
       it.dis  = text
       it.line = line-1
-      it.icon = sys.theme.iconErr
+      it.icon = Sys.cur.theme.iconErr
     }
   }
 
