@@ -10,8 +10,8 @@ mixin Nav
   abstract ItemList items
   abstract File root
 
-  ** Refresh a particular item or all if null
-  virtual Void refresh(Item? item := null) {}
+  ** Refresh (in place) the item list
+  abstract Void refresh()
 
   Void highlight(Item? curItem)
   {
@@ -28,7 +28,4 @@ mixin Nav
       return null
     }
   }
-
-  //TODO: expand / collapse nodes ?
-  // expandall / collapseall ?
 }

@@ -138,14 +138,14 @@ class Frame : Window
     best:= matchSpace(item)
     if (best != null && ! forceNewSpace)
     {
-      best.goto(this, item)
+      best.goto(item)
       load(best, spaceIndex(best), item)
     }
     else
     {
       c := create(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
-      c.goto(this, item)
+      c.goto(item)
       load(c, null, item)
     }
   }

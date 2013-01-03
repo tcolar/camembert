@@ -46,11 +46,12 @@ class PodSpace : Space
     hideFiles = r
 
     view = View.makeBest(frame, file)
+    nav = FancyNav(frame, dir, Item(file))
     ui = EdgePane
     {
       left = EdgePane
       {
-        left = InsetPane(0, 5, 0, 5) { FancyNav(frame, dir, Item(file)).items, }
+        left = InsetPane(0, 5, 0, 5) { nav.items, }
         right = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
       }
       center = InsetPane(0, 5, 0, 0) { view, }
@@ -170,6 +171,25 @@ class PodSpace : Space
     }
 
     return ItemList(frame, items, 175)
+  }
+
+    ** Go to the given item. (in Editor & Nav)
+  override Void goto(Item? item)
+  {
+    // TODO : select in nav / uncollapse if needed ?
+    // TODO : Update slot nav ?
+    file := item == null ? view.file : item.file
+    newView := View.makeBest(frame, file)
+    if(newView != null)
+    {
+      if(item != null)
+        newView.onGoto(item)
+      else
+        newView.onGoto(Item{it.line = view.curPos.line; it.col = view.curPos.col})
+      (view.parent as ContentPane).content = newView
+      view = newView
+      view.repaint
+    }
   }
 }
 

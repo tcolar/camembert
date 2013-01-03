@@ -101,9 +101,9 @@ class FileSpace : Space
     return this.dir.path.size
   }
 
-  override Void goto(Frame frame, Item item)
+  override Void goto(Item? item)
   {
-    // TODO
+    // TODO  : goto for filespace
     //make(sys, dir, dis, FileUtil.pathIn(dir, item.file))
   }
 

@@ -236,7 +236,7 @@ const class DocWebMod : WebMod
       }
     }
     if(inclSlots)
-    { // TODO: not show axon funcs
+    {
       slots := index.matchSlots(query, kind).findAll{ ! type.isAxonLib}
       if(! slots.isEmpty)
       {
@@ -251,7 +251,6 @@ const class DocWebMod : WebMod
     slots := index.matchSlots(query, kind).findAll{ type.isAxonLib}
     if( ! funcs.isEmpty || ! slots.isEmpty)
     {
-      // TODO: add fantom axon funcs
       results += "<h2>Funcs:</h2>"
       slots.each |slot|
       {

@@ -112,6 +112,7 @@ const class NewFileCmd : Cmd
 
     f.out.print(text).close
 
+    frame.curSpace.nav?.refresh
     frame.goto(Item(f))
   }
 
@@ -176,6 +177,7 @@ const class MoveFileCmd : Cmd
     to := (File(dest)).normalize
     file.moveTo(to)
 
+    frame.curSpace.nav?.refresh
     frame.goto(Item(to))
   }
   new make(|This| f) {f(this)}
@@ -199,6 +201,8 @@ const class DeleteFileCmd : Cmd
     if (r != Dialog.ok) return
 
     file.delete
+
+    frame.curSpace.nav?.refresh
 
     //if cur file was deleted, got to view default
     if(! frame.curFile.exists)

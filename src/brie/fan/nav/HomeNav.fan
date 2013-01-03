@@ -18,4 +18,6 @@ class HomeNav : Nav
     items = ItemList(frame, files)
     highlight(curItem)
   }
+
+  override Void refresh() {}
 }

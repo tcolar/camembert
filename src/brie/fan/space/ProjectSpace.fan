@@ -64,7 +64,7 @@ class ProjectSpace : Space
 
   override Int match(Item item) { 0 }
 
-  override Void goto(Frame frame, Item item) {}
+  override Void goto(Item? item) {}
 
   Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
   {

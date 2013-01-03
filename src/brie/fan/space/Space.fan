@@ -46,11 +46,7 @@ mixin Space
 
   ** Main Ui compinent if this space
   abstract Widget ui
-
-  ** Space view/editor if any
   abstract View? view
-
-  ** Space nav (if any)
   abstract Nav? nav
 
   ** Find matches for the Goto command
@@ -59,24 +55,12 @@ mixin Space
   ** refresh the current space (nav, view, etc..)
   virtual Void refresh()
   {
-    nav?.refresh
-    if(view != null)
-    {
-      view = View.makeBest(view.frame, view.file)
-      pos := view.curPos
-      item := Item{it.dis = pos.toStr; it.line = pos.line; it.col = pos.col}
-      view.onGoto(item)
-    }
-    ui.repaint
+    goto(null)
   }
 
   ** Go to the given item. (in Editor & Nav)
-  virtual Void goto(Frame frame, Item item)
-  {
-    file := item.file
-    view = View.makeBest(frame, file)
-    view.onGoto(item)
-    ui.repaint
-  }
+  ** If null, refresh current item
+  abstract Void goto(Item? item)
+
 }
 

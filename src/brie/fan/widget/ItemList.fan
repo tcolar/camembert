@@ -73,7 +73,7 @@ class ItemList : Panel
     newItems.each |x| { max = x.dis.size.max(max) }
     this.items = newItems
     this.colCount = max + 2 // leave 2 for icon
-    &highlight = null
+    //&highlight = null
     relayout
     repaint
   }
@@ -199,6 +199,11 @@ class ItemList : Panel
       item.icon = Sys.cur.theme.iconFolderClosed
     }
     repaint
+  }
+
+  Item? findForFile(File f)
+  {
+    items.find {it.file == f}
   }
 }
 

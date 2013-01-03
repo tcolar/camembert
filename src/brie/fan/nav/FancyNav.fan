@@ -10,7 +10,8 @@ class FancyNav : Nav
   override ItemList items
   override File root
 
-  static const Int limit := 999 // TODO: later, not sure I like it
+  // TODO: make a setting collapseLimit
+  static const Int collapseLimit := 30 // auto-collapse limit
 
   new make(Frame frame, File dir, Item? curItem)
   {
@@ -21,7 +22,7 @@ class FancyNav : Nav
     highlight(curItem)
   }
 
-  private Void findItems(File dir, Item[] results, Str path := "")
+  private Void findItems(File dir, Item[] results, Bool preserveLayout := false, Str path := "")
   {
     dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
     {
@@ -38,13 +39,19 @@ class FancyNav : Nav
         // TODO: make this generic : isProjectDir() for any plugin
         if(Sys.cur.index.isPodDir(f)!=null || Sys.cur.index.isGroupDir(f) != null)
         {
-          results.add(Item(f) { it.dis = "${path}$f.name/"})
           // Not recursing in pods or pod groups
+          results.add(Item(f) { it.dis = "${path}$f.name/"})
         }
         else
         {
           sub := f.list.findAll{! hidden(f)}.size
-          if(sub > limit && sub > 0)
+          Bool? expandable := sub > collapseLimit && sub > 0
+          if(preserveLayout)
+          {
+            // keep layout of existing item if known
+            expandable = items.findForFile(f)?.collapsed ?: expandable
+          }
+          if(expandable)
           {
             results.add(Item(f)
             {
@@ -56,7 +63,7 @@ class FancyNav : Nav
           {
             results.add(Item(f) { it.dis = "${path}$f.name/"})
             // recurse
-            findItems(f, results, "${path}$f.name/")
+            findItems(f, results, preserveLayout, "${path}$f.name/")
           }
         }
       }
@@ -65,7 +72,15 @@ class FancyNav : Nav
 
   Bool hidden(File f)
   {
+    // TODO: hidden files
     /*hideFiles.eachWhile |Regex r -> Bool?| {
         r.matches(f.uri.toStr) ? true : null} ?: */false
+  }
+
+  override Void refresh()
+  {
+    newItems := [Item(root)]
+    findItems(root, newItems, true)
+    items.update(newItems)
   }
 }
