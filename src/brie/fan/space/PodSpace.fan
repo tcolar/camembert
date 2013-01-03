@@ -18,6 +18,9 @@ class PodSpace : Space
   override View? view
   override Nav? nav
 
+  ContentPane viewParent
+  ContentPane slotsParent
+
   Frame frame
 
   new make(Frame frame, Str name, File dir, File? file := null)
@@ -47,14 +50,16 @@ class PodSpace : Space
 
     view = View.makeBest(frame, file)
     nav = FancyNav(frame, dir, Item(file))
+    slotsParent = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
+    viewParent = InsetPane(0, 5, 0, 0) { view, }
     ui = EdgePane
     {
       left = EdgePane
       {
         left = InsetPane(0, 5, 0, 5) { nav.items, }
-        right = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
+        right = slotsParent
       }
-      center = InsetPane(0, 5, 0, 0) { view, }
+      center = viewParent
     }
   }
 
@@ -169,16 +174,14 @@ class PodSpace : Space
         items.add(Item(s) { it.dis = s.name; it.indent = 1 })
       }
     }
-
     return ItemList(frame, items, 175)
   }
 
     ** Go to the given item. (in Editor & Nav)
   override Void goto(Item? item)
   {
-    // TODO : select in nav / uncollapse if needed ?
-    // TODO : Update slot nav ?
-    file := item == null ? view.file : item.file
+    // Update view (editor)
+    file = item == null ? file : item.file
     newView := View.makeBest(frame, file)
     if(newView != null)
     {
@@ -186,10 +189,18 @@ class PodSpace : Space
         newView.onGoto(item)
       else
         newView.onGoto(Item{it.line = view.curPos.line; it.col = view.curPos.col})
-      (view.parent as ContentPane).content = newView
+      viewParent.content = newView
       view = newView
       view.repaint
     }
+
+    // select in nav
+    nav?.highlight(item?.file)
+
+    // Update slot nav ?
+    newSlots := makeSlotNav(frame)
+    slotsParent.content = newSlots
+    newSlots?.repaint
   }
 }
 

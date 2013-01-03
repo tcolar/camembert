@@ -19,7 +19,7 @@ class FancyNav : Nav
     files := [Item(dir)]
     findItems(dir, files)
     items = ItemList(frame, files)
-    highlight(curItem)
+    highlight(curItem.file)
   }
 
   private Void findItems(File dir, Item[] results, Bool preserveLayout := false, Str path := "")

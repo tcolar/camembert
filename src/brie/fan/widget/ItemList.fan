@@ -163,13 +163,13 @@ class ItemList : Panel
     {
       // expand (one level)
       Item[] newItems := [,]
-      item.file.listFiles.each |File file|
+      item.file.listFiles.sort |a,b| {a<=>b}.each |File file|
       {
         newItems.add(Item(file){
           it.indent = 1
         })
       }
-      item.file.listDirs.each |File file|
+      item.file.listDirs.sort |a,b| {a<=>b}.each |File file|
       {
         newItems.add(Item(file){
           it.dis = "${item.dis}$file.name/"

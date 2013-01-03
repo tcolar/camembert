@@ -16,7 +16,7 @@ class HomeNav : Nav
     files := [Item(dir)]
     //findItems(dir, files)
     items = ItemList(frame, files)
-    highlight(curItem)
+    //highlight(curItem)
   }
 
   override Void refresh() {}

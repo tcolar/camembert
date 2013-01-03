@@ -10,16 +10,17 @@ mixin Nav
   abstract ItemList items
   abstract File root
 
-  ** Refresh (in place) the item list
+  ** Refresh the nav
   abstract Void refresh()
 
-  Void highlight(Item? curItem)
+  ** Highlight a file
+  Void highlight(File? file)
   {
-    if(curItem == null) return
+    if(file == null) return
 
     items.items.eachWhile |item, index -> Bool?|
     {
-      if(item.toStr == curItem.toStr)
+      if(item.file == file)
       {
         items.highlight = item
         items.scrollToLine(index>=5 ? index-5 : 0)
