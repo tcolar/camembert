@@ -75,10 +75,16 @@ const class Index
       Desktop.callAsync |->|
       {
         frame := Sys.cur.frame
-        if (frame.curSpace is ProjectSpace) frame.reload
-        else frame.updateStatus
+        frame.updateStatus
         if(! val)  // done indexing
+        {
+          frame.spaces.each
+          {
+            if(it is ProjectSpace)
+              it.nav?.refresh
+          }
           frame.helpPane.indexUpdated
+        }
       }
     }
     catch {}

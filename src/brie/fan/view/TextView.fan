@@ -125,7 +125,7 @@ class TextView : View
           "Another application has updated file:
            $file.osPath
            Reload it?", Dialog.yesNo)
-    if (r == Dialog.yes) frame.reload
+    if (r == Dialog.yes) frame.curSpace.refresh
   }
 
   private Void editorKeyDown(Event event)

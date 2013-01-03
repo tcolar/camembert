@@ -35,9 +35,6 @@ mixin Space
   ** is match priority or zero if it cannot handle the item.
   abstract Int match(Item item)
 
-  ** Go to the given item. (in Editor & Nav)
-  abstract Void goto(Item item)
-
   override Int compare(Obj obj)
   {
     that := (Space)obj
@@ -58,5 +55,28 @@ mixin Space
 
   ** Find matches for the Goto command
   virtual Item[] findGotoMatches(Str text) {return [,]}
+
+  ** refresh the current space (nav, view, etc..)
+  virtual Void refresh()
+  {
+    nav?.refresh
+    if(view != null)
+    {
+      view = View.makeBest(view.frame, view.file)
+      pos := view.curPos
+      item := Item{it.dis = pos.toStr; it.line = pos.line; it.col = pos.col}
+      view.onGoto(item)
+    }
+    ui.repaint
+  }
+
+  ** Go to the given item. (in Editor & Nav)
+  virtual Void goto(Frame frame, Item item)
+  {
+    file := item.file
+    view = View.makeBest(frame, file)
+    view.onGoto(item)
+    ui.repaint
+  }
 }
 

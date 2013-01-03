@@ -19,14 +19,14 @@ internal const class ExitCmd : Cmd
   }
   new make(|This| f) {f(this)}
 }
-**************************************************************************
-** ReloadCmd
-**************************************************************************
 
+**************************************************************************
+** ReloadCmd : reload cur file
+**************************************************************************
 internal const class ReloadCmd : Cmd
 {
   override const Str name := "Reload"
-  override Void invoke(Event event) { frame.reload }
+  override Void invoke(Event event) { frame.curSpace.refresh }
   new make(|This| f) {f(this)}
 }
 

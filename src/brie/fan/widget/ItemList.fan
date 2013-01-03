@@ -34,7 +34,7 @@ class ItemList : Panel
 
   Frame? frame { private set }
 
-  Item[] items := [,] { private set  }
+  Item[] items := [,]
 
   Font font := Sys.cur.theme.font
 
@@ -71,7 +71,7 @@ class ItemList : Panel
   {
     max := 5
     newItems.each |x| { max = x.dis.size.max(max) }
-    this.items = newItems.ro
+    this.items = newItems
     this.colCount = max + 2 // leave 2 for icon
     &highlight = null
     relayout
@@ -137,6 +137,10 @@ class ItemList : Panel
     {
       event.consume
       item.selected(frame)
+      if(item.file != null && item.file.isDir)
+      {
+        toggleCollapse(item)
+      }
       return
     }
 
@@ -152,5 +156,49 @@ class ItemList : Panel
     }
   }
 
+  ** Collpase / expand a folder item
+  Void toggleCollapse(Item item)
+  {
+    if(item.collapsed)
+    {
+      // expand (one level)
+      Item[] newItems := [,]
+      item.file.listFiles.each |File file|
+      {
+        newItems.add(Item(file){
+          it.indent = 1
+        })
+      }
+      item.file.listDirs.each |File file|
+      {
+        newItems.add(Item(file){
+          it.dis = "${item.dis}$file.name/"
+          it.collapsed = ! file.list.isEmpty
+        })
+      }
+      Int index := items.eachWhile |that, index -> Int?| {if(item.file == that.file) return index; return null}
+
+      items.insertAll(index == items.size ? -1 : index + 1, newItems)
+
+      max := colCount
+      newItems.each |x| { max = x.dis.size.max(max) }
+      colCount = max + 2
+
+      item.collapsed = false
+      item.icon = Sys.cur.theme.iconFolderOpen
+    }
+    else
+    {
+      // collpase (all)
+      items.dup.each
+      {
+        if(it.file!=item.file && it.file.pathStr.startsWith(item.file.pathStr))
+          items.remove(it)
+      }
+      item.collapsed = true
+      item.icon = Sys.cur.theme.iconFolderClosed
+    }
+    repaint
+  }
 }
 

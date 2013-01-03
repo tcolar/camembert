@@ -18,8 +18,11 @@ class PodSpace : Space
   override View? view
   override Nav? nav
 
+  Frame frame
+
   new make(Frame frame, Str name, File dir, File? file := null)
   {
+    this.frame = frame
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
     if (!dir.isDir) throw Err("Not a dir: $dir")
       this.name = name
@@ -47,7 +50,7 @@ class PodSpace : Space
     {
       left = EdgePane
       {
-        left = InsetPane(0, 5, 0, 5) { makeFileNav(frame), }
+        left = InsetPane(0, 5, 0, 5) { FancyNav(frame, dir, Item(file)).items, }
         right = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
       }
       center = InsetPane(0, 5, 0, 0) { view, }
@@ -142,58 +145,6 @@ class PodSpace : Space
     // Pods from groups should open in own space
     if(isGroup && item.pod != null) return 0
     return 1000 + dir.pathStr.size
-  }
-
-  override Void goto(Item item)
-  {
-    //frame.history.push(this, Item(file))
-    file = item.file
-    //refreshNav(item)
-    // TODO: make(name, dir, item.file)
-  }
-
-  private Widget makeFileNav(Frame frame)
-  {
-    items := [Item(dir)]
-    findItems(dir, items)
-    list := ItemList(frame, items)
-    items.eachWhile |item, index -> Bool?|
-    {
-      if(item.toStr == Item.makeFile(file).toStr)
-      {
-        list.highlight = item
-        list.scrollToLine(index>=5 ? index-5 : 0)
-        return true
-      }
-      return null
-    }
-    return list
-  }
-
-  private Void findItems(File dir, Item[] results, Str path := "")
-  {
-    dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
-    {
-      hidden := hideFiles.eachWhile |Regex r -> Bool?| {
-        r.matches(f.uri.toStr) ? true : null} ?: false
-      if (! hidden)
-      {
-        results.add(Item(f) { it.indent = path.isEmpty ? 0 : 1 })
-      }
-    }
-
-    dir.listDirs.sort |a, b| {a.name  <=> b.name}.each |f|
-    {
-      hidden := hideFiles.eachWhile |Regex r -> Bool?| {
-        r.matches(f.uri.toStr) ? true : null} ?: false
-      if (! hidden)
-      {
-        results.add(Item(f) { it.dis = "${path}$f.name/"})
-        // Not recursing in pods or pod groups
-        if(Sys.cur.index.isPodDir(f)==null && Sys.cur.index.isGroupDir(f) == null)
-          findItems(f, results, "${path}$f.name/")
-      }
-    }
   }
 
   private Widget? makeSlotNav(Frame frame)

@@ -29,7 +29,6 @@ class Item
   new makeFile(File file, |This|? f := null)
   {
     this.dis  = file.name + (file.isDir ? "/" : "")
-    this.icon = Theme.fileToIcon(file)
     this.file = file
     // check if this is a pod / group root first
     if(file.isDir)
@@ -51,6 +50,7 @@ class Item
       }
     }
     if (f != null) f(this)
+    this.icon = collapsed ? Sys.cur.theme.iconFolderClosed : Theme.fileToIcon(file)
   }
 
   new makePod(PodInfo p, |This|? f := null)
@@ -102,7 +102,7 @@ class Item
 
   const Str dis
 
-  const Image? icon
+  Image? icon
 
   Space? space
 
@@ -126,6 +126,9 @@ class Item
 
   const Str? group
 
+  ** whether an item(folder) is collapsed
+  Bool collapsed := false
+
   override Str toStr() { dis }
 
   Str debug() {"$dis $file $pod $type $slot"}
@@ -135,7 +138,10 @@ class Item
   ** Called when this item is left clicked
   virtual Void selected(Frame frame)
   {
-    frame.goto(this)
+    if(file != null && file.isDir)
+      return
+    else
+      frame.goto(this)
   }
 
   ** call when item is right clicked

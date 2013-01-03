@@ -17,6 +17,44 @@ better plugin speration
 
 Move away from const space to allow more efficient refresh and not having to rebuild space constantly.
 
-Copy and use the syntax files in config folder
+Copy and use the syntax files in config folder ? o at least fpr extra ones
 
+make nav sidebar sash resizable ?
 
+undo/redo at file level ?
+
+themes / dark theme
+
+conf /etc/camembert/1.1/
+ - options.props
+ - session.props
+ - shortcuts.props
+ - run.fog ? global or plugin folder ??
+ - fantom/class.tpl
+ - fantom/envs.props
+ - axon/axon.tpl
+ - theme/default .... dark ....
+
+ node support
+ java support
+ ruby, php, etc ...
+
+  custom run/ commands build/whatever commands
+
+  fantom/commands.fog:  $fan -> env/fan(.exe) automatically
+
+  have a flag -> scope -> GLOBAL, SPACE (ie command only shows when corresponding space open or always)
+
+  few vars:
+  $env (current fantom, node whatever env)
+  $dir -> project root dir
+  $file -> current file if any
+  etc ...
+
+  "run", "f5", ["$fan"], interactive = true (can edit params)  -> memorize(mem/disk) or ask each time ?
+                                  interactive -> NO, ALWAYS, ONCE, ONCE_PER_PROJECT ?, ONCE_PER_SESSION
+  "build", "f4", ["$fan", "$dir/build.fan"], "$dir"
+  "push", "f3", ["/bin/hg", "push"], "$dir"
+
+  mercurial/git commands (pull -u, push, merge, status etc....)
+  mercurial / git view ?

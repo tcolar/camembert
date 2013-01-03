@@ -38,7 +38,7 @@ class Frame : Window
     // eventing
     onClose.add |Event e| { e.consume; Sys.cur.commands.exit.invoke(e) }
     onKeyDown.add |e| { trapKeyDown(e) }
-    //onDrop = |data| { doDrop(data) }
+    onDrop = |data| { doDrop(data) }
 
     // build UI
     this.spaceBar = SpaceBar(this)
@@ -112,14 +112,11 @@ class Frame : Window
   // Space Lifecycle
   //////////////////////////////////////////////////////////////////////////
 
-  ** Select given space
+  ** Select given space (upon being picked in spacebar)
   Void select(Space space)
   {
     load(space, spaceIndex(space), null)
   }
-
-  ** Reload current space
-  Void reload() { load(curSpace, spaceIndex(curSpace), null) }
 
   ** Route to best open space or open new one for given item.
   Void goto(Item? item, Bool forceNewSpace := false)
@@ -141,14 +138,14 @@ class Frame : Window
     best:= matchSpace(item)
     if (best != null && ! forceNewSpace)
     {
-      best.goto(item)
+      best.goto(this, item)
       load(best, spaceIndex(best), item)
     }
     else
     {
       c := create(item)
       if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
-      c.goto(item)
+      c.goto(this, item)
       load(c, null, item)
     }
   }
@@ -160,8 +157,10 @@ class Frame : Window
 
     spaces.removeAt(i)
     if (curSpace == space)
+    {
       curSpace = spaces.getSafe(i) ?: spaces.last
-    reload
+      load(curSpace, null, null)
+    }
   }
 
   private Space? matchSpace(Item item)
@@ -220,7 +219,7 @@ class Frame : Window
     return match?.createSpace(file)
   }
 
-  ** Load current space
+  ** Activate given space
   private Void load(Space space, Int? index, Item? item)
   {
     // confirm if we should close
@@ -238,7 +237,6 @@ class Frame : Window
     curView = null
 
     // update space references
-    oldSpace := curSpace
     this.curSpace = space
     if (index == null)
       spaces.add(space).sort
@@ -249,11 +247,11 @@ class Frame : Window
     spaceBar.onLoad
     spacePane.content = space.ui
 
-    // see if current space content has view
+    // update cur file in statusBar
     this.curView = space.view
     updateStatus
 
-    // save curItem and push into history
+    // Push into history
     if (item != null) history.push(space, item)
 
     // relayout
@@ -268,9 +266,9 @@ class Frame : Window
       {
         pos := filePosHis[curView.file]
         if (pos != null) item = Item { it.dis = pos.toStr; it.line = pos.line; it.col = pos.col }
-        }
-      if (item != null) curView.onGoto(item)
       }
+      if (item != null) curView.onGoto(item)
+    }
   }
 
   private Int spaceIndex(Space space)
@@ -370,7 +368,7 @@ class Frame : Window
     props := Str:Str[:]
     try
       if (sessionFile.exists) props = sessionFile.readProps
-      catch (Err e)
+    catch (Err e)
       Sys.cur.log.err("Cannot load session: $sessionFile", e)
 
     // read bounds

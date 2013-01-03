@@ -87,6 +87,8 @@ const class Theme
   const Image iconIndexing  := Image(`fan://icons/x16/sync.png`)
   const Image iconSlideUp   := Image(`fan://camembert/res/slideUp.png`)
   const Image iconSlideDown := Image(`fan://camembert/res/slideDown.png`)
+  const Image iconFolderClosed := Image(`fan://camembert/res/folderClosed.png`)
+  const Image iconFolderOpen := Image(`fan://camembert/res/folderOpen.png`)
   const Image iconDirty     := Image(`fan://camembert/res/dirty.png`)
   const Image iconNotDirty  := Image(`fan://camembert/res/notDirty.png`)
   const Image iconPod       := Image(`fan://icons/x16/database.png`)
@@ -102,7 +104,7 @@ const class Theme
   {
     t := Sys.cur.theme
 
-    if (f.isDir) return t.iconDir
+    if (f.isDir) return t.iconFolderOpen
       if (f.mimeType?.mediaType == "image") return t.iconImage
       if (f.ext == "fan")  return t.iconFan
       if (f.ext == "java") return t.iconJava
