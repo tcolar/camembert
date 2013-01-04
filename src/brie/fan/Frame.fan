@@ -121,6 +121,7 @@ class Frame : Window
   ** Route to best open space or open new one for given item.
   Void goto(Item? item, Bool forceNewSpace := false)
   {
+    echo("goto $item.dis $item.file")
     if(item == null)
       return
     // if this item is one of our marks, let console know
@@ -402,9 +403,9 @@ class Frame : Window
       catch (Err e) Sys.cur.log.err("ERROR: Cannot load space $type", e)
       }
 
-    // always insert ProjectSpace
-    if (spaces.first isnot ProjectSpace)
-      spaces.insert(0, ProjectSpace(this))
+    // always insert IndexSpace
+    if (spaces.first isnot IndexSpace)
+      spaces.insert(0, IndexSpace(this))
 
     // save spaces
     this.spaces = spaces

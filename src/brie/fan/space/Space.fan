@@ -38,13 +38,13 @@ mixin Space
   override Int compare(Obj obj)
   {
     that := (Space)obj
-    if (this is ProjectSpace) return -1
-    if (that is ProjectSpace) return 1
+    if (this is IndexSpace) return -1
+    if (that is IndexSpace) return 1
     if (this.typeof != that.typeof) return this.typeof.name <=> that.typeof.name
     return dis <=> that.dis
   }
 
-  ** Main Ui compinent if this space
+  ** Main Ui component if this space
   abstract Widget ui
   abstract View? view
   abstract Nav? nav
@@ -61,6 +61,5 @@ mixin Space
   ** Go to the given item. (in Editor & Nav)
   ** If null, refresh current item
   abstract Void goto(Item? item)
-
 }
 

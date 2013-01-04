@@ -77,7 +77,7 @@ internal class SpaceBar : Canvas
 
   private Void onPopup(Event e, Space s)
   {
-    if (s is ProjectSpace) return
+    if (s is IndexSpace) return
     menu := Menu
     {
       MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },

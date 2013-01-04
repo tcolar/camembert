@@ -9,12 +9,27 @@ class FancyNav : Nav
 {
   override ItemList items
   override File root
+  Regex[] hideFiles
 
   // TODO: make a setting collapseLimit
   static const Int collapseLimit := 30 // auto-collapse limit
 
   new make(Frame frame, File dir, Item? curItem)
   {
+    Regex[] r := Regex[,]
+    try
+    {
+      Sys.cur.options.hidePatterns.each
+      {
+        r.add(Regex.fromStr(it))
+      }
+    }
+    catch(Err e)
+    {
+      Sys.cur.log.err("Failed to load the hidden file patterns !", e)
+    }
+    hideFiles = r
+
     root = dir
     files := [Item(dir)]
     findItems(dir, files)
@@ -72,9 +87,8 @@ class FancyNav : Nav
 
   Bool hidden(File f)
   {
-    // TODO: hidden files
-    /*hideFiles.eachWhile |Regex r -> Bool?| {
-        r.matches(f.uri.toStr) ? true : null} ?: */false
+    hideFiles.eachWhile |Regex r -> Bool?| {
+        r.matches(f.uri.toStr) ? true : null} ?: false
   }
 
   override Void refresh()

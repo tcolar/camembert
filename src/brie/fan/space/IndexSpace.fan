@@ -10,13 +10,14 @@ using gfx
 using fwt
 
 **
-** ProjectSpace
+** IndexSpace
+** Projects Index
 **
-class ProjectSpace : Space
+class IndexSpace : Space
 {
   override Widget ui
-  override View? view
-  override Nav? nav
+  override View? view := null
+  override Nav? nav := null
   Frame frame
 
   override Str dis() { "home" }
@@ -25,6 +26,11 @@ class ProjectSpace : Space
   new make(Frame frame)
   {
     this.frame = frame
+    ui = InsetPane(0, 5, 5, 5) { makeUi }
+  }
+
+  GridPane makeUi()
+  {
     podRoots := ItemList[,]
     pods := Sys.cur.index.pods.dup
     groups := Sys.cur.index.groups.dup
@@ -36,7 +42,6 @@ class ProjectSpace : Space
       addPluginProjects(indexDir, items)
 
       addItems(indexDir, groups, pods, items)
-
       podRoots.add(ItemList(frame, items))
     }
 
@@ -47,7 +52,7 @@ class ProjectSpace : Space
       expandRow = 0
     }
     podRoots.each |g| { grid.add(g) }
-    ui = InsetPane(0, 5, 5, 5) { grid, }
+    return grid
   }
 
   override Str:Str saveSession()
@@ -57,14 +62,22 @@ class ProjectSpace : Space
 
   static Space loadSession(Frame frame, Str:Str props)
   {
-    return ProjectSpace(frame)
+    return IndexSpace(frame)
   }
 
   override File? curFile() { null }
 
   override Int match(Item item) { 0 }
 
-  override Void goto(Item? item) {}
+  override Void goto(Item? item)
+  {
+    if(item == null) // refresh
+    {
+      (ui as ContentPane).content= makeUi
+      ui.relayout
+      ui.repaint
+    }
+  }
 
   Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
   {

@@ -12,80 +12,33 @@ using fwt
 **
 ** Fantom pod space
 **
-class PodSpace : Space
+class PodSpace : BaseSpace
 {
-  override Widget ui
   override View? view
   override Nav? nav
-
-  ContentPane viewParent
-  ContentPane slotsParent
-
-  Frame frame
+  override Image icon() { isGroup ? Sys.cur.theme.iconPodGroup : Sys.cur.theme.iconPod }
+  ** Whether this is a pod or a pod group
+  Bool isGroup
+  Widget? slots
+  Str podName
 
   new make(Frame frame, Str name, File dir, File? file := null)
+      : super(frame, name, dir, file)
   {
-    this.frame = frame
-    if (!dir.exists) throw Err("Dir doesn't exist: $dir")
-    if (!dir.isDir) throw Err("Not a dir: $dir")
-      this.name = name
-    this.dir  = dir.normalize
+    this.podName = name
     this.isGroup = Sys.cur.index.isGroupDir(dir) != null
-    this.file = isGroup ?
-                  (file ?: FileUtil.findBuildGroup(dir))
-                : (file ?: FileUtil.findBuildPod(dir, dir))
-    Regex[] r := Regex[,]
-    try
-    {
-      Sys.cur.options.hidePatterns.each
-      {
-        r.add(Regex.fromStr(it))
-      }
-    }
-    catch(Err e)
-    {
-      Sys.cur.log.err("Failed to load the hidden file patterns !", e)
-    }
-    hideFiles = r
 
-    view = View.makeBest(frame, file)
-    nav = FancyNav(frame, dir, Item(file))
-    slotsParent = InsetPane(0, 5, 0, 0) { makeSlotNav(frame), }
-    viewParent = InsetPane(0, 5, 0, 0) { view, }
-    ui = EdgePane
-    {
-      left = EdgePane
-      {
-        left = InsetPane(0, 5, 0, 5) { nav.items, }
-        right = slotsParent
-      }
-      center = viewParent
-    }
+    view = View.makeBest(frame, this.file)
+    nav = FancyNav(frame, dir, Item(this.file))
+    slots = makeSlotNav
+
+    viewParent.content = view
+    navParent.content = nav.items
+    slotsParent.content = slots
   }
 
-  ** Pod name
-  const Str name
 
-  const File dir
-
-  ** Active file
-  File file
-
-  ** Patterns of files to hide
-  const Regex[] hideFiles
-
-  ** Whether this is a pod or a pod group
-  const Bool isGroup
-
-  override File? root() {dir}
-
-  override Str dis() { name }
-
-  override Image icon() { isGroup ? Sys.cur.theme.iconPodGroup : Sys.cur.theme.iconPod }
-
-  override File? curFile() { file }
-
-  PodInfo? curPod() { Sys.cur.index.pod(name, false) }
+  PodInfo? curPod() { Sys.cur.index.pod(podName, false) }
 
   TypeInfo? curType()
   {
@@ -103,7 +56,7 @@ class PodSpace : Space
 
   override Str:Str saveSession()
   {
-    ["pod":name, "dir":dir.uri.toStr, "file":file.uri.toStr]
+    ["pod":podName, "dir":dir.uri.toStr, "file":file.uri.toStr]
   }
 
   static Space loadSession(Frame frame, Str:Str props)
@@ -153,10 +106,10 @@ class PodSpace : Space
     return 1000 + dir.pathStr.size
   }
 
-  private Widget? makeSlotNav(Frame frame)
+  private Widget? makeSlotNav()
   {
     if (file.ext != "fan") return null
-    pod := Sys.cur.index.pod(this.name, false)
+    pod := Sys.cur.index.pod(this.podName, false)
     if (pod == null) return null
 
     types := pod.types.findAll |t| { return t.file == file.name }
@@ -177,28 +130,13 @@ class PodSpace : Space
     return ItemList(frame, items, 175)
   }
 
-    ** Go to the given item. (in Editor & Nav)
+  ** Go to the given item. (in Editor & Nav)
   override Void goto(Item? item)
   {
-    // Update view (editor)
-    file = item == null ? file : item.file
-    newView := View.makeBest(frame, file)
-    if(newView != null)
-    {
-      if(item != null)
-        newView.onGoto(item)
-      else
-        newView.onGoto(Item{it.line = view.curPos.line; it.col = view.curPos.col})
-      viewParent.content = newView
-      view = newView
-      view.repaint
-    }
-
-    // select in nav
-    nav?.highlight(item?.file)
+    super.goto(item)
 
     // Update slot nav ?
-    newSlots := makeSlotNav(frame)
+    newSlots := makeSlotNav()
     slotsParent.content = newSlots
     newSlots?.repaint
   }

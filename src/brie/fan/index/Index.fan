@@ -80,8 +80,8 @@ const class Index
         {
           frame.spaces.each
           {
-            if(it is ProjectSpace)
-              it.nav?.refresh
+            if(it is IndexSpace)
+              it.refresh
           }
           frame.helpPane.indexUpdated
         }

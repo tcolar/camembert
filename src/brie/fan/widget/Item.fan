@@ -40,17 +40,20 @@ class Item
         this.dis  = g.name
         this.icon = Sys.cur.theme.iconPodGroup
         this.file = g.srcDir
+        isProject = true
       }
       else if(p != null)
       {
         this.dis  = p.name
         this.icon = Sys.cur.theme.iconPod
         this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
+        isProject = true
         this.pod  = p
       }
     }
     if (f != null) f(this)
-    this.icon = collapsed ? Sys.cur.theme.iconFolderClosed : Theme.fileToIcon(file)
+    if(! isProject)
+      this.icon = collapsed ? Sys.cur.theme.iconFolderClosed : Theme.fileToIcon(file)
   }
 
   new makePod(PodInfo p, |This|? f := null)
@@ -58,7 +61,7 @@ class Item
     this.dis  = p.name
     this.icon = Sys.cur.theme.iconPod
     this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
-
+    isProject = true
     this.pod  = p
     if (f != null) f(this)
   }
@@ -69,6 +72,7 @@ class Item
     this.icon = Sys.cur.theme.iconPodGroup
     this.file = g.srcDir
     this.group = g.name
+    isProject = true
     if (f != null) f(this)
   }
 
@@ -126,6 +130,8 @@ class Item
 
   const Str? group
 
+  const Bool isProject := false
+
   ** whether an item(folder) is collapsed
   Bool collapsed := false
 
@@ -138,9 +144,7 @@ class Item
   ** Called when this item is left clicked
   virtual Void selected(Frame frame)
   {
-    if(file != null && file.isDir)
-      return
-    else
+    if(! file.isDir || isProject)
       frame.goto(this)
   }
 

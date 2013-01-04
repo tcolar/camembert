@@ -40,7 +40,6 @@ internal class IndexCache
     file = file.normalize
     return groups.find |group|
     {
-      echo("$file.pathStr  ->  $group.srcDir.pathStr")
       return file.pathStr.startsWith(group.srcDir.pathStr)
     }
   }

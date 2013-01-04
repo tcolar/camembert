@@ -12,111 +12,42 @@ using fwt
 **
 ** File system space
 **
-class FileSpace : Space
+class FileSpace : BaseSpace
 {
-  override Widget ui
   override View? view
   override Nav? nav
-  Frame frame
 
-  new make(Frame frame, File dir, Str dis:= FileUtil.pathDis(dir), Uri path := ``)
+  new make(Frame frame, File dir)
+    : super(frame, FileUtil.pathDis(dir), dir)
   {
-    this.frame = frame
-    if (!dir.exists) throw Err("Dir doesn't exist: $dir")
-    if (!dir.isDir) throw Err("Not a dir: $dir")
-    this.dir = dir.normalize
-    this.dis = dis
-    this.path = path
-    this.curFile = dir + path
-    // build path bar
-    pathBar := GridPane
-    {
-      numCols = path.path.size + 1
-    }
-    x := this.dir
-    pathBar.add(makePathButton(frame, x))
-    path.path.each |name|
-    {
-      x = File(x.uri.plusName(name), false)
-      pathBar.add(makePathButton(frame, x))
-    }
+    view = View.makeBest(frame, this.file)
+    nav = FancyNav(frame, dir, Item(this.file))
 
-    // build dir listing
-    lastDir := x.isDir ? x : x.parent
-    lister := ItemList(frame, Item.makeFiles(lastDir.list))
-    lister.items.eachWhile |item, index -> Bool?|
-    {
-      if(item.toStr == path.name)
-      {
-        lister.highlight = item
-        lister.scrollToLine(index>=5 ? index-5 : 0)
-        return true
-      }
-      return null
-    }
-
-    // if path is file, make view for it
-    if (!x.isDir) view = View.makeBest(frame, x)
-
-    ui = EdgePane
-    {
-      top = InsetPane(0, 4, 6, 2) { pathBar, }
-      left = lister
-      center = view
-    }
+    viewParent.content = view
+    navParent.content = nav.items
   }
-
-  const Uri path
-
-  const File dir
-
-  override const Str dis
-
-  override File? root() {dir}
 
   override Image icon() { Sys.cur.theme.iconDir }
 
   override Str:Str saveSession()
   {
-    props := ["dir": dir.uri.toStr, "dis":dis]
-    if (!path.path.isEmpty) props["path"] = path.toStr
+    props := ["dir": dir.uri.toStr]
     return props
   }
 
   static Space loadSession(Frame frame, Str:Str props)
   {
-    make(frame, File(props.getOrThrow("dir").toUri, false),
-         props.getOrThrow("dis"),
-         props.get("path", "").toUri)
+    make(frame, File(props.getOrThrow("dir").toUri, false))
   }
-
-  override const File? curFile
 
   override Int match(Item item)
   {
     if (!FileUtil.contains(this.dir, item.file)) return 0
     // if group or pod we don't want to open them here but in a pod space
-    if (item.pod != null) return 0
-    if (item.group != null) return 0
+    // TODO: make generic
+    //if (item.pod != null) return 0
+    //if (item.group != null) return 0
     return this.dir.path.size
   }
-
-  override Void goto(Item? item)
-  {
-    // TODO  : goto for filespace
-    //make(sys, dir, dis, FileUtil.pathIn(dir, item.file))
-  }
-
-  private Button makePathButton(Frame frame, File file)
-  {
-    dis := file === this.dir ? FileUtil.pathDis(file) : file.name
-    return Button
-    {
-      text  = dis
-      image = Theme.fileToIcon(file)
-      onAction.add |e| { frame.goto(Item(file)) }
-    }
-  }
-
 }
 
