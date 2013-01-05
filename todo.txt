@@ -1,13 +1,16 @@
 - Bocce bug: When going in the text area, the first keystroke is often lost, especially if backspace/delete ?
    (gains focus but do not act on the keystroke)
 
+
+Rework item .. baseitem, fantomitem, errorItem etc... maybe go back to const if possible
+
+
+BUG: when clicking console item (error) -> not updating in nav view
+BUG: console errors show fan icon
+BUG: Axon -> sometimes endup with duplicated functions ??
+
+
 console: process tabs, repeat command etc ... ?
-
-build group icon should stay yellow in space bar
-
-allow folding/unfolding folders in pod space nav
-allow to use patterns for folders to autoexpand (ie: fan/** test/**)
-
 separate fantom config from editor config
 make support fantom a plugin ?
 
@@ -17,22 +20,23 @@ better plugin speration
 
 Move away from const space to allow more efficient refresh and not having to rebuild space constantly.
 
-Copy and use the syntax files in config folder ? o at least fpr extra ones
+Copy and use the syntax files in config folder ? or at least fpor extra ones
 
 make nav sidebar sash resizable ?
 
 undo/redo at file level ?
 
-themes / dark theme
+themes / dark theme (~ sublimetext)
 
 conf /etc/camembert/1.1/
  - options.props
  - session.props
  - shortcuts.props
  - run.fog ? global or plugin folder ??
- - fantom/class.tpl
  - fantom/envs.props
- - axon/axon.tpl
+ - tpl/axon.tpl
+ - tpl/class.tpl
+ - axon/license.props
  - theme/default .... dark ....
 
  node support

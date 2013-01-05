@@ -173,7 +173,7 @@ internal class IndexCache
       pod.srcFiles.each |f|
       {
         if(match(f.name, pattern, kind))
-          results.add(Item(f) { dis="$pod.name::$f.name" })
+          results.add(FileItem { it.file = f; it.dis="$pod.name::$f.name" })
       }
     }
     return results

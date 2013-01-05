@@ -37,11 +37,10 @@ class IndexSpace : Space
     Sys.cur.index.srcDirs.each |indexDir|
     {
       items := Item[,]
-      items.add(Item(indexDir) { it.dis = FileUtil.pathDis(indexDir) })
-
+      items.add(FileItem.forFile(indexDir, 0, FileUtil.pathDis(indexDir), Sys.cur.theme.iconHome))
       addPluginProjects(indexDir, items)
 
-      addItems(indexDir, groups, pods, items)
+      //addItems(indexDir, groups, pods, items)
       podRoots.add(ItemList(frame, items))
     }
 
@@ -67,9 +66,9 @@ class IndexSpace : Space
 
   override File? curFile() { null }
 
-  override Int match(Item item) { 0 }
+  override Int match(FileItem item) { 0 }
 
-  override Void goto(Item? item)
+  override Void goto(FileItem? item)
   {
     if(item == null) // refresh
     {
@@ -78,7 +77,7 @@ class IndexSpace : Space
     }
   }
 
-  Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
+  /*Void addItems(File indexDir, PodGroup[] groups, PodInfo[] pods, Item[] items, Str curGroup := "", Int ind := 0)
   {
     groupsInDir := groups.findAll |g|
     {
@@ -95,7 +94,7 @@ class IndexSpace : Space
     groupsInDir.each |g|
     {
       groups.removeSame(g)
-      items.add(Item(g) {indent = ind})
+      items.add(FantomItem.forGroup(g, null, ind))
       // Now recurse for what is in this group
       addItems(g.srcDir, groups, pods, items, g.name, ind + 1)
     }
@@ -103,22 +102,31 @@ class IndexSpace : Space
     podsInDir.each |p|
     {
       pods.removeSame(p)
-      items.add(Item(p) {indent = ind})
+      items.add(FantomItem.forPod(p, null, ind))
     }
-  }
+  }*/
 
-  Void addPluginProjects(File dir, Item[] items, Int ind:=0)
+  Void addPluginProjects(File dir, Item[] items, Int ind:=0, Int depth:=0)
   {
+    // look only a few levels deep to save time
+    if(depth > 2)
+      return
+
     // look for plugin projects
-    Sys.cur.plugins.vals.each |p|
+    item := Sys.cur.plugins.vals.eachWhile |p|
     {
-      item := p.projectItem(dir, ind)
-      if(item != null)
-        items.add(item)
+      p.projectItem(dir, ind)
+    }
+    if(item != null)
+    {
+      items.add(item)
+      ind++
     }
     // recurse
-    dir.listDirs.sort |a, b| { a <=> b }
-      .each {addPluginProjects(it, items, ind + 1)}
+    dir.listDirs.sort |a, b| { a.name.lower <=> b.name.lower }.each {
+      if(it.name[0]!='.')
+        addPluginProjects(it, items, ind, item == null ? depth + 1 : 0)
+    }
   }
 }
 

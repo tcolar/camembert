@@ -17,6 +17,7 @@ class PodSpace : BaseSpace
   override View? view
   override Nav? nav
   override Image icon() { isGroup ? Sys.cur.theme.iconPodGroup : Sys.cur.theme.iconPod }
+
   ** Whether this is a pod or a pod group
   Bool isGroup
   Widget? slots
@@ -29,7 +30,7 @@ class PodSpace : BaseSpace
     this.isGroup = Sys.cur.index.isGroupDir(dir) != null
 
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, StdItemBuilder(), Item(this.file))
+    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.forFile(this.file))
     slots = makeSlotNav
 
     viewParent.content = view
@@ -74,13 +75,14 @@ class PodSpace : BaseSpace
     {
       curType.slots.each |s|
       {
-        if (s.name.startsWith(text)) acc.add(Item(s) { it.dis = s.name })
-        }
+        if (s.name.startsWith(text))
+          acc.add(FantomItem.forSlot(s, s.name))
+      }
     }
 
     // match types
     if (!text.isEmpty)
-      acc.addAll(Sys.cur.index.matchTypes(text).map |t->Item| { Item(t) })
+      acc.addAll(Sys.cur.index.matchTypes(text).map |t->Item| { FantomItem.forType(t) })
 
     // f <file>
     if (text.startsWith("f ") && text.size >= 3)
@@ -90,18 +92,18 @@ class PodSpace : BaseSpace
     acc.addAll(Sys.cur.index.matchSlots(text)
       .findAll |s| {s.type.qname != curType?.qname}
       .findAll |s| {s.name.size>0 && text.size>0 && s.name[0] == text[0]}
-      .map |s->Item| { Item(s) })
+      .map |s->Item| { FantomItem.forSlot(s) })
 
     return acc
   }
 
-  override Int match(Item item)
+  override Int match(FileItem item)
   {
     // add 1000 so always preferred over filespace
     // use length so the "Deepest" (sub)pod matches first
     if (!FileUtil.contains(this.dir, item.file)) return 0
     // Pods from groups should open in own space
-    if(isGroup && item.pod != null) return 0
+    if(item.isProject) return 0
     return 1000 + dir.pathStr.size
   }
 
@@ -119,18 +121,18 @@ class PodSpace : BaseSpace
     types.sort |a, b| { a.line <=> b.line }
     types.each |t|
     {
-      items.add(Item(t) { it.dis = t.name } )
+      items.add(FantomItem.forType(t, t.name))
       slots := t.slots.dup.sort |a, b| { a.name <=> b.name }
       slots.each |s|
       {
-        items.add(Item(s) { it.dis = s.name; it.indent = 1 })
+        items.add(FantomItem.forSlot(s, s.name, 1))
       }
     }
     return ItemList(frame, items, 175)
   }
 
   ** Go to the given item. (in Editor & Nav)
-  override Void goto(Item? item)
+  override Void goto(FileItem? item)
   {
     super.goto(item)
 

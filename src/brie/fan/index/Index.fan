@@ -175,7 +175,7 @@ const class Index
     return pods.eachWhile |p|
     {
       if(p.srcDir == null)
-  return null
+        return null
       if(p.srcDir.normalize.uri == f.normalize.uri)
         return p
       return null

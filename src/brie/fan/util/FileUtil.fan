@@ -118,8 +118,10 @@ const class FileUtil
     offset := 0
     step := newText.size - oldText.size
 
-    items.each |item|
+    items.each |a|
     {
+      if(! (a is FileItem)) return
+      item := a as FileItem
       if(item.file != curFile)
       {
         if(curFile != null)
@@ -130,9 +132,9 @@ const class FileUtil
         catch(Err e) {e.trace; lines=null}
         offset = 0
       }
-      if(item.span.start.line != item.span.end.line)
+      if(item.loc.span.start.line != item.loc.span.end.line)
         throw Err("Replace only supported within a single line.")
-      line := item.span.start.line
+      line := item.loc.span.start.line
       if(line != curLine)
       {
         offset = 0
@@ -141,8 +143,8 @@ const class FileUtil
       if(lines != null)
       {
         l := lines[line]
-        start :=  item.span.start.col + offset
-        end := item.span.end.col + offset
+        start :=  item.loc.span.start.col + offset
+        end := item.loc.span.end.col + offset
         lines[line] = l[0 ..< start] + newText + l[end .. -1]
         offset += step
       }

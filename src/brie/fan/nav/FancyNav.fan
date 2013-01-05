@@ -12,13 +12,13 @@ class FancyNav : Nav
 
   // TODO: make a setting collapseLimit
   new make(Frame frame, File dir, NavItemBuilder navBuilder,
-      Item? curItem, Int collapseLimit := 30, Int listWidth:=200)
+      FileItem? curItem, Int collapseLimit := 50, Int listWidth:=200)
     : super(collapseLimit, navBuilder)
   {
     this.collapseLimit = collapseLimit
 
     root = dir
-    files := [Item(dir)]
+    files := [FileItem.forProject(dir, 0, null, navBuilder.icon)]
     findItems(dir, files)
     list = ItemList(frame, files, listWidth)
     highlight(curItem.file)

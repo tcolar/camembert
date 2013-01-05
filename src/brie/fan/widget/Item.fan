@@ -11,145 +11,97 @@ using fwt
 using concurrent
 using petanque
 
-**
-** Item represents an active item such as file or type
-** that has an icon, display string, and popup
-**
-class Item
+const class Item
 {
-  static Item[] makeFiles(File[] files)
-  {
-    acc := Item[,]
-    files.sort |a,b| { a.name <=> b.name }
-    files.each |f| { if (f.isDir) acc.add(makeFile(f)) }
-    files.each |f| { if (!f.isDir) acc.add(makeFile(f)) }
-    return acc
-  }
+  const Str dis
+  const Image? icon := null
+  const ItemLoc? loc := null
+  const Int indent := 0
+  // space ref
+  const Str? spaceId := null
 
-  new makeFile(File file, |This|? f := null)
-  {
-    this.dis  = file.name + (file.isDir ? "/" : "")
-    this.file = file
-    // check if this is a pod / group root first
-    if(file.isDir)
-    {
-      g := Sys.cur.index.isGroupDir(file)
-      p := Sys.cur.index.isPodDir(file)
-      if(g != null)
-      {
-        this.dis  = g.name
-        this.icon = Sys.cur.theme.iconPodGroup
-        this.file = g.srcDir
-        isProject = true
-      }
-      else if(p != null)
-      {
-        this.dis  = p.name
-        this.icon = Sys.cur.theme.iconPod
-        this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
-        isProject = true
-        this.pod  = p
-      }
-    }
-    if (f != null) f(this)
-    if(! isProject)
-      this.icon = collapsed ? Sys.cur.theme.iconFolderClosed : Theme.fileToIcon(file)
-  }
+  Space? space() {Sys.cur.frame.spaces.find{spaceId == buildSpaceId(it)}}
 
-  new makePod(PodInfo p, |This|? f := null)
-  {
-    this.dis  = p.name
-    this.icon = Sys.cur.theme.iconPod
-    this.file = FileUtil.findBuildPod(p.srcDir, p.srcDir)
-    isProject = true
-    this.pod  = p
-    if (f != null) f(this)
-  }
+  static Str buildSpaceId(Space space) {return "$space.typeof $space?.root"}
 
-  new makeGroup(PodGroup g, |This|? f := null)
+  new make(|This|? f := null)
   {
-    this.dis  = g.name
-    this.icon = Sys.cur.theme.iconPodGroup
-    this.file = g.srcDir
-    this.group = g.name
-    isProject = true
-    if (f != null) f(this)
-  }
-
-  new makeType(TypeInfo t, |This|? f := null)
-  {
-    this.dis  = t.qname
-    this.icon = Sys.cur.theme.iconType
-    this.file = t.toFile
-    this.line = t.line
-    this.pod  = t.pod
-    this.type = t
-    if (f != null) f(this)
-  }
-
-  new makeSlot(SlotInfo s, |This|? f := null)
-  {
-    this.dis  = s.qname
-    this.icon = s is FieldInfo ? Sys.cur.theme.iconField : Sys.cur.theme.iconMethod
-    this.file = s.type.toFile
-    this.line = s.line
-    this.col  = 2
-    this.pod  = s.type.pod
-    this.type = s.type
-    this.slot = s
-    if (f != null) f(this)
+    if(f!=null) f(this)
   }
 
   new makeStr(Str dis) { this.dis = dis }
 
-  new make(|This| f) { f(this) }
+  Pos pos() { Pos(loc?.line ?: 1, loc?.col ?: 0) }
 
-  const Str dis
+  virtual Void selected(Frame frame) {}
+  virtual Menu? popup(Frame frame) {return null}
+}
 
-  Image? icon
+const class ItemLoc
+{
+  const Int line := 1
+  const Int col := 0
+  const Span? span := null
 
-  Space? space
+  new make(|This|? f)
+  {
+    if(f != null) f(this)
+  }
+}
 
+const class FileItem : Item
+{
   const File? file
+  const Bool collapsed
+  const Bool isProject
 
-  const Int line
+  ** dDon't use directly usually
+  new make(|This|? f) : super(f)
+  {
+  }
 
-  const Int col
+  static FileItem forFile(File f, Int? indent := 0, Str? dis := null, Image? icon := null)
+  {
+    FileItem{
+      it.indent = indent
+      it.file = f
+      it.dis = dis ?: f.name + (f.isDir ? "/" : "")
+      it.icon = icon ?: Theme.fileToIcon(f)
+      it.collapsed = false
+      it.isProject = false
+    }
+  }
 
-  const Span? span
+  static FileItem forProject(File f, Int? indent := 0, Str? dis := null, Image? icon := null)
+  {
+    FileItem{
+      it.icon = icon ?: Theme.fileToIcon(f)
+      it.indent = indent
+      it.file = f
+      it.dis = dis ?: f.name + (f.isDir ? "/" : "")
+      it.isProject = true
+      it.collapsed = false
+    }
+  }
 
-  const PodInfo? pod
-
-  const TypeInfo? type
-
-  const SlotInfo? slot
-
-  const Bool header
-
-  const Int indent
-
-  const Str? group
-
-  Bool isProject := false
-
-  ** whether an item(folder) is collapsed
-  Bool collapsed := false
-
-  override Str toStr() { dis }
-
-  Str debug() {"$dis $file $pod $type $slot"}
-
-  Pos pos() { Pos(line, col) }
+  static FileItem[] makeFiles(File[] files)
+  {
+    acc := Item[,]
+    files.sort |a,b| { a.name <=> b.name }
+    files.each |f| { if (f.isDir) acc.add(forFile(f)) }
+    files.each |f| { if (!f.isDir) acc.add(forFile(f)) }
+    return acc
+  }
 
   ** Called when this item is left clicked
-  virtual Void selected(Frame frame)
+  override Void selected(Frame frame)
   {
-    if(! file.isDir || isProject)
+    if(isProject || ! file.isDir)
       frame.goto(this)
   }
 
   ** call when item is right clicked
-  virtual Menu? popup(Frame frame)
+  override Menu? popup(Frame frame)
   {
     if (file == null) return null
     // File menus
@@ -189,5 +141,20 @@ class Item
     }
   }
 
+  static FileItem toCollapsed(FileItem item, Bool val := ! item.collapsed)
+  {
+    return FileItem
+    {
+      it.collapsed = val
+      it.icon = it.collapsed ? Sys.cur.theme.iconFolderClosed : Sys.cur.theme.iconFolderOpen
+      // copy
+      it.file = item.file
+      it.isProject = item.isProject
+      it.dis = item.dis
+      it.loc = item.loc
+      it.indent = item.indent
+      it.spaceId = item.spaceId
+    }
+  }
 }
 

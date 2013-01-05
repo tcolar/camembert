@@ -33,7 +33,7 @@ mixin Space
 
   ** If this space can handle view of the given item, then return
   ** is match priority or zero if it cannot handle the item.
-  abstract Int match(Item item)
+  abstract Int match(FileItem item)
 
   override Int compare(Obj obj)
   {
@@ -41,7 +41,7 @@ mixin Space
     if (this is IndexSpace) return -1
     if (that is IndexSpace) return 1
     if (this.typeof != that.typeof) return this.typeof.name <=> that.typeof.name
-    return dis <=> that.dis
+    return root.normalize <=> that.root.normalize
   }
 
   ** Main Ui component if this space
@@ -60,6 +60,6 @@ mixin Space
 
   ** Go to the given item. (in Editor & Nav)
   ** If null, refresh current item
-  abstract Void goto(Item? item)
+  abstract Void goto(FileItem? item)
 }
 

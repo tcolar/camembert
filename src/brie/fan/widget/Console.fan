@@ -72,17 +72,6 @@ class Console : InsetPane
     open
   }
 
-  Void appendUnsafeItem(Unsafe u)
-  {
-    append([u.val])
-  }
-
-  Void appendErrMsg(Str s)
-  {
-    item := Item{it.dis = s; it.icon = Sys.cur.theme.iconErr}
-    append([item])
-  }
-
   Void close()
   {
     isOpen = false
@@ -202,7 +191,7 @@ internal const class ConsoleProcess
       {
         item := parseLine(line)
         console.list.addItem(item)
-        if (item.file != null)
+        if ((item is FileItem) && (item as FileItem).file != null)
           frame.marks = frame.marks.dup.add(item)
       }
       catch (Err e)
@@ -226,7 +215,7 @@ internal const class ConsoleProcess
     return Item(str)
   }
 
-  private Item? parseFan(Str str)
+  private FileItem? parseFan(Str str)
   {
     p1 := str.index("(", 4); if (p1 == null) return null
     c  := str.index(",", p1); if (c == null) return null
@@ -236,11 +225,14 @@ internal const class ConsoleProcess
     line := str[p1+1..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
     text := file.name + str[p1..-1]
-    return Item(file)
+    return FileItem
     {
+      it.file = file
       it.dis  = text
-      it.line = line-1
-      it.col  = col-1
+      it.loc = ItemLoc{
+        it.line = line-1
+        it.col  = col-1
+      }
       it.icon = Sys.cur.theme.iconErr
     }
   }
@@ -253,10 +245,11 @@ internal const class ConsoleProcess
     if (!file.exists) return null
       line := str[c1+1..<c2].toInt(10, false) ?: 1
     text := file.name + str[c1..-1]
-    return Item(file)
+    return FileItem
     {
+      it.file = file
       it.dis  = text
-      it.line = line-1
+      it.loc = ItemLoc {it.line = line-1}
       it.icon = Sys.cur.theme.iconErr
     }
   }

@@ -21,7 +21,7 @@ class FileSpace : BaseSpace
     : super(frame, FileUtil.pathDis(dir), dir)
   {
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, StdItemBuilder(), Item(this.file))
+    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.forFile(this.file))
 
     viewParent.content = view
     navParent.content = nav.list
@@ -40,13 +40,11 @@ class FileSpace : BaseSpace
     make(frame, File(props.getOrThrow("dir").toUri, false))
   }
 
-  override Int match(Item item)
+  override Int match(FileItem item)
   {
     if (!FileUtil.contains(this.dir, item.file)) return 0
-    // if group or pod we don't want to open them here but in a pod space
-    // TODO: make generic
-    //if (item.pod != null) return 0
-    //if (item.group != null) return 0
+    // if project we don't want to open them here but in a proper space
+    if (item.isProject) return 0
     return this.dir.path.size
   }
 }

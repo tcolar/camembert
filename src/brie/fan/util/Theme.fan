@@ -104,13 +104,16 @@ const class Theme
   {
     t := Sys.cur.theme
 
+    icon := PluginManager.cur.itemForFile(f)?.icon
+    if(icon != null) return icon
+
     if (f.isDir) return t.iconFolderOpen
-      if (f.mimeType?.mediaType == "image") return t.iconImage
-      if (f.ext == "fan")  return t.iconFan
-      if (f.ext == "java") return t.iconJava
-      if (f.ext == "js")   return t.iconJs
-      if (f.ext == "cs")   return t.iconCs
-      return t.iconFile
+    if (f.mimeType?.mediaType == "image") return t.iconImage
+    if (f.ext == "fan")  return t.iconFan
+    if (f.ext == "java") return t.iconJava
+    if (f.ext == "js")   return t.iconJs
+    if (f.ext == "cs")   return t.iconCs
+    return t.iconFile
   }
 
   const Str name := "default"

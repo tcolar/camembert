@@ -159,7 +159,12 @@ internal const class GotoCmd : Cmd
     line := text.toInt(10, false)
     file := frame.curFile
     if (line != null && file != null)
-      return [Item { it.dis= "Line $line"; it.file = file; it.line = line-1 }]
+      return [FileItem
+      {
+        it.dis= "Line $line"
+        it.file = file
+        it.loc = ItemLoc{it.line = line-1}
+      }]
 
     acc.addAll(frame.curSpace.findGotoMatches(text))
 
@@ -301,7 +306,7 @@ const class FindCmd : Cmd
     FileUtil.replaceAll(selectedItems, search, newText.text, "\n")
   }
 
-  Void findMatches(Item[] matches, File f, Str str, Bool matchCase)
+  Void findMatches(FileItem[] matches, File f, Str str, Bool matchCase)
   {
     if(! f.exists) return
 
@@ -324,11 +329,14 @@ const class FindCmd : Cmd
       {
         span := Span(linei, col, linei, col+str.size)
         dis := "$f.name(${linei+1}) [${col+1}-${col+1+str.size}]: $line.trim"
-        matches.add(Item(f)
+        matches.add(FileItem
           {
-            it.line = linei
-            it.col  = col
-            it.span = span
+            it.file = f
+            it.loc = ItemLoc{
+              it.line = linei
+              it.col  = col
+              it.span = span
+            }
             it.dis  = dis
             it.icon = Sys.cur.theme.iconMark
           })

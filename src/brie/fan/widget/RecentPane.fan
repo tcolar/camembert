@@ -140,22 +140,22 @@ class History
   ** Log navigation to the specified resource
   ** into the history.  Return this.
   **
-  This push(Space space, Item link)
+  This push(Space space, FileItem link)
   {
     // create history item
-    item := Item
+    item := FileItem
     {
-      it.space = space
+      it.spaceId = FileItem.buildSpaceId(space)
       it.file  = link.file
       it.dis   = link.file.name
       it.icon  = Theme.fileToIcon(link.file)
     }
 
     // remove any item that matches file (regardless of space)
-    dup := items.findIndex |x|
+    dup := items.findAll{it is FileItem}.findIndex |x|
     {
       //item.space.typeof == x.space.typeof &&
-      item.file == x.file
+      item.file == (x as FileItem).file
     }
     if (dup != null) items.removeAt(dup)
 

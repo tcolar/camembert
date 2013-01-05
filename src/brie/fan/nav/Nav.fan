@@ -38,11 +38,11 @@ abstract class Nav
   {
     if(file == null) return
 
-    Int? index := list.items.eachWhile |item, index -> Int?|
+    Int? index := list.files.eachWhile |item, index -> Int?|
     {
-      return item.file == file ? index : null
+      echo("${item->file} $file")
+      return (item as FileItem).file.normalize == file.normalize ? index : null
     }
-
     if(index == null) return
 
     list.highlight = list.items[index]
@@ -50,10 +50,12 @@ abstract class Nav
     // if not in vieport then scroll to it
     if( ! list.viewportLines.contains(index))
       list.scrollToLine(index>=5 ? index-5 : 0)
+
+    list.repaint
   }
 
   ** find items
-  Void findItems(File dir, Item[] results, Bool preserveLayout := false, Str path := "")
+  Void findItems(File dir, Item[] results, Bool preserveLayout := false, Str path:="")
   {
     dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
     {
@@ -105,7 +107,7 @@ abstract class Nav
 
   virtual Void refresh()
   {
-    newItems := [Item(root)]
+    newItems := [FileItem.forFile(root)]
     findItems(root, newItems, true)
     list.update(newItems)
   }

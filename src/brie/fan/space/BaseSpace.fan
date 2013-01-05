@@ -51,7 +51,7 @@ abstract class BaseSpace : Space
   }
 
   ** Go to the given item. (in Editor & Nav)
-  override Void goto(Item? item)
+  override Void goto(FileItem? item)
   {
     // Update view (editor)
     file = item == null ? file : item.file
@@ -61,7 +61,7 @@ abstract class BaseSpace : Space
       if(item != null)
         newView.onGoto(item)
       else
-        newView.onGoto(Item{it.line = view.curPos.line; it.col = view.curPos.col})
+        newView.onGoto(Item{it.loc.line = view.curPos.line; it.loc.col = view.curPos.col})
       updateView(newView)
     }
 

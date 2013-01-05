@@ -126,18 +126,20 @@ class ItemList : Panel
 
   private Void doMouseUp(Event event)
   {
-    item := items.getSafe(yToLine(event.pos.y))
-    if(item==null)
+    obj := items.getSafe(yToLine(event.pos.y))
+    if(obj==null ||  ! (obj is FileItem))
     {
       event.consume
       return
     }
 
+    item := obj as FileItem
+
     if (event.count == 1 && event.button == 1)
     {
       event.consume
       item.selected(frame)
-      if(!item.isProject && item.file != null && item.file.isDir)
+      if(! item.isProject && item.file != null && item.file.isDir)
       {
         toggleCollapse(item)
       }
@@ -157,53 +159,59 @@ class ItemList : Panel
   }
 
   ** Collpase / expand a folder item
-  Void toggleCollapse(Item item)
+  Void toggleCollapse(FileItem item)
   {
     if(item.collapsed)
     {
       // expand (one level)
-      Item[] newItems := [,]
+      FileItem[] newItems := [,]
       item.file.listFiles.sort |a,b| {a<=>b}.each |File file|
       {
-        newItems.add(Item(file){
-          it.indent = 1
-        })
+        newItems.add(FileItem.forFile(file, 1))
       }
       item.file.listDirs.sort |a,b| {a<=>b}.each |File file|
       {
-        newItems.add(Item(file){
-          it.dis = "${item.dis}$file.name/"
-          it.collapsed = ! file.list.isEmpty
-        })
+        newItems.add(FileItem.toCollapsed(
+          FileItem.forFile(file, 0, "${item.dis}$file.name/"),
+          ! file.list.isEmpty)
+        )
       }
-      Int index := items.eachWhile |that, index -> Int?| {if(item.file == that.file) return index; return null}
+      Int index := files.eachWhile |that, index -> Int?|
+      {
+        if(item.file == (that as FileItem).file) return index; return null
+      }
 
       items.insertAll(index == items.size ? -1 : index + 1, newItems)
 
       max := colCount
       newItems.each |x| { max = x.dis.size.max(max) }
       colCount = max + 2
-
-      item.collapsed = false
-      item.icon = Sys.cur.theme.iconFolderOpen
     }
     else
     {
-      // collpase (all)
-      items.dup.each
+      // collapse (all)
+      items.findAll{it is FileItem}.each
       {
-        if(it.file!=item.file && it.file.pathStr.startsWith(item.file.pathStr))
+        that := it as FileItem
+        if(that.file!=item.file && that.file.pathStr.startsWith(item.file.pathStr))
           items.remove(it)
       }
-      item.collapsed = true
-      item.icon = Sys.cur.theme.iconFolderClosed
     }
+
+    index := items.indexSame(item)
+    if(index>=0)
+      items[index] = FileItem.toCollapsed(item)
     repaint
   }
 
-  Item? findForFile(File f)
+  FileItem? findForFile(File f)
   {
-    items.find {it.file == f}
+    return files.find {it.file.normalize == f.normalize}
+  }
+
+  FileItem[] files()
+  {
+    return (FileItem[]) items.findAll{it is FileItem}
   }
 }
 

@@ -120,7 +120,7 @@ class Frame : Window
   }
 
   ** Route to best open space or open new one for given item.
-  Void goto(Item? item)
+  Void goto(FileItem? item)
   {
     if(item == null)
       return
@@ -173,10 +173,10 @@ class Frame : Window
     // now check if we have view to handle line/col
     if (curView != null) Desktop.callAsync |->|
     {
-      if (item == null || item.line <= 0)
+      if (item == null || item.loc.line <= 0)
       {
         pos := filePosHis[curView.file]
-        if (pos != null) item = Item { it.dis = pos.toStr; it.line = pos.line; it.col = pos.col }
+        if (pos != null) item = Item { it.dis = pos.toStr; it.loc.line = pos.line; it.loc.col = pos.col }
       }
       if (item != null) curView.onGoto(item)
     }
@@ -254,7 +254,7 @@ class Frame : Window
     return bestSpace
   }
 
-  private Space? create(Item item)
+  private Space? create(FileItem item)
   {
     if (item.space != null) return item.space
 
@@ -372,7 +372,7 @@ class Frame : Window
     files := data as File[]
     if (files == null || files.isEmpty) return
       file := files.first
-    goto(Item(file))
+    goto(FileItem.forFile(file))
   }
 
   //////////////////////////////////////////////////////////////////////////

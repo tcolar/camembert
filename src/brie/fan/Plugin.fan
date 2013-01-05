@@ -26,7 +26,7 @@ mixin Plugin
   ** If this plugin provides a custom space, return thempriority of this space (PosSpace is 50, Filespace is 0)
   virtual Int? spacePriority() {return null}
 
-  ** Return an Item if the dir matches a project fro the plugin
+  ** Return an Item if the dir matches a project for the plugin
   virtual Item? projectItem(File dir, Int indent) {return null}
 }
 
@@ -50,7 +50,7 @@ const class PluginManager : Service
   new make()
   {
     pods := Pod.list.findAll {it.meta.containsKey("camembert.plugin")}
-    Str:Plugin temp := [:]
+    Str:Plugin temp := ["camFantomPlugin": (Plugin)FantomPlugin()]
     pods.each |pod|
     {
       typeName := pod.meta["camembert.plugin"]
@@ -109,5 +109,11 @@ const class PluginManager : Service
   internal static PluginManager cur()
   {
     return (PluginManager) Service.find(PluginManager#)
+  }
+
+  ** See if any plugins know of this item
+  Item? itemForFile(File f)
+  {
+    plugins.vals.eachWhile |Plugin p -> Item?| {p.projectItem(f, 0)}
   }
 }
