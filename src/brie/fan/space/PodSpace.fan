@@ -29,14 +29,13 @@ class PodSpace : BaseSpace
     this.isGroup = Sys.cur.index.isGroupDir(dir) != null
 
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, Item(this.file))
+    nav = FancyNav(frame, dir, StdItemBuilder(), Item(this.file))
     slots = makeSlotNav
 
     viewParent.content = view
-    navParent.content = nav.items
+    navParent.content = nav.list
     slotsParent.content = slots
   }
-
 
   PodInfo? curPod() { Sys.cur.index.pod(podName, false) }
 
@@ -138,7 +137,9 @@ class PodSpace : BaseSpace
     // Update slot nav ?
     newSlots := makeSlotNav()
     slotsParent.content = newSlots
-    newSlots?.repaint
+    slotsParent.relayout
+    // needs to repaint view parent if slots pane went away or came back
+    viewParent.parent.relayout
   }
 }
 

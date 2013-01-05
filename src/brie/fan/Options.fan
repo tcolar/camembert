@@ -15,7 +15,7 @@ using netColarUtils
 @Serializable
 const class Options
 {
-  static const File standard := Env.cur.workDir + `etc/camenbert/options.props`
+  static const File standard := Env.cur.workDir + `etc/camembert/options.props`
 
   ** Reload options
   static Options load(File file := standard)

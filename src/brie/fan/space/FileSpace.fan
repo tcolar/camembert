@@ -21,10 +21,10 @@ class FileSpace : BaseSpace
     : super(frame, FileUtil.pathDis(dir), dir)
   {
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, Item(this.file))
+    nav = FancyNav(frame, dir, StdItemBuilder(), Item(this.file))
 
     viewParent.content = view
-    navParent.content = nav.items
+    navParent.content = nav.list
   }
 
   override Image icon() { Sys.cur.theme.iconDir }

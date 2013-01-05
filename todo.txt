@@ -58,3 +58,16 @@ conf /etc/camembert/1.1/
 
   mercurial/git commands (pull -u, push, merge, status etc....)
   mercurial / git view ?
+
+file -> same
+nav -> same .... but quick search / goto would need to be plugin specific or moved
+process -> mve all that inside plugin  -> terminate : move to console area X
+.... or keep them there but have them call out to plugin specific impls ???
+panels -> same
+options -> add "plugins" options : enable/disable plugins   remove swicth config(env)
+help -> same
+plugins -> remove
+plugin[1] "Fantom" .. swicth env
+plugin[1] "Axon" (End : fantom_env), import, licensing, about etc ...
+
+

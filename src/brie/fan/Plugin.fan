@@ -30,6 +30,15 @@ mixin Plugin
   virtual Item? projectItem(File dir, Int indent) {return null}
 }
 
+/*class PluginCommands
+{
+  Str? menuName
+  ** Only valid / enabled for this plugin space
+  Command[] spaceCommands := [,]
+  ** Always available
+  Command[] globalCommands := [,]
+}*/
+
 **
 ** Manages plugins
 **
@@ -54,7 +63,7 @@ const class PluginManager : Service
       {
         try
         {
-          //temp[pod.name] = (Plugin) type.make
+          temp[pod.name] = (Plugin) type.make
           echo("Found plugin : ${pod.name}.$typeName")
         }
         catch(Err e)

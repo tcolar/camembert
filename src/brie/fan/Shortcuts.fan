@@ -70,7 +70,7 @@ const class Shortcuts
   ** Reload theme
   static Shortcuts load()
   {
-    return (Shortcuts) SettingUtils.load(Env.cur.workDir + `etc/camenbert/shortcuts.props`, Shortcuts#)
+    return (Shortcuts) SettingUtils.load(Env.cur.workDir + `etc/camembert/shortcuts.props`, Shortcuts#)
   }
 
   ** Default constructor with it-block

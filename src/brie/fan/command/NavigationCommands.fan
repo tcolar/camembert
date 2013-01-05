@@ -16,7 +16,6 @@ internal const class RecentCmd : Cmd
   override Void invoke(Event event)
   {
     index := event.keyChar - '0'
-    echo(index)
     items := frame.history.items
     if(index>=0 && items.size > index)
       frame.goto(items[index])

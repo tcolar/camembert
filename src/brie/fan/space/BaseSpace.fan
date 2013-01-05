@@ -62,12 +62,17 @@ abstract class BaseSpace : Space
         newView.onGoto(item)
       else
         newView.onGoto(Item{it.line = view.curPos.line; it.col = view.curPos.col})
-      viewParent.content = newView
-      view = newView
-      view.repaint
+      updateView(newView)
     }
 
     // select in nav
     nav?.highlight(item?.file)
+  }
+
+  virtual Void updateView(View newView)
+  {
+    viewParent.content = newView
+    view = newView
+    viewParent.relayout
   }
 }

@@ -82,10 +82,10 @@ internal class SpaceBar : Canvas
     {
       MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },
       MenuItem { text="Close Others"; onAction.add{
-          frame.spaces.each {if(it != s) this.frame.closeSpace(it)}
-        }},
+          frame.closeOtherSpaces(s)}
+        },
       MenuItem { text="Close All"; onAction.add {
-          frame.spaces.each {this.frame.closeSpace(it)}
+          frame.closeSpaces
         }},
     }
     menu.open(e.widget, e.pos)

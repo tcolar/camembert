@@ -75,7 +75,6 @@ class IndexSpace : Space
     {
       (ui as ContentPane).content= makeUi
       ui.relayout
-      ui.repaint
     }
   }
 

@@ -130,7 +130,7 @@ class Item
 
   const Str? group
 
-  const Bool isProject := false
+  Bool isProject := false
 
   ** whether an item(folder) is collapsed
   Bool collapsed := false

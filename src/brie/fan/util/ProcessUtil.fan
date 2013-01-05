@@ -14,7 +14,7 @@ class ProcessUtil
 {
   ** Build pod args -> saved in memory and persisted in file
   private [Str:RunArgs]? runArgs
-  private File runArgsFile := Env.cur.workDir + `etc/camenbert/run.fog`
+  private File runArgsFile := Env.cur.workDir + `etc/camembert/run.fog`
 
   ** Single run args -> just kep in memory for session
   private File:RunArgs runSingleArgs := [:]

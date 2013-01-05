@@ -74,8 +74,9 @@ class Frame : Window
 
     // load session and home space
     loadSession
+
+    switchSpace(spaces.first)
     curSpace = spaces.first
-    load(curSpace, 0, null)
 
     PluginManager.cur.onFrameReady(this)
   }
@@ -84,14 +85,14 @@ class Frame : Window
   // Access
   //////////////////////////////////////////////////////////////////////////
 
-  ** Current space
+  ** Current space index
   Space curSpace
 
   ** Current space file
   File? curFile() { curSpace.curFile }
 
   ** If current space has loaded a view
-  View? curView { private set }
+  View? curView() { curSpace.view }
 
   ** Currently open spaces
   Space[] spaces := [,] { private set }
@@ -115,15 +116,15 @@ class Frame : Window
   ** Select given space (upon being picked in spacebar)
   Void select(Space space)
   {
-    load(space, spaceIndex(space), null)
+    switchSpace(space)
   }
 
   ** Route to best open space or open new one for given item.
-  Void goto(Item? item, Bool forceNewSpace := false)
+  Void goto(Item? item)
   {
-    echo("goto $item.dis $item.file")
     if(item == null)
       return
+
     // if this item is one of our marks, let console know
     markIndex := marks.indexSame(item)
     if (markIndex != null)
@@ -132,36 +133,108 @@ class Frame : Window
       console.highlight(item)
     }
 
-    // check if current view is on item
+    // check if current view is on current item, if so nothing to do
     if (curView?.file == item.file) { curView.onGoto(item); return }
 
-    // find best space to handle item, or create new one
+    // confirm if we should close
+    if (!confirmClose) return
+
+      // save current file line number
+    if (curView != null)
+      filePosHis[curView.file] = curView.curPos
+
+    // unload current view
+    try
+      curView?.onUnload
+    catch (Err e)
+      Sys.cur.log.err("View.onUnload", e)
+
+    // Push into history
+    if (item != null) history.push(curSpace, item)
+
+    // find best open space to handle item
     best:= matchSpace(item)
-    if (best != null && ! forceNewSpace)
+    if (best != null)
     {
       best.goto(item)
-      load(best, spaceIndex(best), item)
     }
     else
     {
-      c := create(item)
-      if (c == null) { echo("WARN: Cannot create space $item.dis"); return }
-      c.goto(item)
-      load(c, null, item)
+      // create new space
+      best = create(item)
+      if (best == null)
+       { echo("WARN: Cannot create space $item.dis"); return }
+      else
+       spaces.add(best)
+    }
+
+    switchSpace(best)
+
+    // now check if we have view to handle line/col
+    if (curView != null) Desktop.callAsync |->|
+    {
+      if (item == null || item.line <= 0)
+      {
+        pos := filePosHis[curView.file]
+        if (pos != null) item = Item { it.dis = pos.toStr; it.line = pos.line; it.col = pos.col }
+      }
+      if (item != null) curView.onGoto(item)
+    }
+  }
+
+  Void switchSpace(Space? space)
+  {
+    if(space == null)
+      space = spaces.first
+    if(space <=> curSpace != 0)
+    {
+      curSpace = space
+      spacePane.content = space.ui
+      spacePane.relayout
+      spaceBar.onLoad
+      spaceBar.relayout
+      updateStatus
+    }
+  }
+
+  Int? spaceIndex(Space space)
+  {
+    return spaces.eachWhile |Space sp, Int i -> Int?|
+    {
+      return sp <=> space == 0 ? i : null
     }
   }
 
   Void closeSpace(Space space)
   {
     i := spaceIndex(space)
-    if (i == 0) return
+    if (i == null) return // home space
 
     spaces.removeAt(i)
-    if (curSpace == space)
+    if (curSpace <=> space == 0)
     {
-      curSpace = spaces.getSafe(i) ?: spaces.last
-      load(curSpace, null, null)
+      space = spaces.getSafe(i) ?: spaces.last
+      switchSpace(space)
     }
+    else
+      spaceBar.onLoad
+  }
+
+  Void closeOtherSpaces(Space space)
+  {
+    spaces = [spaces.first, space]
+    if (curSpace <=> space != 0)
+    {
+      switchSpace(space)
+    }
+    else
+      spaceBar.onLoad
+  }
+
+  Void closeSpaces()
+  {
+    spaces = [spaces.first]
+    switchSpace(spaces.first)
   }
 
   private Space? matchSpace(Item item)
@@ -218,63 +291,6 @@ class Frame : Window
           match = p
     }
     return match?.createSpace(file)
-  }
-
-  ** Activate given space
-  private Void load(Space space, Int? index, Item? item)
-  {
-    // confirm if we should close
-    if (!confirmClose) return
-
-      // save current file line number
-    if (curView != null)
-      filePosHis[curView.file] = curView.curPos
-
-    // unload current view
-    try
-      curView?.onUnload
-    catch (Err e)
-      Sys.cur.log.err("View.onUnload", e)
-    curView = null
-
-    // update space references
-    this.curSpace = space
-    if (index == null)
-      spaces.add(space).sort
-    else
-      spaces.set(index, space).sort
-
-    // load space
-    spaceBar.onLoad
-    spacePane.content = space.ui
-
-    // update cur file in statusBar
-    this.curView = space.view
-    updateStatus
-
-    // Push into history
-    if (item != null) history.push(space, item)
-
-    // relayout
-    spaceBar.relayout
-    spacePane.relayout
-    relayout
-
-    // now check if we have view to handle line/col
-    if (curView != null) Desktop.callAsync |->|
-    {
-      if (item == null || item.line <= 0)
-      {
-        pos := filePosHis[curView.file]
-        if (pos != null) item = Item { it.dis = pos.toStr; it.line = pos.line; it.col = pos.col }
-      }
-      if (item != null) curView.onGoto(item)
-    }
-  }
-
-  private Int spaceIndex(Space space)
-  {
-    spaces.indexSame(space) ?: throw Err("Space not open: $space.typeof")
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -442,7 +458,7 @@ class Frame : Window
   // Private Fields
   //////////////////////////////////////////////////////////////////////////
 
-  private File sessionFile := Env.cur.workDir + `etc/camenbert/session.props`
+  private File sessionFile := Env.cur.workDir + `etc/camembert/session.props`
   private SpaceBar spaceBar
   private ContentPane spacePane
   private StatusBar statusBar

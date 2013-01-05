@@ -72,6 +72,17 @@ class Console : InsetPane
     open
   }
 
+  Void appendUnsafeItem(Unsafe u)
+  {
+    append([u.val])
+  }
+
+  Void appendErrMsg(Str s)
+  {
+    item := Item{it.dis = s; it.icon = Sys.cur.theme.iconErr}
+    append([item])
+  }
+
   Void close()
   {
     isOpen = false

@@ -118,7 +118,7 @@ const class Theme
   ** Reload theme
   static Theme load(Str name)
   {
-    template := Env.cur.workDir + `etc/camenbert/theme-${name}.props`
+    template := Env.cur.workDir + `etc/camembert/theme-${name}.props`
     return (Theme) SettingUtils.load(template, Theme#)
   }
 
