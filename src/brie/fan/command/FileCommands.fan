@@ -113,7 +113,7 @@ const class NewFileCmd : Cmd
     f.out.print(text).close
 
     frame.curSpace.nav?.refresh
-    frame.goto(FileItem.forFile(f))
+    frame.goto(FileItem.makeFile(f))
   }
 
   internal Void adjustCombo(Combo combo, Text text)
@@ -178,7 +178,7 @@ const class MoveFileCmd : Cmd
     file.moveTo(to)
 
     frame.curSpace.nav?.refresh
-    frame.goto(FileItem.forFile(to))
+    frame.goto(FileItem.makeFile(to))
   }
   new make(|This| f) {f(this)}
 }
@@ -206,7 +206,7 @@ const class DeleteFileCmd : Cmd
 
     //if cur file was deleted, got to view default
     if(! frame.curFile.exists)
-      frame.goto(FileItem.forFile(frame.curSpace.root))
+      frame.goto(FileItem.makeFile(frame.curSpace.root))
   }
   new make(|This| f) {f(this)}
 }
@@ -222,7 +222,7 @@ internal const class OpenFolderCmd : Cmd
     }.open(frame)
 
     if(f!=null)
-      frame.goto(FileItem.forFile(f))
+      frame.goto(FileItem.makeFile(f))
   }
   new make(|This| f) {f(this)}
 }

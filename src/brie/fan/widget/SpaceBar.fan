@@ -77,7 +77,16 @@ internal class SpaceBar : Canvas
 
   private Void onPopup(Event e, Space s)
   {
-    if (s is IndexSpace) return
+    if (s is IndexSpace)
+    {
+      menu := Menu
+      {
+        MenuItem { text="Refresh"; onAction.add{s.refresh} },
+      }
+      return
+    }
+
+    // Not index space
     menu := Menu
     {
       MenuItem { text="Close"; onAction.add { frame.closeSpace(s) } },

@@ -98,6 +98,7 @@ class ItemList : Panel
     y := 0
     itemh := this.itemh
 
+    Str? collapsedBase := null
     items.eachRange(lines) |item|
     {
       paintItem(g, item, x, y)
@@ -167,13 +168,13 @@ class ItemList : Panel
       FileItem[] newItems := [,]
       item.file.listFiles.sort |a,b| {a<=>b}.each |File file|
       {
-        newItems.add(FileItem.forFile(file, 1))
+        newItems.add(FileItem.makeFile(file, 1))
       }
       item.file.listDirs.sort |a,b| {a<=>b}.each |File file|
       {
-        newItems.add(FileItem.toCollapsed(
-          FileItem.forFile(file, 0, "${item.dis}$file.name/"),
-          ! file.list.isEmpty)
+        newItems.add(
+          FileItem.makeFile(file, 0).setDis("${item.dis}$file.name/")
+            .setCollapsed(! file.list.isEmpty)
         )
       }
       Int index := files.eachWhile |that, index -> Int?|
@@ -200,7 +201,7 @@ class ItemList : Panel
 
     index := items.indexSame(item)
     if(index>=0)
-      items[index] = FileItem.toCollapsed(item)
+      items[index] = item.setCollapsed( ! item.collapsed)
     repaint
   }
 

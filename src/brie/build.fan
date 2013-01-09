@@ -30,6 +30,8 @@ class Build : BuildPod
                `fan/index/`,
                `fan/util/`,
                `fan/command/`,
+               `fan/item/`,
+               `fan/fantom/`,
                `fan/widget/`,
                `fan/nav/`]
     resDirs = [`res/`]

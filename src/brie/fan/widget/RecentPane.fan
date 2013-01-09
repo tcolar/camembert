@@ -117,7 +117,7 @@ class RecentPickerModel : TableModel
     {
       case 0:  return row >= 1 && row <= 9 ? row.toStr : ""
       case 1:  return items[row].dis
-      case 2:  return items[row].space.dis
+      case 2:  return items[row].space?.dis ?: ""
       default: return ""
     }
   }
@@ -142,20 +142,17 @@ class History
   **
   This push(Space space, FileItem link)
   {
+    if(link.file == null) return this
+    if(link.file.isDir) return this
+
     // create history item
-    item := FileItem
-    {
-      it.spaceId = FileItem.buildSpaceId(space)
-      it.file  = link.file
-      it.dis   = link.file.name
-      it.icon  = Theme.fileToIcon(link.file)
-    }
+    item := FileItem.makeFile(link.file).setSpace(space)
 
     // remove any item that matches file (regardless of space)
     dup := items.findAll{it is FileItem}.findIndex |x|
     {
       //item.space.typeof == x.space.typeof &&
-      item.file == (x as FileItem).file
+      item.file.normalize == (x as FileItem).file.normalize
     }
     if (dup != null) items.removeAt(dup)
 

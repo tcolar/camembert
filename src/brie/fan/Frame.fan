@@ -120,7 +120,7 @@ class Frame : Window
   }
 
   ** Route to best open space or open new one for given item.
-  Void goto(FileItem? item)
+  Void goto(Item? item)
   {
     if(item == null)
       return
@@ -134,7 +134,11 @@ class Frame : Window
     }
 
     // check if current view is on current item, if so nothing to do
-    if (curView?.file == item.file) { curView.onGoto(item); return }
+    if ( !(item is FileItem) || curView?.file == (item as FileItem).file)
+    {
+      curView.onGoto(item)
+      return
+    }
 
     // confirm if we should close
     if (!confirmClose) return
@@ -150,7 +154,8 @@ class Frame : Window
       Sys.cur.log.err("View.onUnload", e)
 
     // Push into history
-    if (item != null) history.push(curSpace, item)
+    if (item != null)
+      history.push(curSpace, item)
 
     // find best open space to handle item
     best:= matchSpace(item)
@@ -176,7 +181,7 @@ class Frame : Window
       if (item == null || item.loc.line <= 0)
       {
         pos := filePosHis[curView.file]
-        if (pos != null) item = Item { it.dis = pos.toStr; it.loc.line = pos.line; it.loc.col = pos.col }
+        if (pos != null) item = Item.makeLoc(pos.line, pos.col, null).setDis(pos.toStr)
       }
       if (item != null) curView.onGoto(item)
     }
@@ -256,38 +261,30 @@ class Frame : Window
 
   private Space? create(FileItem item)
   {
-    if (item.space != null) return item.space
+    if (item.space != null && ! (item.space is IndexSpace))
+     return item.space
 
     file := item.file
     if (file == null) return null
 
-    pSpace := createPluginSpace(file, 51)
+    pSpace := createPluginSpace(file, 11)
     if(pSpace != null)
       return pSpace
 
-    // Pod spaces is considered prio 50
-    pod := Sys.cur.index.podForFile(file)
-    if (pod != null) return PodSpace(this, pod.name, pod.srcDir)
-
-    group := Sys.cur.index.groupForFile(file)
-    if (group != null) return PodSpace(this, group.name, group.srcDir)
-
-    pSpace = createPluginSpace(file, 1)
-    if(pSpace != null)
-      return pSpace
-
-    // File space is considered prio 0
+    // if we found no spaces with prio over 10, use filespace
     dir := file.isDir ? file : file.parent
     return FileSpace(this, dir)
   }
 
+  ** Find and create the space with the highest prio for given file
+  ** If prio > minPrio return thge space istance, otherwise null
   private Space? createPluginSpace(File file, Int minPrio)
   {
     Plugin? match
     Sys.cur.plugins.vals.each |p|
     {
-      if(p.spacePriority != null && p.spacePriority >= minPrio)
-        if(match == null || p.spacePriority > match.spacePriority)
+      if(p.spacePriority(file) >= minPrio)
+        if(match == null || p.spacePriority(file) > match.spacePriority(file))
           match = p
     }
     return match?.createSpace(file)
@@ -372,7 +369,7 @@ class Frame : Window
     files := data as File[]
     if (files == null || files.isEmpty) return
       file := files.first
-    goto(FileItem.forFile(file))
+    goto(FileItem.makeFile(file))
   }
 
   //////////////////////////////////////////////////////////////////////////

@@ -30,7 +30,7 @@ class PodSpace : BaseSpace
     this.isGroup = Sys.cur.index.isGroupDir(dir) != null
 
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.forFile(this.file))
+    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file))
     slots = makeSlotNav
 
     viewParent.content = view
@@ -76,13 +76,13 @@ class PodSpace : BaseSpace
       curType.slots.each |s|
       {
         if (s.name.startsWith(text))
-          acc.add(FantomItem.forSlot(s, s.name))
+          acc.add(FantomItem.makeSlot(s, s.name).setIndent(0))
       }
     }
 
     // match types
     if (!text.isEmpty)
-      acc.addAll(Sys.cur.index.matchTypes(text).map |t->Item| { FantomItem.forType(t) })
+      acc.addAll(Sys.cur.index.matchTypes(text).map |t->Item| { FantomItem.makeType(t) })
 
     // f <file>
     if (text.startsWith("f ") && text.size >= 3)
@@ -92,7 +92,7 @@ class PodSpace : BaseSpace
     acc.addAll(Sys.cur.index.matchSlots(text)
       .findAll |s| {s.type.qname != curType?.qname}
       .findAll |s| {s.name.size>0 && text.size>0 && s.name[0] == text[0]}
-      .map |s->Item| { FantomItem.forSlot(s) })
+      .map |s->Item| { FantomItem.makeSlot(s).setIndent(0) })
 
     return acc
   }
@@ -121,11 +121,11 @@ class PodSpace : BaseSpace
     types.sort |a, b| { a.line <=> b.line }
     types.each |t|
     {
-      items.add(FantomItem.forType(t, t.name))
+      items.add(FantomItem.makeType(t, t.name))
       slots := t.slots.dup.sort |a, b| { a.name <=> b.name }
       slots.each |s|
       {
-        items.add(FantomItem.forSlot(s, s.name, 1))
+        items.add(FantomItem.makeSlot(s, s.name))
       }
     }
     return ItemList(frame, items, 175)

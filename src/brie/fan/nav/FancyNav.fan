@@ -18,7 +18,7 @@ class FancyNav : Nav
     this.collapseLimit = collapseLimit
 
     root = dir
-    files := [FileItem.forProject(dir, 0, null, navBuilder.icon)]
+    files := [FileItem.makeProject(dir, 0).setIcon(navBuilder.icon)]
     findItems(dir, files)
     list = ItemList(frame, files, listWidth)
     highlight(curItem.file)

@@ -61,7 +61,7 @@ abstract class BaseSpace : Space
       if(item != null)
         newView.onGoto(item)
       else
-        newView.onGoto(Item{it.loc.line = view.curPos.line; it.loc.col = view.curPos.col})
+        newView.onGoto(Item.makeLoc(view.curPos.line, view.curPos.col, null))
       updateView(newView)
     }
 

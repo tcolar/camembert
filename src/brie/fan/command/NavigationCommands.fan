@@ -28,7 +28,7 @@ internal const class MostRecentCmd : Cmd
   override const Str name := "Last File"
   override Void invoke(Event event)
   {
-    if(frame.history.items.size > 0)
+    if(frame.history.items.size > 1)
       frame.goto(frame.history.items[1])
   }
   new make(|This| f) {f(this)}
@@ -159,12 +159,7 @@ internal const class GotoCmd : Cmd
     line := text.toInt(10, false)
     file := frame.curFile
     if (line != null && file != null)
-      return [FileItem
-      {
-        it.dis= "Line $line"
-        it.file = file
-        it.loc = ItemLoc{it.line = line-1}
-      }]
+      return [FileItem.makeFile(file).setDis("Line $line").setLoc(ItemLoc{it.line = line-1})]
 
     acc.addAll(frame.curSpace.findGotoMatches(text))
 
@@ -329,17 +324,9 @@ const class FindCmd : Cmd
       {
         span := Span(linei, col, linei, col+str.size)
         dis := "$f.name(${linei+1}) [${col+1}-${col+1+str.size}]: $line.trim"
-        matches.add(FileItem
-          {
-            it.file = f
-            it.loc = ItemLoc{
-              it.line = linei
-              it.col  = col
-              it.span = span
-            }
-            it.dis  = dis
-            it.icon = Sys.cur.theme.iconMark
-          })
+        matches.add(FileItem.makeFile(f).setDis(dis).setLoc(
+              ItemLoc{it.line = linei; it.col  = col; it.span = span}).setIcon(
+              Sys.cur.theme.iconMark))
         col = chars.index(str, col+str.size)
       }
     }

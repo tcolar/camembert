@@ -137,7 +137,7 @@ class HelpPane : ContentPane
       {
         try
         {
-         frame.goto(FantomItem.forType(info))
+         frame.goto(FantomItem(info))
         }
         catch(Err err){err.trace}
       }

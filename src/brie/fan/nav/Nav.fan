@@ -40,7 +40,6 @@ abstract class Nav
 
     Int? index := list.files.eachWhile |item, index -> Int?|
     {
-      echo("${item->file} $file")
       return (item as FileItem).file.normalize == file.normalize ? index : null
     }
     if(index == null) return
@@ -107,7 +106,7 @@ abstract class Nav
 
   virtual Void refresh()
   {
-    newItems := [FileItem.forFile(root)]
+    newItems := [FileItem.makeFile(root)]
     findItems(root, newItems, true)
     list.update(newItems)
   }

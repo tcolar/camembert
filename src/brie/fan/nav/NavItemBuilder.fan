@@ -32,19 +32,19 @@ class StdItemBuilder : NavItemBuilder
 
   override  FileItem forFile(File f, Str path, Int indent)
   {
-    return FileItem.forFile(f, indent)
+    return FileItem.makeFile(f, indent)
   }
 
   override  FileItem forDir(File f, Str path, Int indent, Bool collapsed)
   {
     if(collapsed)
-      return FileItem.toCollapsed(FileItem.forFile(f, indent, "${path}$f.name/"), true)
+      return FileItem.makeFile(f, indent).setDis("${path}$f.name/").setCollapsed(true)
     else
-      return FileItem.toCollapsed(FileItem.forFile(f, indent, "${path}$f.name/"),false)
+      return FileItem.makeFile(f, indent).setDis("${path}$f.name/").setCollapsed(false)
   }
 
   override FileItem forProj(File f, Str path, Int indent)
   {
-    return FileItem.forProject(f, indent, "${path}$f.name")
+    return FileItem.makeProject(f, indent).setDis("${path}$f.name")
   }
 }

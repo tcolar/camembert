@@ -33,6 +33,7 @@ mixin Space
 
   ** If this space can handle view of the given item, then return
   ** is match priority or zero if it cannot handle the item.
+  ** File space returns 10
   abstract Int match(FileItem item)
 
   override Int compare(Obj obj)

@@ -55,7 +55,7 @@ const class Shortcuts
   const Str recentToggle          := "Alt+R"
 
   @Setting{help = ["Back to most recent file (Equivalent to Ctrl+1)"]}
-  const Str mostRecent            := "Ctrl+Space"
+  const Str mostRecent            := "Ctrl+Tab"
 
   @Setting{help = ["Recent files will be mapped to Modifier + 1 .. 9"]}
   const Str recentModifier := "Ctrl"

@@ -225,16 +225,9 @@ internal const class ConsoleProcess
     line := str[p1+1..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
     text := file.name + str[p1..-1]
-    return FileItem
-    {
-      it.file = file
-      it.dis  = text
-      it.loc = ItemLoc{
-        it.line = line-1
-        it.col  = col-1
-      }
-      it.icon = Sys.cur.theme.iconErr
-    }
+    return FileItem.makeFile(file).setDis(text).setLoc(
+          ItemLoc{it.line = line-1; it.col  = col-1}).setIcon(
+          Sys.cur.theme.iconErr)
   }
 
   private Item? parseJava(Str str)
@@ -245,13 +238,8 @@ internal const class ConsoleProcess
     if (!file.exists) return null
       line := str[c1+1..<c2].toInt(10, false) ?: 1
     text := file.name + str[c1..-1]
-    return FileItem
-    {
-      it.file = file
-      it.dis  = text
-      it.loc = ItemLoc {it.line = line-1}
-      it.icon = Sys.cur.theme.iconErr
-    }
+    return FileItem.makeFile(file).setDis(text).setLoc(ItemLoc {it.line = line-1})
+            .setIcon(Sys.cur.theme.iconErr)
   }
 
   private Obj? receive(Msg msg)

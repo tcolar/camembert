@@ -102,10 +102,10 @@ const class Theme
 
   static Image fileToIcon(File f)
   {
-    t := Sys.cur.theme
-
-    icon := PluginManager.cur.itemForFile(f)?.icon
+    icon := PluginManager.cur.iconForFile(f)
     if(icon != null) return icon
+
+    t := Sys.cur.theme
 
     if (f.isDir) return t.iconFolderOpen
     if (f.mimeType?.mediaType == "image") return t.iconImage
@@ -113,6 +113,7 @@ const class Theme
     if (f.ext == "java") return t.iconJava
     if (f.ext == "js")   return t.iconJs
     if (f.ext == "cs")   return t.iconCs
+
     return t.iconFile
   }
 
