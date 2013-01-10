@@ -15,9 +15,10 @@ using petanque
 **
 abstract class View : ContentPane
 {
-  static View? makeBest(Frame frame, File file)
+  static View? makeBest(Frame frame, File? file)
   {
     mime := file.mimeType ?: MimeType("text/plain")
+    if(file == null) return null
     if (mime.mediaType == "text") return TextView(frame, file)
     if (mime.mediaType == "image") return ImageView(frame, file)
     return null

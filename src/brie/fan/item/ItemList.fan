@@ -140,7 +140,7 @@ class ItemList : Panel
     {
       event.consume
       item.selected(frame)
-      if(! item.isProject && item.file != null && item.file.isDir)
+      if(! item.isProject && item.file.isDir)
       {
         toggleCollapse(item)
       }

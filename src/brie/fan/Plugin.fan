@@ -35,13 +35,9 @@ mixin Plugin
   ** null otherwise
   virtual Image? iconForFile(File dir) {return null}
 
-  ** Crawl the source dirs looking for projects directories
-  ** The indexer cache will cache this and only call agin upon request
-  FileItem[] projects(File[] srcDirs)
-  {
-  }
-
-  //abstract Bool isProject(File dir)
+  ** Return the list of projects found in the source directories
+  ** Implementation should cache this if possible.
+  abstract FileItem[] projects(/*File[] srcDirs*/)
 }
 
 /*class PluginCommands

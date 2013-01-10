@@ -11,13 +11,13 @@ using compilerDoc
 using concurrent
 
 **
-** IndexCrawler
+** FantomIndexCrawler
 **
-internal class IndexCrawler
+internal class FantomIndexCrawler
 {
-  new make(Index index) { this.index = index }
+  new make(FantomIndex index) { this.index = index }
 
-  const Index index
+  const FantomIndex index
 
   ** Reindex all pods
   Duration indexAll()

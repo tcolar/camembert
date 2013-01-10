@@ -12,7 +12,7 @@ using fwt
 **
 ** Fantom pod space
 **
-class PodSpace : BaseSpace
+class FantomSpace : BaseSpace
 {
   override View? view
   override Nav? nav

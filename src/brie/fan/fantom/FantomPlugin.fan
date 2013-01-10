@@ -65,17 +65,21 @@ const class FantomPlugin : Plugin
     {
       group := Sys.cur.index.isGroupDir(file)
       if(group != null)
-        return PodSpace(Sys.cur.frame, group.name, file)
+        return FantomSpace(Sys.cur.frame, group.name, file)
       pod := Sys.cur.index.isPodDir(file)
       if(pod != null)
-        return PodSpace(Sys.cur.frame, pod.name, file)
+        return FantomSpace(Sys.cur.frame, pod.name, file)
     }
     return null
   }
 
   override Int spacePriority(File prjDir)
   {
-    if(projectItem(prjDir, 0) != null)
+    pod := Sys.cur.index.isPodDir(prjDir)
+    if(pod != null)
+      return 55
+    group := Sys.cur.index.isGroupDir(prjDir)
+    if(group != null)
       return 50
     return 0
   }

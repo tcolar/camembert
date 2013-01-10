@@ -34,11 +34,11 @@ class IndexSpace : Space
     podRoots := ItemList[,]
     projects := getPluginProjects()
 
-    Sys.cur.index.srcDirs.each |indexDir|
+    Sys.cur.srcRoots.each |indexDir|
     {
       items := Item[,]
-      items.add(FileItem.makeProject(indexDir).setIcon(Sys.cur.theme.iconHome))
-      items.addAll(projects.findAll{FileUtil.contains(indexDir, it.file)})
+      items.add(FileItem.makeProject(indexDir.toFile).setIcon(Sys.cur.theme.iconHome))
+      items.addAll(projects.findAll{FileUtil.contains(indexDir.toFile, it.file)})
       podRoots.add(ItemList(frame, items))
     }
 

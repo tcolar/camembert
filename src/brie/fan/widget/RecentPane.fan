@@ -142,7 +142,6 @@ class History
   **
   This push(Space space, FileItem link)
   {
-    if(link.file == null) return this
     if(link.file.isDir) return this
 
     // create history item

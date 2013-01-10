@@ -191,7 +191,7 @@ internal const class ConsoleProcess
       {
         item := parseLine(line)
         console.list.addItem(item)
-        if ((item is FileItem) && (item as FileItem).file != null)
+        if ((item is FileItem))
           frame.marks = frame.marks.dup.add(item)
       }
       catch (Err e)

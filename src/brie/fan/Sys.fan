@@ -25,8 +25,9 @@ const class Sys : Service
   ** Theme
   const Theme theme
 
-  ** Indexing service
-  const Index index
+  // TODO : remove this
+  ** FantomIndexing service
+  const FantomIndex index
 
   ** Application level commands
   const Commands commands
@@ -43,7 +44,7 @@ const class Sys : Service
   {
     if(f!=null) f(this)
     theme = Theme.load(options.theme)
-    index = Index(this)
+    index = FantomIndex(this)
     commands = Commands(this)
     wPort := NetUtils.findAvailPort(8787)
     docServer = WispService { port = wPort; root = DocWebMod() }.start
@@ -52,6 +53,7 @@ const class Sys : Service
 
   override Void onStart()
   {
+    // TODO: have plugins indexer called
     index.reindexAll
   }
 
@@ -106,5 +108,7 @@ const class Sys : Service
   {
     return (Sys) Service.find(Sys#)
   }
+
+  Uri[] srcRoots() {options.srcDirs}
 }
 

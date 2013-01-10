@@ -7,6 +7,14 @@ BUG: Axon space -> eval disspears .... nav buttons disappear
 
 TrioInfo -> should be in Axon plugin
 
+hide .git folder by default ... others ?
+
+each plugin -> reindex option (remove reindex from status bar)
+each plugin -> rescan for projects option
+nd also indexspace pill -> refresh all projects (for all plugins)
+
+FantomPodIndex ->   // TODO: key by path to allow multiple version of same pod ??
+
 generic indexer or indexer per plugin ?
 fix project finder fo axon plugin using new indexer
 nav -> make collapse limit a setting

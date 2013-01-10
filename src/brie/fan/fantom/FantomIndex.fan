@@ -15,7 +15,7 @@ using compilerDoc
 **
 ** Index maintains listing of files and pods we've crawled
 **
-const class Index
+const class FantomIndex
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ const class Index
   new make(Sys sys)
   {
     dirs := File[,]
-    sys.options.srcDirs.each |uri|
+    sys.srcRoots.each |uri|
     {
       try
       {
@@ -201,8 +201,8 @@ const class Index
 
   private Obj? receiveCache(Msg msg)
   {
-    c := Actor.locals["cache"] as IndexCache
-    if (c == null) Actor.locals["cache"] = c = IndexCache(this)
+    c := Actor.locals["cache"] as FantomIndexCache
+    if (c == null) Actor.locals["cache"] = c = FantomIndexCache(this)
 
     id := msg.id
     if (id === "pods")        return Unsafe(c.listPods)
@@ -220,7 +220,7 @@ const class Index
     if (id === "addPodSrc")   return c.addPodSrc(msg.a, msg.b, msg.c)
     if (id === "addPodLib")   return c.addPodLib(msg.a, msg.b, msg.c)
     if (id === "addGroup")   return c.addGroup(msg.a, msg.b)
-    if (id === "clearAll")    return Actor.locals["cache"] = IndexCache(this)
+    if (id === "clearAll")    return Actor.locals["cache"] = FantomIndexCache(this)
     if (id === "addTrioInfo")  return c.addTrioInfo(msg.a)
 
     echo("ERROR: Unknown msg: $msg.id")
@@ -235,8 +235,8 @@ const class Index
   {
     try
     {
-      c := Actor.locals["crawl"] as IndexCrawler
-      if (c == null) Actor.locals["crawl"] = c = IndexCrawler(this)
+      c := Actor.locals["crawl"] as FantomIndexCrawler
+      if (c == null) Actor.locals["crawl"] = c = FantomIndexCrawler(this)
 
       id := msg.id
       if (id === "reindexPod") return c.indexPod(msg.a)

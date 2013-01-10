@@ -265,7 +265,6 @@ class Frame : Window
      return item.space
 
     file := item.file
-    if (file == null) return null
 
     pSpace := createPluginSpace(file, 11)
     if(pSpace != null)

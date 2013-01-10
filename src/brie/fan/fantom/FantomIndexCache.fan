@@ -9,13 +9,13 @@
 using compilerDoc
 
 **
-** IndexCache
+** FantomIndexCache
 **
-internal class IndexCache
+internal class FantomIndexCache
 {
-  new make(Index index) { this.index = index }
+  new make(FantomIndex index) { this.index = index }
 
-  const Index index
+  const FantomIndex index
 
   PodInfo[] listPods() { pods.vals.sort }
 
@@ -53,9 +53,8 @@ internal class IndexCache
   {
     cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList, null)
     if(cur.srcDir != null && cur.srcDir.uri !=  srcDir.uri)
-      echo("WARNING: Ignoring second source root for pod $name : $cur.srcDir.osPath .. $srcDir.osPath")
-    else
-      pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles, findGroup(srcDir))
+      echo("WARNING: Duplicated source root for pod $name : $cur.srcDir.osPath .. $srcDir.osPath\\Last one found will be used")
+    pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles, findGroup(srcDir))
     return null
   }
 
@@ -83,9 +82,9 @@ internal class IndexCache
   {
     cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList, null)
     if(cur.podFile != null && cur.podFile.uri !=  podFile.uri)
-      echo("WARNING: Ignoring second pod file for pod $name : $cur.podFile.osPath .. $podFile.osPath")
-    else
-      pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles, null)
+      echo("WARNING: Duplicated pod file for pod $name : $cur.podFile.osPath .. $podFile.osPath\\Last one found will be used!")
+
+    pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles, null)
     return null
   }
 
@@ -195,8 +194,10 @@ internal class IndexCache
     return false
   }
 
+  // TODO: key by path to allow multiple version of same pod ??
   private Str:PodInfo pods := [:]
   private Str:PodGroup groups := [:]
+
   ** Trio info / keyed by pod name
   private Str:TrioInfo trioInfo := [:]
 }

@@ -9,7 +9,7 @@ using fwt
 @Serializable
 class FileItem : Item
 {
-  const File? file
+  const File file
 
   Bool isProject := false
   Str? sortStr
@@ -52,7 +52,7 @@ class FileItem : Item
   ** call when item is right clicked
   override Menu? popup(Frame frame)
   {
-    //if (file == null) return null
+    if (isProject) return null
     // File menus
     return Menu
     {
