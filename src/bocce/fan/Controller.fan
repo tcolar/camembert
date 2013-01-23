@@ -117,6 +117,7 @@ class Controller
       case "Backspace":  event.consume; onBackspace; return
       case "Del":        event.consume; onDel(false); return
       case "Ctrl+Del":   event.consume; onDel(true); return
+      case "Ctrl+A":     event.consume; onSelectAll; return
       case "Ctrl+D":     event.consume; onCutLine; return
       case "Ctrl+X":     event.consume; onCut; return
       case "Ctrl+V":     event.consume; onPaste; return
@@ -143,6 +144,11 @@ class Controller
     if (event.consumed) return
 
     if (event.key == Key.shift) anchor = null
+  }
+
+  private Void onSelectAll()
+  {
+    editor.selection = Span(editor.doc.homePos, editor.doc.endPos)
   }
 
   private Void goto(Event event, Pos newCaret)
@@ -374,7 +380,11 @@ class Controller
   private Void mouseSelectDrag(Event event)
   {
     pos := viewport.pointToPos(event.pos)
-    editor.selection = Span(anchor, pos)
+    // Note that without this it would improperly create a zero length selection
+    // even for accidental 1 pixel mouse drags ... and would prevent next event
+    // to be handled properly (as if there was a selection)
+    if(anchor != pos)
+      editor.selection = Span(anchor, pos)
   }
 
   private Void mouseSelectWord(Event event)
