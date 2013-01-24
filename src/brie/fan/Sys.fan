@@ -30,7 +30,7 @@ const class Sys : Service
 
   const Template[] templates
 
-  const License[] licenses
+  const LicenseTpl[] licenses
 
   // TODO : remove this
   ** FantomIndexing service
@@ -69,10 +69,10 @@ const class Sys : Service
     templates = tpl.sort |a, b| {a.name <=> b.name}
 
     // read the licenses
-    lic := License[,]
+    lic := LicenseTpl[,]
     (optionsFile.parent + `licenses/`).listFiles.each
     {
-      lic.add(JsonUtils.load(it.in, License#))
+      lic.add(JsonUtils.load(it.in, LicenseTpl#))
     }
     licenses = lic.sort |a, b| {a.name <=> b.name}
   }

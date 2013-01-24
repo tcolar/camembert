@@ -68,6 +68,7 @@ abstract class Nav
     {
       if (! hidden(f))
       {
+        // TODO: also those might not be ready before indexer is done -> cache that ?
         // TODO: make this generic : isProjectDir() for any plugin
         if(Sys.cur.index.isPodDir(f)!=null || Sys.cur.index.isGroupDir(f) != null)
         {
@@ -104,10 +105,12 @@ abstract class Nav
         r.matches(f.uri.toStr) ? true : null} ?: false
   }
 
-  virtual Void refresh()
+  virtual Void refresh(File base := root)
   {
-    newItems := [FileItem.makeFile(root)]
-    findItems(root, newItems, true)
-    list.update(newItems)
+    if( ! base.isDir)
+      base = base.parent
+    FileItem[] newItems := [,]
+    findItems(base, newItems, true)
+    list.refresh(base, newItems)
   }
 }

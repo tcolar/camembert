@@ -13,7 +13,7 @@ class FileItem : Item
 
   Bool isProject := false
   Str? sortStr
-  Bool collapsed := false
+  Bool collapsed := false {private set}
 
   new makeFile(File? f, Int indent := 0) : super.makeStr(f.name + (f.isDir ? "/" : ""))
   {
@@ -33,7 +33,8 @@ class FileItem : Item
 
   This setCollapsed(Bool val)
   {
-    icon = val ? Sys.cur.theme.iconFolderClosed : Sys.cur.theme.iconFolderOpen
+    if(! isProject)
+      icon = val ? Sys.cur.theme.iconFolderClosed : Sys.cur.theme.iconFolderOpen
     collapsed = val
     return this
   }
@@ -53,6 +54,7 @@ class FileItem : Item
   override Menu? popup(Frame frame)
   {
     if (isProject) return null
+
     // File menus
     return Menu
     {

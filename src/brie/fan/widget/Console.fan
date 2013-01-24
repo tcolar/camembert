@@ -61,7 +61,7 @@ class Console : InsetPane
   Void show(Item[] marks)
   {
     frame.marks = marks
-    list.update(marks)
+    list.items = marks
     open
   }
 
@@ -90,7 +90,7 @@ class Console : InsetPane
   Void clear()
   {
     frame.marks = [,]
-    list.update(frame.marks)
+    list.items = frame.marks
   }
 
   ** Copy all the text from the console to the clipboard

@@ -19,6 +19,8 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 [TODO / Ideas]
 
+(1) Optimize template / license lookup (toStr equals)
+
 (1) config /etc/camembert/
  - run.fog ? global or plugin folder ??
  - fantom/envs.props
@@ -30,10 +32,15 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 (2) nav -> refresh, expand all, colapse all options ?
 
+(2) Optimize project indexing / lookup -> file watched and/or folders timstamp hash maybe ?
+not bother with projects in projects ??
+
+(2) hidden folders -> change that to collapsed ??
+
 (2)** make license on camembert level ... free but some plugins require it to be licensed ?
 
 (3) nav -> auto-open folders: <10(10 children or less) ; *(all); .fan, .axon(olders wth .fan or .axon); fan(folder)
-
+always expand folders that contain sub projects ?
 
 (3)**console:
 process tabs, repeat command etc ... ?

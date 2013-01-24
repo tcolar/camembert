@@ -24,7 +24,8 @@ class ItemList : Panel
   {
     this.frame = frame
     this.width = width
-    update(items)
+    this.items = items
+    update
     onMouseUp.add |e| { doMouseUp(e) }
   }
 
@@ -34,7 +35,7 @@ class ItemList : Panel
 
   Frame? frame { private set }
 
-  Item[] items := [,]
+  Item[] items := [,] {set{&items = it; update}}
 
   Font font := Sys.cur.theme.font
 
@@ -44,7 +45,7 @@ class ItemList : Panel
 // Panel
 //////////////////////////////////////////////////////////////////////////
 
-  override Int lineCount() { items.size }
+  override Int lineCount() { visibleItems.size }
 
   override Int lineh() { itemh }
 
@@ -62,23 +63,20 @@ class ItemList : Panel
 
   Void addItem(Item item)
   {
-    update(this.items.rw.add(item))
-    relayout
-    repaint
+    items.add(item)
+    update()
   }
 
-  Void update(Item[] newItems)
+  private Void update()
   {
     max := 5
-    newItems.each |x| { max = x.dis.size.max(max) }
-    this.items = newItems
+    items.each |x| { max = x.dis.size.max(max) }
     this.colCount = max + 2 // leave 2 for icon
-    //&highlight = null
     relayout
     repaint
   }
 
-  Void clear() { update(Item[,]) }
+  Void clear() { items = Item[,] }
 
 //////////////////////////////////////////////////////////////////////////
 // Layout
@@ -99,7 +97,7 @@ class ItemList : Panel
     itemh := this.itemh
 
     Str? collapsedBase := null
-    items.eachRange(lines) |item|
+    visibleItems.eachRange(lines) |item, i|
     {
       paintItem(g, item, x, y)
       y += itemh
@@ -123,11 +121,16 @@ class ItemList : Panel
 // Eventing
 //////////////////////////////////////////////////////////////////////////
 
-  private Item? yToItem(Int y) { items.getSafe(yToLine(y)) }
+  private Item? yToItem(Int y) { itemAtLine(yToLine(y)) }
+
+  private Item? itemAtLine(Int line)
+  {
+    visibleItems.getSafe(line)
+  }
 
   private Void doMouseUp(Event event)
   {
-    obj := items.getSafe(yToLine(event.pos.y))
+    obj := itemAtLine(yToLine(event.pos.y))
     if(obj==null ||  ! (obj is FileItem))
     {
       event.consume
@@ -140,7 +143,7 @@ class ItemList : Panel
     {
       event.consume
       item.selected(frame)
-      if(! item.isProject && item.file.isDir)
+      if(item.file.isDir)
       {
         toggleCollapse(item)
       }
@@ -151,6 +154,19 @@ class ItemList : Panel
     {
       event.consume
       menu := item.popup(frame)
+
+      if(item.file.isDir)
+      {
+        if(menu == null)
+          menu = Menu()
+        else
+          menu.addSep
+
+        menu.add(MenuItem{it.text="Refresh tree"
+          it.onAction.add |e| {frame.curSpace.nav?.refresh(item.file)} })
+          menu.add(MenuItem{it.text="Expand tree"
+            it.onAction.add |e| {expand(item, true)} })
+      }
       if (menu != null)
       {
         menu.open(event.widget, event.pos)
@@ -159,50 +175,96 @@ class ItemList : Panel
     }
   }
 
-  ** Collpase / expand a folder item
+  private Item[] visibleItems()
+  {
+    items.findAll { ! it.hidden }
+  }
+
+  ** Toggle collapse / expand an item (1 level)
   Void toggleCollapse(FileItem item)
   {
     if(item.collapsed)
-    {
-      // expand (one level)
-      FileItem[] newItems := [,]
-      item.file.listFiles.sort |a,b| {a<=>b}.each |File file|
-      {
-        newItems.add(FileItem.makeFile(file, 1))
-      }
-      item.file.listDirs.sort |a,b| {a<=>b}.each |File file|
-      {
-        newItems.add(
-          FileItem.makeFile(file, 0).setDis("${item.dis}$file.name/")
-            .setCollapsed(! file.list.isEmpty)
-        )
-      }
-      Int index := files.eachWhile |that, index -> Int?|
-      {
-        if(item.file == (that as FileItem).file) return index; return null
-      }
-
-      items.insertAll(index == items.size ? -1 : index + 1, newItems)
-
-      max := colCount
-      newItems.each |x| { max = x.dis.size.max(max) }
-      colCount = max + 2
-    }
+      expand(item)
     else
+      collapse(item)
+  }
+
+  ** Collapse a folder and all subfolders
+  Void collapse(FileItem item)
+  {
+    item.setCollapsed(true)
+    index := items.indexSame(item) + 1
+    // hide children
+    while(index < items.size)
     {
-      // collapse (all)
-      items.findAll{it is FileItem}.each
-      {
-        that := it as FileItem
-        if(that.file!=item.file && that.file.pathStr.startsWith(item.file.pathStr))
-          items.remove(it)
-      }
+      that := items[index] as FileItem
+      if(that.file.pathStr.startsWith(item.file.pathStr))
+        that.hidden = true
+      else
+        break // we are out of the parents path
+      index++
     }
 
-    index := items.indexSame(item)
-    if(index>=0)
-      items[index] = item.setCollapsed( ! item.collapsed)
-    repaint
+    update
+  }
+
+  ** Expand a folder
+  ** if recurse is true then expand any subfolder as well
+  Void expand(FileItem item, Bool recurse := false)
+  {
+    item.setCollapsed(false)
+    index := items.indexSame(item) + 1
+    // hide children
+    while(index < items.size)
+    {
+      that := items[index] as FileItem
+      if(! recurse && that.file.path.size > item.file.path.size + 1)
+      {  //  skipping subfolder items
+        index++;
+        continue
+      }
+      if(that.file.pathStr.startsWith(item.file.pathStr))
+      {
+        that.hidden = false
+        if(that.file.isDir)
+          that.setCollapsed(that.isProject || ! recurse)
+      }
+      else
+        break // we are out of the parents path
+      index++
+    }
+
+    update
+  }
+
+  ** Refresh an item tree, typically a directory
+  ** base is the item (base of tree) being refreshed
+  Void refresh(File base, FileItem[] newItems)
+  {
+    Int? start := items.eachWhile |item, index -> Int?|
+    {
+      return (item as FileItem).file == base ? index : null
+    }
+
+    if(start == null)
+      return
+
+    // drop the current subtree
+    start += 1
+    removeEnd := start
+    pathStr := base.pathStr
+    while(removeEnd < items.size)
+    {
+      that := items[removeEnd] as FileItem
+      if(that.file.pathStr.startsWith(pathStr))
+        removeEnd++
+      else
+        break // out of the subtree
+    }
+
+    items = items[0 ..< start].addAll(newItems).addAll(items[removeEnd .. -1])
+
+    update
   }
 
   FileItem? findForFile(File f)

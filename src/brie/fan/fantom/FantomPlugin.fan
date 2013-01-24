@@ -32,7 +32,7 @@ const class FantomPlugin : Plugin
 
     licenses := configDir + `licenses/default.json`
     if( ! licenses.exists)
-      JsonUtils.save(licenses.out, License{it.name="default"
+      JsonUtils.save(licenses.out, LicenseTpl{it.name="default"
         it.text="// Copyright 2013 : me - Change this and create new licenses in config/licenses/\n//\n"})
 
     // TODO: init index and so on here

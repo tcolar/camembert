@@ -8,7 +8,7 @@ using netColarUtils
 ** Licences
 **
 @Serializable
-const class License
+const class LicenseTpl
 {
   ** can be use to sort licenses - lower shows first
   const Int order := 10

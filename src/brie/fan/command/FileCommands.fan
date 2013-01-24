@@ -57,7 +57,7 @@ const class NewFileCmd : Cmd
     Template[] tpls := [Template{it.name = "Empty file"; it.text=""}]
     tpls.addAll(Sys.cur.templates)
 
-    License[] licenses := [License{it.name = "None"; it.text=""}]
+    LicenseTpl[] licenses := [LicenseTpl{it.name = "None"; it.text=""}]
     licenses.addAll(Sys.cur.licenses)
 
     ok := Dialog.ok
@@ -120,7 +120,7 @@ const class NewFileCmd : Cmd
     // store last license used in session, so we reuse the same until changed
     frame.lastLicense = licCombo.selected
 
-    frame.curSpace.nav?.refresh
+    frame.curSpace.nav?.refresh(f)
     frame.goto(FileItem.makeFile(f))
   }
 
@@ -186,7 +186,8 @@ const class MoveFileCmd : Cmd
     to := (File(dest)).normalize
     file.moveTo(to)
 
-    frame.curSpace.nav?.refresh
+    frame.curSpace.nav?.refresh(file.parent)
+    frame.curSpace.nav?.refresh(to.parent)
     frame.goto(FileItem.makeFile(to))
   }
   new make(|This| f) {f(this)}
@@ -211,7 +212,7 @@ const class DeleteFileCmd : Cmd
 
     file.delete
 
-    frame.curSpace.nav?.refresh
+    frame.curSpace.nav?.refresh(file.parent)
 
     //if cur file was deleted, got to view default
     if(! frame.curFile.exists)

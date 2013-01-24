@@ -19,6 +19,7 @@ class Item
   ItemLoc loc := ItemLoc{}
   Image? icon
   Str? spaceId {private set}
+  Bool hidden := false
 
   new makeStr(Str dis) { this.dis = dis }
 
@@ -53,6 +54,7 @@ class Item
   virtual Void selected(Frame frame) {}
 
   ** Called when item is right cliked on
+  ** isRootItem is true if it's the first item in the list and a project
   virtual Menu? popup(Frame frame) {return null}
 }
 
