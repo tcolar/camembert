@@ -72,7 +72,6 @@ internal const class GotoCmd : Cmd
     // table of matches
     matches := GotoMatchModel { itemFont = font; width = 500 }
 
-
     table := Table
     {
       it.headerVisible = false

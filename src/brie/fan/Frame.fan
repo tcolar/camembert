@@ -85,6 +85,9 @@ class Frame : Window
   // Access
   //////////////////////////////////////////////////////////////////////////
 
+  ** Last license template used
+  Str? lastLicense
+
   ** Current space index
   Space curSpace
 
@@ -387,6 +390,8 @@ class Frame : Window
     // read bounds
     this.bounds = Rect(props["frame.bounds"] ?: "100,100,600,500")
 
+    this.lastLicense = props["last.license"]
+
     // spaces
     spaces := Space[,]
     for (i:=0; true; ++i)
@@ -430,6 +435,8 @@ class Frame : Window
 
     // frame state
     props["saved"] = DateTime.now.toStr
+    if(lastLicense != null)
+      props["last.license"] = lastLicense
     props["frame.bounds"] = this.bounds.toStr
 
     // spaces
@@ -454,7 +461,7 @@ class Frame : Window
   // Private Fields
   //////////////////////////////////////////////////////////////////////////
 
-  private File sessionFile := Env.cur.workDir + `etc/camembert/session.props`
+  private File sessionFile := Sys.cur.optionsFile.parent + `session.props`
   private SpaceBar spaceBar
   private ContentPane spacePane
   private StatusBar statusBar
