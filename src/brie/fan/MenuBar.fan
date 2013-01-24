@@ -57,9 +57,9 @@ class MenuBar : Menu
       }
 
 
-      configs := Menu{
+      /*configs := Menu{
         it.text = "Switch config"
-          MenuItem{ it.command = SwitchConfigCmd("default", Options.standard).asCommand
+          MenuItem{ it.command = SwitchConfigCmd("default", Sys.optionsFile).asCommand
                     it.mode = MenuItemMode.radio
                     it.selected = true
                   },
@@ -69,13 +69,13 @@ class MenuBar : Menu
         configs.add(MenuItem{
           it.command = SwitchConfigCmd(name, file).asCommand; it.mode = MenuItemMode.radio
         })
-      }
+      }*/
 
       options = Menu {
         it.text = "Options"
         MenuItem{ it.command = Sys.cur.commands.editConfig.asCommand},
         MenuItem{ it.command = Sys.cur.commands.reloadConfig.asCommand},
-        configs,
+        //configs,
       }
 
       help = Menu {

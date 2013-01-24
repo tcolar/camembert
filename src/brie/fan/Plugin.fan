@@ -10,7 +10,7 @@ mixin Plugin
 {
 
   ** Called as soon as camembert starts up (before doing anything)
-  virtual Void onInit() {}
+  virtual Void onInit(File configDir) {}
 
   ** Called was a config is loaded / reloaded
   ** Note that the user can possibly swap config

@@ -16,14 +16,21 @@ using netColarUtils
 **
 const class Sys : Service
 {
+  ** The main options file
+  const File optionsFile
+
   ** Shortcuts config
-  const Shortcuts shortcuts := Shortcuts.load
+  const Shortcuts shortcuts
 
   ** Configuration options
   const Options options
 
   ** Theme
   const Theme theme
+
+  const Template[] templates
+
+  const License[] licenses
 
   // TODO : remove this
   ** FantomIndexing service
@@ -43,12 +50,31 @@ const class Sys : Service
   new make(|This|? f)
   {
     if(f!=null) f(this)
-    theme = Theme.load(options.theme)
+    options = Options.load(optionsFile)
+    shortcuts =  Shortcuts.load(optionsFile.parent)
+    theme = Theme.load(optionsFile.parent, options.theme)
     index = FantomIndex(this)
     commands = Commands(this)
     wPort := NetUtils.findAvailPort(8787)
     docServer = WispService { port = wPort; root = DocWebMod() }.start
+
     PluginManager.cur.onConfigLoaded(this)
+
+    // read the templates
+    tpl := Template[,]
+    (optionsFile.parent + `templates/`).listFiles.each
+    {
+      tpl.add(JsonUtils.load(it.in, Template#))
+    }
+    templates = tpl.sort |a, b| {a.name <=> b.name}
+
+    // read the licenses
+    lic := License[,]
+    (optionsFile.parent + `licenses/`).listFiles.each
+    {
+      lic.add(JsonUtils.load(it.in, License#))
+    }
+    licenses = lic.sort |a, b| {a.name <=> b.name}
   }
 
   override Void onStart()
@@ -72,11 +98,12 @@ const class Sys : Service
     }
   }
 
-  static Void loadConfig(File config := Options.standard)
+  static Void loadConfig()
   {
     frame := Sys.cur.frame
     frame.spaces.each {Sys.cur.frame.closeSpace(it)}
 
+    optionsFile := Sys.cur.optionsFile
     // Note : calling manually onStop to make sure it fully stops before we restart
     // because sys.stop calls it asynchronously
     Sys.cur.onStop
@@ -85,21 +112,9 @@ const class Sys : Service
 
     Sys sys := Sys
     {
-      options = Options.load(config)
+      it.optionsFile = optionsFile
     }
     sys.start
-  }
-
-  ** Look for alternate config files (options_xyz.props)
-  Str:File configs()
-  {
-    Str:File results := [:]
-    Options.standard.parent.listFiles.each |f|
-    {
-      if(f.name.startsWith("options_") && f.ext =="props")
-        results.add(f.basename[8 .. -1], f)
-    }
-    return results
   }
 
   Str:Plugin plugins() {PluginManager.cur.plugins}
@@ -110,5 +125,10 @@ const class Sys : Service
   }
 
   Uri[] srcRoots() {options.srcDirs}
+
+  static File confDir()
+  {
+    File.os((Env.cur.workDir + `etc/camembert/camembert.props`).readProps["configDir"])
+  }
 }
 

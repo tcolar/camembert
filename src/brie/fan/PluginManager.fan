@@ -12,8 +12,11 @@ const class PluginManager : Service
   ** Pod name / Plugin implementation instance map
   const Str:Plugin plugins := [:]
 
-  new make()
+  const File configDir
+
+  new make(File configDir)
   {
+    this.configDir = configDir
     pods := Pod.list.findAll {it.meta.containsKey("camembert.plugin")}
     Str:Plugin temp := ["camFantomPlugin": (Plugin)FantomPlugin()]
     pods.each |pod|
@@ -43,7 +46,7 @@ const class PluginManager : Service
 
   internal Void onInit()
   {
-    plugins.vals.each |plugin| {plugin.onInit}
+    plugins.vals.each |plugin| {plugin.onInit(configDir)}
   }
 
   internal Void onConfigLoaded(Sys newSys)

@@ -116,12 +116,12 @@ internal const class EditConfigCmd : Cmd
   override const Str name := "Edit config"
   override Void invoke(Event event)
   {
-    frame.goto(FileItem.makeFile(Options.standard))
+    frame.goto(FileItem.makeFile(Sys.cur.optionsFile))
   }
   new make(|This| f) {f(this)}
 }
 
-internal const class SwitchConfigCmd : Cmd
+/*internal const class SwitchConfigCmd : Cmd
 {
   override const Str name
   const File conf
@@ -140,7 +140,7 @@ internal const class SwitchConfigCmd : Cmd
     this.name = name
     this.conf = conf
   }
-}
+}*/
 
 internal const class ReloadConfigCmd : Cmd
 {

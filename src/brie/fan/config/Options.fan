@@ -10,17 +10,16 @@ using gfx
 using netColarUtils
 
 **
-** Configuration options
+** Global configuration options
 **
 @Serializable
 const class Options
 {
-  static const File standard := Env.cur.workDir + `etc/camembert/options.props`
 
   ** Reload options
-  static Options load(File file := standard)
+  static Options load(File file)
   {
-    return (Options) SettingUtils.load(file, Options#)
+    return (Options) JsonSettings.load(file, Options#)
   }
 
   ** Default constructor with it-block
@@ -31,18 +30,16 @@ const class Options
   }
 
   @Setting{ help = [
-  "Note that you can create alternate configs: options_foo.props, options_bar.props ...",
-  "",
   "Home directory to use for fan/build commands"] }
   const Uri fanHomeUri := Env.cur.homeDir.uri
 
   @Setting{ help = ["Sources Directories to crawl"] }
-  const Uri[] srcDirs := [standard.parent.uri]
+  const Uri[] srcDirs := [Sys.confDir.uri]
 
   @Setting{ help = ["Pod directories to crawl. Typically [fanHomeUri]/lib/fan/"] }
-  const Uri[] podDirs := [Env.cur.homeDir.uri]
+  const Uri[] podDirs := [Env.cur.homeDir.uri+`lib/fan`]
 
-  @Setting{ help = ["Name of theme to use (saved in etc/camembert/theme-name.props)"] }
+  @Setting{ help = ["Name of theme to use (saved in config/tehmes/name.props)"] }
   const Str theme := "default"
 
   @Setting{ help = ["Patterns of file/directories to hide from pod navigation. Uses Pattern.match() on File full uri's to match",

@@ -54,22 +54,22 @@ const class NewFileCmd : Cmd
 
   Void newFile(File? dir, Str filename, Frame frame)
   {
-    Str:Str tpls := [:] {ordered = true}
-    Options.standard.parent.listFiles.findAll |file->Bool|
-    {
-      return file.ext == "tpl"}
-        .each{tpls[it.basename] = it.readAllStr
-    }
-    tpls["Empty File"] = ""
+    Template[] tpls := [Template{it.name = "Empty file"; it.text=""}]
+    tpls.addAll(Sys.cur.templates)
+
+    License[] licenses := [License{it.name = "None"; it.text=""}]
+    licenses.addAll(Sys.cur.licenses)
 
     ok := Dialog.ok
     cancel := Dialog.cancel
 
     name := Text {text = filename; prefCols = 60}
-    combo := Combo
-    {
-      items = tpls.keys
-    }
+
+    tplCombo := Combo{items = tpls.map {it.name}}
+    licCombo := Combo{items = licenses.map {it.name}}
+
+    if(frame.lastLicense != null)
+      licCombo.selected = frame.lastLicense
 
     path := Text
     {
@@ -77,9 +77,9 @@ const class NewFileCmd : Cmd
       text = (dir?.osPath ?: Env.cur.workDir.osPath) + File.sep
     }
 
-    name.onKeyUp.add |Event e| {adjustCombo(combo, name)}
+    name.onKeyUp.add |Event e| {adjustCombo(tpls, tplCombo, name)}
 
-    adjustCombo(combo, name) // preselect item according to default file name
+    adjustCombo(tpls, tplCombo, name) // preselect item according to default file name
 
     dialog := Dialog(frame)
     {
@@ -92,9 +92,13 @@ const class NewFileCmd : Cmd
         Label{ text = "Folder: (Any new folders will get created automatically)" },
         path,
         Label{ text = "Template:" },
-        combo,
+        tplCombo,
+        Label{ text = "License:" },
+        licCombo,
       }
     }
+    // Note: select is not working for some reason
+    name.select(0, filename.index(".") ?: filename.size - 1)
     name.focus
 
     // open dialog
@@ -105,25 +109,30 @@ const class NewFileCmd : Cmd
 
     f := File.os(path.text).createFile(name.text)
 
-    text := tpls[combo.selected]
-      .replace("{date}", DateTime.now.toLocale("MMM DD YY"))
-      .replace("{name}", f.basename)
-      .replace("{user}", Env.cur.user)
+    text := licenses.find {it.name == licCombo.selected}.text +
+      tpls.find{it.name == tplCombo.selected}.text
+        .replace("{date}", DateTime.now.toLocale("MMM DD YY"))
+        .replace("{name}", f.basename)
+        .replace("{user}", Env.cur.user)
 
     f.out.print(text).close
+
+    // store last license used in session, so we reuse the same until changed
+    frame.lastLicense = licCombo.selected
 
     frame.curSpace.nav?.refresh
     frame.goto(FileItem.makeFile(f))
   }
 
-  internal Void adjustCombo(Combo combo, Text text)
+  internal Void adjustCombo(Template[] tpls, Combo combo, Text text)
   {
     name := text.text
     ext := (name.contains(".") ? name[name.index(".") .. -1] : ".")[1 .. -1]
-    if(combo.index(ext) != null)
-      combo.selected = ext
+    tpl := tpls.find {it.extensions.contains(ext)}
+    if(tpl != null)
+      combo.selected = tpl.name
     else
-      combo.selected = combo.items[-1] // empty file tpl
+      combo.selected = combo.items[0] // empty file tpl
   }
 
   new make(|This| f) {f(this)}

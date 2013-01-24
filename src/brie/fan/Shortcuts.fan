@@ -68,9 +68,9 @@ const class Shortcuts
 
 
   ** Reload theme
-  static Shortcuts load()
+  static Shortcuts load(File configDir)
   {
-    return (Shortcuts) SettingUtils.load(Env.cur.workDir + `etc/camembert/shortcuts.props`, Shortcuts#)
+    return (Shortcuts) JsonSettings.load(configDir + `shortcuts.props`, Shortcuts#)
   }
 
   ** Default constructor with it-block
@@ -88,6 +88,7 @@ const class Shortcuts
   "Ctrl+Home:   Go to document start",
   "Ctrl+End:    Go to document end",
   "Ctrl+D:      Cut whole line",
+  "Ctrl+A:      Select All",
   "Tab:         Increase indentation",
   "Shift+Tab:   Decrease indentation",
   ]}

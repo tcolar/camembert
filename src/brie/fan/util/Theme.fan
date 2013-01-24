@@ -120,10 +120,10 @@ const class Theme
   const Str name := "default"
 
   ** Reload theme
-  static Theme load(Str name)
+  static Theme load(File configDir, Str name)
   {
-    template := Env.cur.workDir + `etc/camembert/theme-${name}.props`
-    return (Theme) SettingUtils.load(template, Theme#)
+    template := configDir+ `themes/${name}.props`
+    return (Theme) JsonSettings.load(template, Theme#)
   }
 
   ** Default constructor with it-block

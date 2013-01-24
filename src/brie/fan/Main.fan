@@ -15,26 +15,58 @@ class Main
 {
   static Void main()
   {
-    pluginManager := PluginManager()
+    checkConfigFolder
+    props := (Env.cur.workDir + `etc/camembert/camembert.props`).readProps
+    echo("props: $props")
+    configDir := File.os(props["configDir"])
+    configVersion := Version(props["version"])
+
+    pluginManager := PluginManager(configDir)
     pluginManager.start // will call plugins init
 
-    init
-
-    sys := Sys{options = Options.load}
+    sys := Sys{optionsFile = configDir+`options.props`}
     sys.start
     Frame().open
 
     pluginManager.stop // will call plugins shutdown
   }
 
-  static Void init()
+  ** Gheck the config folder
+  ** If not defined yet, then ask and create it
+  static Void checkConfigFolder()
   {
-    // Create .fan files template
-    fan := File(`${Options.standard.parent}/fan.tpl`)
-    if(!fan.exists)
+    props := Env.cur.workDir + `etc/camembert/camembert.props`
+    path := Text
     {
-      fan.create.out.print("// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nclass {name}\n{\n}\n").close
+      prefCols = 60
+      text = Env.cur.homeDir.parent.normalize.osPath + "/camembert/"
     }
+
+    if( ! props.exists)
+    {
+      dialog := Dialog(null)
+      {
+        title = "Config folder"
+        commands = [Dialog.ok]
+        body = GridPane
+        {
+          Label{ text = "Please select or create a folder for the camembert configuration files :" },
+          path,
+        }
+      }
+      path.focus
+
+      if(dialog.open != Dialog.ok)
+        Env.cur.exit(-1)
+
+      folder := File.os(path.text.trim)
+      if( ! folder.exists)
+        folder.parent.createDir(folder.name)
+    }
+
+    props.writeProps(["configDir" : "$path.text.trim",
+                      "version" : Pod.find("camembert").version.toStr
+                    ])
   }
 }
 

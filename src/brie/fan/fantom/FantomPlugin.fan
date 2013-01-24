@@ -1,7 +1,9 @@
 // History:
 //  Jan 05 13 tcolar Creation
 //
+
 using gfx
+using netColarUtils
 
 **
 ** FantomPlugin
@@ -9,9 +11,30 @@ using gfx
 **
 const class FantomPlugin : Plugin
 {
-  override Void onInit()
+  override Void onInit(File configDir)
   {
-    // TODO create config / template if not there yet
+    // Create templates if missing
+    fanClass := configDir + `templates/fantom_class.json`
+    if( ! fanClass.exists)
+      JsonUtils.save(fanClass.out, Template{it.name="Fantom class"; it.order = 3
+        it.extensions=["fan","fwt"]
+        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nclass {name}\n{\n}\n"})
+
+    fanMixin := configDir + `templates/fantom_mixin.json`
+    if( ! fanMixin.exists)
+      JsonUtils.save(fanMixin.out, Template{it.name="Fantom mixin"; it.order = 13
+        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nmixin {name}\n{\n}\n"})
+
+    fanEnum := configDir + `templates/fantom_enum.json`
+    if( ! fanEnum.exists)
+      JsonUtils.save(fanEnum.out, Template{it.name="Fantom enum"; it.order = 23
+        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nenum class {name}\n{\n}\n"})
+
+    licenses := configDir + `licenses/default.json`
+    if( ! licenses.exists)
+      JsonUtils.save(licenses.out, License{it.name="default"
+        it.text="// Copyright 2013 : me - Change this and create new licenses in config/licenses/\n//\n"})
+
     // TODO: init index and so on here
   }
 
