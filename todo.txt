@@ -1,9 +1,18 @@
-- Bocce bug: When going in the text area, the first keystroke is often lost, especially if backspace/delete ?
-   (gains focus but do not act on the keystroke)
-
 
 BUG: Axon -> sometimes endup with duplicated functions ??
 BUG: Axon space -> eval disspears .... nav buttons disappear
+BUG: when deleting a file in the file nav it opens a new space
+BUG: Help pane -> view src  opens the folder but not the file
+
+Use JsonSettings instead of SettingUtils
+
+duplicate sources -> provide a way to pick which to use somehow ?
+
+navigator : auto-open folders: *, .fan. .axon, none etc...
+nav -> make collapse limit a setting
+nav -> refresh, expand all, colapse all options ?
+
+And also indexspace pill -> refresh all projects (for all plugins)
 
 TrioInfo -> should be in Axon plugin
 
@@ -11,19 +20,18 @@ hide .git folder by default ... others ?
 
 each plugin -> reindex option (remove reindex from status bar)
 each plugin -> rescan for projects option
-nd also indexspace pill -> refresh all projects (for all plugins)
 
 FantomPodIndex ->   // TODO: key by path to allow multiple version of same pod ??
 
 generic indexer or indexer per plugin ?
 fix project finder fo axon plugin using new indexer
-nav -> make collapse limit a setting
-nav -> refresh, expand all, colapse all options ?
 axonPlugin -> specify an env where to find documentation (pods)
-axon -> pull/edit rukles
+axon -> pull/edit rules
 axon -> new faxon file -> validate/fix func name, requires lower case first letter !
 
 always have new line at end of file on save
+
+make license on camembert level ... free but some plugins require it to be licensed ?
 
 console: process tabs, repeat command etc ... ?
 separate fantom config from editor config
@@ -32,7 +40,6 @@ instead of "gray" area when no file, open a "blank" file ?
 
 splits screen: horizontal / vertical ? (own file browser or shared ??)
 manyally -> open in side panel ??
-ctrl + tab instead of ctrl + space
 
 Goto in filespace/axon space -> list of files
 goto -> use :25 instead of 25 for go to line ?
@@ -49,7 +56,7 @@ undo/redo at file level ?
 
 themes / dark theme (~ subliminal)
 
-conf /etc/camembert/1.1/
+conf /etc/camembert/
  - options.props
  - session.props
  - shortcuts.props
