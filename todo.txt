@@ -28,10 +28,7 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 # run.fog -> replace with more generic props based
 # axon_options.props or axon/options.props ?
 
-(1) hide .git folder by default ... others ?
-
-(2) nav -> make collapse limit a setting
-nav -> refresh, expand all, colapse all options ?
+(2) nav -> refresh, expand all, colapse all options ?
 
 (2)** make license on camembert level ... free but some plugins require it to be licensed ?
 
