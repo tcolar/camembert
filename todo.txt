@@ -1,100 +1,67 @@
+***********************************************************
+
+[Bugs]
 
 BUG: Axon -> sometimes endup with duplicated functions ??
 BUG: Axon space -> eval disspears .... nav buttons disappear
 BUG: when deleting a file in the file nav it opens a new space
 BUG: Help pane -> view src  opens the folder but not the file
 
-Use JsonSettings instead of SettingUtils
+************************************************************
 
-duplicate sources -> provide a way to pick which to use somehow ?
+[Axon Plugin]
 
-navigator : auto-open folders: *, .fan. .axon, none etc...
-nav -> make collapse limit a setting
-nav -> refresh, expand all, colapse all options ?
-
-And also indexspace pill -> refresh all projects (for all plugins)
-
-TrioInfo -> should be in Axon plugin
-
-hide .git folder by default ... others ?
-
-each plugin -> reindex option (remove reindex from status bar)
-each plugin -> rescan for projects option
-
-FantomPodIndex ->   // TODO: key by path to allow multiple version of same pod ??
-
-generic indexer or indexer per plugin ?
-fix project finder fo axon plugin using new indexer
 axonPlugin -> specify an env where to find documentation (pods)
 axon -> pull/edit rules
 axon -> new faxon file -> validate/fix func name, requires lower case first letter !
 
-always have new line at end of file on save
+*************************************************************
 
-make license on camembert level ... free but some plugins require it to be licensed ?
+[TODO / Ideas]
 
-console: process tabs, repeat command etc ... ?
+(1) config /etc/camembert/
+ - run.fog ? global or plugin folder ??
+ - fantom/envs.props
+ - theme/default .... dark (~ subliminal)
+# MultiNUmbered : srdDir.1 =; srdDir.2= etc... or just have it(srdDir=) mutiple times ???
+# Multinamed : env.podDir.default = ;  env.podDir.skyspark = ;
+# run.fog -> replace with more generic props based
+# axon_options.props or axon/options.props ?
+
+(1) hide .git folder by default ... others ?
+
+(2) nav -> make collapse limit a setting
+nav -> refresh, expand all, colapse all options ?
+
+(2)** make license on camembert level ... free but some plugins require it to be licensed ?
+
+(3) nav -> auto-open folders: <10(10 children or less) ; *(all); .fan, .axon(olders wth .fan or .axon); fan(folder)
+
+
+(3)**console:
+process tabs, repeat command etc ... ?
 separate fantom config from editor config
 make support fantom a plugin ?
 instead of "gray" area when no file, open a "blank" file ?
-
-splits screen: horizontal / vertical ? (own file browser or shared ??)
-manyally -> open in side panel ??
-
-Goto in filespace/axon space -> list of files
-goto -> use :25 instead of 25 for go to line ?
-
-autosave option (when swicthing screen ?? )
-
-better plugin speration
-
-"pluginize" help pane -> allow search in html, javascript, java docs etc ...
-
-make nav sidebar sash resizable ?
-
-undo/redo at file level ?
-
-themes / dark theme (~ subliminal)
-
-conf /etc/camembert/
- - options.props
- - session.props
- - shortcuts.props
- - run.fog ? global or plugin folder ??
- - fantom/envs.props
- - tpl/axon.tpl
- - tpl/class.tpl
- - axon/license.props
- - theme/default .... dark ....
-
-
 run -> terminate any existing process ??
 or maybe have process list somewhere
 separate console from search results ??
 
+(3) ** custom run/ commands build/whatever commands
+fantom/commands.fog:  $fan -> env/fan(.exe) automatically
 
- ant projects, maven projects (graddle etc..), play ? and so on
- node support
- java support
- ruby, php, etc ...
+have a flag -> scope -> GLOBAL, SPACE (ie command only shows when corresponding space open or always)
 
-  custom run/ commands build/whatever commands
+few vars:
+$env (current fantom, node whatever env)
+$dir -> project root dir
+$file -> current file if any
+etc ...
 
-  fantom/commands.fog:  $fan -> env/fan(.exe) automatically
-
-  have a flag -> scope -> GLOBAL, SPACE (ie command only shows when corresponding space open or always)
-
-  few vars:
-  $env (current fantom, node whatever env)
-  $dir -> project root dir
-  $file -> current file if any
-  etc ...
-
-  "run", "f5", ["$fan"], interactive = true (can edit params)  -> memorize(mem/disk) or ask each time ?
-                                  interactive -> NO, ALWAYS, ONCE, ONCE_PER_PROJECT ?, ONCE_PER_SESSION
-  "build", "f4", ["$fan", "$dir/build.fan"], "$dir"
-  "push", "f3", ["/bin/hg", "push"], "$dir"
-
+"run", "f5", ["$fan"], interactive = true (can edit params)  -> memorize(mem/disk) or ask each time ?
+                                interactive -> NO, ALWAYS, ONCE, ONCE_PER_PROJECT ?, ONCE_PER_SESSION
+"build", "f4", ["$fan", "$dir/build.fan"], "$dir"
+"push", "f3", ["/bin/hg", "push"], "$dir"
   mercurial/git commands (pull -u, push, merge, status etc....)
   mercurial / git view ?
 
@@ -104,6 +71,7 @@ separate console from search results ??
 /etc/camembert/commands/fantom/build.json ... custom commands (could be for space or global etc ...)
 etc ...
 
+(3) Menus
 file -> same
 nav -> same .... but quick search / goto would need to be plugin specific or moved
 process -> mve all that inside plugin  -> terminate : move to console area X
@@ -115,18 +83,41 @@ plugins -> remove
 plugin[1] "Fantom" .. swicth env
 plugin[1] "Axon" (End : fantom_env), import, licensing, about etc ...
 
-# MultiNUmbered : srdDir.1 =; srdDir.2= etc... or just have it(srdDir=) mutiple times ???
-# Multinamed : env.podDir.default = ;  env.podDir.skyspark = ;
-# folder for themes
-# folder for templates
-# options.props, shortcuts.props
-# run.fog -> replace with more generic props based
-# axon_options.props or axon/options.props ?
-# emty file template ????
-# default template association config ? fan -> "fantom"  and so on (ordering ??)
-# ordering by name 1_class.tpl, 2_mixin.tpl, 3_enum.tpl ?
-# or have both global ones and plugins ones ??
-# template/emptyfile.tpl   template/fantom/class.fan template/fantom/mixin.fan etc ...
-# template/licences/default.tpl -> goes on top. when new file ask which license, memorize and reuse last pick by default.
+(3) ** Indexing
+each plugin -> reindex option (remove reindex from status bar)
+each plugin -> rescan for projects option
+
+FantomPodIndex ->   // TODO: key by path to allow multiple version of same pod ??
+generic indexer or indexer per plugin ?
+fix project finder fo axon plugin using new indexer
+
+
+(3) TrioInfo -> should be in Axon plugin
+
+(4) duplicate sources -> provide a way to pick which to use  ?
+
+(4) Goto in filespace/axon space -> list of files
+goto -> use :25 instead of 25 for go to line ?
+
+(4) autosave option (when swicthing screen ?? )
+
+(4) always have new line at end of file on save
+
+(4) make nav sidebar sash resizable ?
+
+(5)**splits screen: horizontal / vertical ? (own file browser or shared ??)
+manyally -> open in side panel ??
+
+(5) undo/redo at file level ?
+
+(3) ** better plugin speration
+"pluginize" help pane -> allow search in html, javascript, java docs etc ...
+
+(5) ** ant projects, maven projects (graddle etc..), play ? and so on
+ node support
+ java support
+ ruby, php, etc ...
+
+
 
 

@@ -91,10 +91,10 @@ const class NewFileCmd : Cmd
         name,
         Label{ text = "Folder: (Any new folders will get created automatically)" },
         path,
-        Label{ text = "Template:" },
-        tplCombo,
         Label{ text = "License:" },
         licCombo,
+        Label{ text = "Template:" },
+        tplCombo,
       }
     }
     // Note: select is not working for some reason
