@@ -5,7 +5,7 @@
 using netColarUtils
 
 **
-** Template
+** Template for new files (Global)
 **
 @Serializable
 const class Template

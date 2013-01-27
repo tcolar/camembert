@@ -16,6 +16,8 @@ using netColarUtils
 **
 const class Sys : Service
 {
+  const ProjectRegistry prjReg
+
   ** The main options file
   const File optionsFile
 
@@ -31,10 +33,6 @@ const class Sys : Service
   const Template[] templates
 
   const LicenseTpl[] licenses
-
-  // TODO : remove this
-  ** FantomIndexing service
-  const FantomIndex index
 
   ** Application level commands
   const Commands commands
@@ -53,10 +51,13 @@ const class Sys : Service
     options = Options.load(optionsFile)
     shortcuts =  Shortcuts.load(optionsFile.parent)
     theme = Theme.load(optionsFile.parent, options.theme)
-    index = FantomIndex(this)
     commands = Commands(this)
     wPort := NetUtils.findAvailPort(8787)
     docServer = WispService { port = wPort; root = DocWebMod() }.start
+
+    prjReg = ProjectRegistry(options.srcDirs)
+    prjReg.send("index")
+    // TODO: save / load registry on start / stop
 
     PluginManager.cur.onConfigLoaded(this)
 
@@ -77,27 +78,27 @@ const class Sys : Service
     licenses = lic.sort |a, b| {a.name <=> b.name}
   }
 
-  override Void onStart()
-  {
-    // TODO: have plugins indexer called
-    index.reindexAll
-  }
-
   override Void onStop()
   {
+    PluginManager.cur.onShutdown()
+
+    // TODO: gotta be generalized or moved to Fantom pugin too
     if(docServer.isRunning)
     {
       docServer.stop
       docServer.uninstall
-      index.cache.pool.stop
-      index.crawler.pool.stop
-      Actor.sleep(1sec)
-      index.cache.pool.kill
-      index.crawler.pool.kill
-      echo("Sys.onStop completed.")
     }
+    prjReg.pool.stop
+
+    Actor.sleep(1sec)
+
+    PluginManager.cur.onShutdown(true)
+    prjReg.pool.kill
+
+    echo("Sys.onStop completed.")
   }
 
+  ** Reload the *whole* config including all plugins
   static Void loadConfig()
   {
     frame := Sys.cur.frame
@@ -117,7 +118,16 @@ const class Sys : Service
     sys.start
   }
 
+  ** All known plugins
   Str:Plugin plugins() {PluginManager.cur.plugins}
+
+  ** Retrieve a given plugin instance by it's pluginType
+  Plugin plugin(Type type)
+  {
+    if( ! type.fits(Plugin#))
+      throw Err("$type.qname is not a plugin instance !")
+    PluginManager.cur.plugins[type.pod.name]
+  }
 
   static Sys cur()
   {

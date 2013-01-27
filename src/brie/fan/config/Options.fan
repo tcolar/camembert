@@ -15,7 +15,6 @@ using netColarUtils
 @Serializable
 const class Options
 {
-
   ** Reload options
   static Options load(File file)
   {
@@ -26,18 +25,10 @@ const class Options
   new make(|This|? f := null)
   {
     if (f != null) f(this)
-      fanHome = fanHomeUri.toFile.normalize
   }
-
-  @Setting{ help = [
-  "Home directory to use for fan/build commands"] }
-  const Uri fanHomeUri := Env.cur.homeDir.uri
 
   @Setting{ help = ["Sources Directories to crawl"] }
   const Uri[] srcDirs := [Sys.confDir.uri]
-
-  @Setting{ help = ["Pod directories to crawl. Typically [fanHomeUri]/lib/fan/"] }
-  const Uri[] podDirs := [Env.cur.homeDir.uri+`lib/fan`]
 
   @Setting{ help = ["Name of theme to use (saved in config/tehmes/name.props)"] }
   const Str theme := "default"
@@ -45,8 +36,5 @@ const class Options
   @Setting{ help = ["Patterns of file/directories to hide from pod navigation. Uses Pattern.match() on File full uri's to match",
                     "Examples: '.*\\.hg/.*' or '.*~'   - REQUIRES FULL RESTART to take effect"] }
   const Str[] hidePatterns := [".*\\.svn/.*", ".*\\.hg/.*", ".*\\.git/.*", ".*~"]
-
-  ** File of `fanHomeUri`
-  const File fanHome
 }
 

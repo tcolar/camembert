@@ -21,7 +21,7 @@ class FileSpace : BaseSpace
     : super(frame, FileUtil.pathDis(dir), dir)
   {
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file))
+    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file), 0)
 
     viewParent.content = view
     navParent.content = nav.list

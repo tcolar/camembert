@@ -14,6 +14,9 @@ mixin NavItemBuilder
 
   abstract Space space
 
+  virtual Str[] expandDirs() {[,]}
+  virtual Str[] expandDirsWith() {[,]}
+
   ** Root item icon
   virtual Image? icon()
   {

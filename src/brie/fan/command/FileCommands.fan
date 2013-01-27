@@ -120,7 +120,7 @@ const class NewFileCmd : Cmd
     // store last license used in session, so we reuse the same until changed
     frame.lastLicense = licCombo.selected
 
-    frame.curSpace.nav?.refresh(f)
+    frame.curSpace.nav?.refresh(f.parent)
     frame.goto(FileItem.makeFile(f))
   }
 

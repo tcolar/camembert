@@ -5,7 +5,7 @@
 using netColarUtils
 
 **
-** Licences
+** Licence templates (global)
 **
 @Serializable
 const class LicenseTpl

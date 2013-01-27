@@ -32,7 +32,7 @@ class IndexSpace : Space
   GridPane makeUi()
   {
     podRoots := ItemList[,]
-    projects := getPluginProjects()
+    projects := getProjects()
 
     Sys.cur.srcRoots.each |indexDir|
     {
@@ -75,12 +75,12 @@ class IndexSpace : Space
     }
   }
 
-  FileItem[] getPluginProjects()
+  FileItem[] getProjects()
   {
     FileItem[] items := [,]
-    item := Sys.cur.plugins.vals.eachWhile |p|
+    ProjectRegistry.projects.each |prj|
     {
-      items.addAll(p.projects)
+      items.addAll(prj.item)
     }
     items.sort |a, b| { a.sortStr <=> b.sortStr }
     return items

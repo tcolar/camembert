@@ -23,10 +23,10 @@ const class FantomIndex
 //////////////////////////////////////////////////////////////////////////
 
   ** Construct with directories to crawl
-  new make(Sys sys)
+  new make()
   {
     dirs := File[,]
-    sys.srcRoots.each |uri|
+    Sys.cur.options.srcDirs.each |uri|
     {
       try
       {
@@ -39,7 +39,7 @@ const class FantomIndex
     }
     this.srcDirs = dirs
     dirs.clear
-    sys.options.podDirs.each |uri|
+    FantomPlugin.config.curEnv.podDirs.each |uri|
     {
       try
       {

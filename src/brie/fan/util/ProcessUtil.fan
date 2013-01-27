@@ -34,12 +34,12 @@ class ProcessUtil
 
   File? findBuildFile(File? f)
   {
-    return FileUtil.findBuildPod(f.parent, null)
+    return FantomUtils.findBuildPod(f.parent, null)
   }
 
   File? findBuildGroup(File? f)
   {
-    return FileUtil.findBuildGroup(f.parent, null)
+    return FantomUtils.findBuildGroup(f.parent, null)
   }
 
   ** Find build / run commands for a given pod

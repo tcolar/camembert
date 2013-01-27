@@ -19,7 +19,6 @@ class Item
   ItemLoc loc := ItemLoc{}
   Image? icon
   Str? spaceId {private set}
-  Bool hidden := false
 
   new makeStr(Str dis) { this.dis = dis }
 

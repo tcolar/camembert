@@ -54,7 +54,8 @@ abstract class Nav
   }
 
   ** find items
-  Void findItems(File dir, Item[] results, Bool preserveLayout := false, Str path:="")
+  Void findItems(File dir, Item[] results, Bool preserveLayout := false,
+        Str path:="", File:Project projects := ProjectRegistry.projects)
   {
     dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
     {
@@ -68,12 +69,11 @@ abstract class Nav
     {
       if (! hidden(f))
       {
-        // TODO: also those might not be ready before indexer is done -> cache that ?
-        // TODO: make this generic : isProjectDir() for any plugin
-        if(Sys.cur.index.isPodDir(f)!=null || Sys.cur.index.isGroupDir(f) != null)
+        if(projects.containsKey(f.normalize))
         {
           // Not recursing in pods or pod groups
-          results.add(navBuilder.forProj(f, path, 0))
+          //FileItem.makeProject(f, indent).setDis("${path}$f.name")
+          results.add(projects[f.normalize].item)
         }
         else
         {
@@ -92,7 +92,7 @@ abstract class Nav
           {
             results.add(navBuilder.forDir(f, path, 0, false))
             // recurse
-            findItems(f, results, preserveLayout, "${path}$f.name/")
+            findItems(f, results, preserveLayout, "${path}$f.name/", projects)
           }
         }
       }

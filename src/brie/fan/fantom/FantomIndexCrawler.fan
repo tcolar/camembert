@@ -91,7 +91,7 @@ internal class FantomIndexCrawler
     // if build.fan with BuildPod
     if (isPodSrcDir(dir))
     {
-      indexPodSrcDir(dir, getPodName(dir))
+      indexPodSrcDir(dir, FantomUtils.getPodName(dir))
       //return -> no, we might have sub-pods
     }
 
@@ -124,7 +124,7 @@ internal class FantomIndexCrawler
   {
     if(dir.name == "src")
       return false
-    return FileUtil.findBuildGroup(dir) != null
+    return FantomUtils.findBuildGroup(dir) != null
   }
 
   ** Whether this is dir has a pod build file
@@ -132,35 +132,7 @@ internal class FantomIndexCrawler
   {
     if(dir.name == "src")
       return false
-    return FileUtil.findBuildPod(dir, dir) != null
-  }
-
-  ** Relying on dir being == to podName is asking for troublee from build.fan
-  ** So trying to lokup the real nam
-  private Str getPodName(File buildDir)
-  {
-    build :=  FileUtil.findBuildPod(buildDir, buildDir)
-    if(build == null)
-      return buildDir.name
-    Str? name
-    try
-    {
-      name = build.readAllLines.eachWhile |Str s -> Str?|
-      {
-         line := s.trim
-         parts := line.split('=')
-         if(parts.size != 2) return null
-         val := parts[1].trim
-         if(val[0]=='"' && val[-1]=='"' && val[1].isAlpha) // (might start with $ or % -> variable)
-          return val[1..-2]
-         return null
-      }
-    } catch(Err e) {e.trace}
-    if(name == null)
-    {
-      echo("Didn't find the podName in $build.osPath - Will use $buildDir.name")
-    }
-    return name ?: buildDir.name
+    return FantomUtils.findBuildPod(dir, dir) != null
   }
 
   ** Index the sources of a pod

@@ -121,27 +121,6 @@ internal const class EditConfigCmd : Cmd
   new make(|This| f) {f(this)}
 }
 
-/*internal const class SwitchConfigCmd : Cmd
-{
-  override const Str name
-  const File conf
-
-  override Void invoke(Event event)
-  {
-    MenuItem mi := event.widget
-    // Note: we receive an event for the "deselected" item as well
-    if(mi.selected)
-    {
-      Desktop.callAsync |->| {Sys.loadConfig(conf)}
-    }
-  }
-  new make(Str name, File conf)
-  {
-    this.name = name
-    this.conf = conf
-  }
-}*/
-
 internal const class ReloadConfigCmd : Cmd
 {
   override const Str name := "Reload Config"

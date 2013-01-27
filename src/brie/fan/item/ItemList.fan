@@ -45,7 +45,7 @@ class ItemList : Panel
 // Panel
 //////////////////////////////////////////////////////////////////////////
 
-  override Int lineCount() { visibleItems.size }
+  override Int lineCount() { items.size }
 
   override Int lineh() { itemh }
 
@@ -97,7 +97,7 @@ class ItemList : Panel
     itemh := this.itemh
 
     Str? collapsedBase := null
-    visibleItems.eachRange(lines) |item, i|
+    items.eachRange(lines) |item, i|
     {
       paintItem(g, item, x, y)
       y += itemh
@@ -125,7 +125,7 @@ class ItemList : Panel
 
   private Item? itemAtLine(Int line)
   {
-    visibleItems.getSafe(line)
+    items.getSafe(line)
   }
 
   private Void doMouseUp(Event event)
@@ -143,7 +143,7 @@ class ItemList : Panel
     {
       event.consume
       item.selected(frame)
-      if(item.file.isDir)
+      if(item.file.isDir && ! item.isProject)
       {
         toggleCollapse(item)
       }
@@ -164,8 +164,10 @@ class ItemList : Panel
 
         menu.add(MenuItem{it.text="Refresh tree"
           it.onAction.add |e| {frame.curSpace.nav?.refresh(item.file)} })
-          menu.add(MenuItem{it.text="Expand tree"
-            it.onAction.add |e| {expand(item, true)} })
+        menu.add(MenuItem{it.text="Expand tree"
+          it.onAction.add |e| {expand(item, true)} })
+        menu.add(MenuItem{it.text="Collapse"
+          it.onAction.add |e| {collapse(item)} })
       }
       if (menu != null)
       {
@@ -173,11 +175,6 @@ class ItemList : Panel
       }
       return
     }
-  }
-
-  private Item[] visibleItems()
-  {
-    items.findAll { ! it.hidden }
   }
 
   ** Toggle collapse / expand an item (1 level)
@@ -190,49 +187,41 @@ class ItemList : Panel
   }
 
   ** Collapse a folder and all subfolders
-  Void collapse(FileItem item)
+  Void collapse(FileItem base)
   {
-    item.setCollapsed(true)
-    index := items.indexSame(item) + 1
+    base.setCollapsed(true)
+    Int? start := items.eachWhile |item, index -> Int?|
+    {
+      return (item as FileItem).file == base.file ? index : null
+    }
+    start += 1
+    index := start
     // hide children
     while(index < items.size)
     {
       that := items[index] as FileItem
-      if(that.file.pathStr.startsWith(item.file.pathStr))
-        that.hidden = true
-      else
-        break // we are out of the parents path
+      if( ! that.file.pathStr.startsWith(base.file.pathStr))
+        break
       index++
     }
+
+    items.removeRange(start ..< index)
 
     update
   }
 
   ** Expand a folder
   ** if recurse is true then expand any subfolder as well
-  Void expand(FileItem item, Bool recurse := false)
+  Void expand(FileItem base, Bool recurse := false)
   {
-    item.setCollapsed(false)
-    index := items.indexSame(item) + 1
-    // hide children
-    while(index < items.size)
+    base.setCollapsed(false)
+    Int? index := items.eachWhile |item, index -> Int?|
     {
-      that := items[index] as FileItem
-      if(! recurse && that.file.path.size > item.file.path.size + 1)
-      {  //  skipping subfolder items
-        index++;
-        continue
-      }
-      if(that.file.pathStr.startsWith(item.file.pathStr))
-      {
-        that.hidden = false
-        if(that.file.isDir)
-          that.setCollapsed(that.isProject || ! recurse)
-      }
-      else
-        break // we are out of the parents path
-      index++
+      return (item as FileItem).file == base.file ? index : null
     }
+    newItems := FileItem[,]
+    frame.curSpace.nav?.findItems(base.file, newItems, false, (index == 0 ? "" : base.dis))
+    items.insertAll(index + 1, newItems)
 
     update
   }

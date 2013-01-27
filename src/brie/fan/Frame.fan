@@ -282,14 +282,23 @@ class Frame : Window
   ** If prio > minPrio return thge space istance, otherwise null
   private Space? createPluginSpace(File file, Int minPrio)
   {
-    Plugin? match
-    Sys.cur.plugins.vals.each |p|
+    Plugin? plugin
+    Project? prj
+
+    ProjectRegistry.projects.each|project, dir|
     {
-      if(p.spacePriority(file) >= minPrio)
-        if(match == null || p.spacePriority(file) > match.spacePriority(file))
-          match = p
+      if(FileUtil.contains(dir, file))
+      {
+        p := Sys.cur.plugins[project.plugin.pod.name]
+        if(p.spacePriority(project) >= minPrio)
+          if(plugin == null || p.spacePriority(project) > plugin.spacePriority(project))
+          {
+            plugin = p
+            prj = project
+          }
+      }
     }
-    return match?.createSpace(file)
+    return plugin?.createSpace(prj)
   }
 
   //////////////////////////////////////////////////////////////////////////

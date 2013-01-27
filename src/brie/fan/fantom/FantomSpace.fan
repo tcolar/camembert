@@ -17,6 +17,7 @@ class FantomSpace : BaseSpace
   override View? view
   override Nav? nav
   override Image icon() { isGroup ? Sys.cur.theme.iconPodGroup : Sys.cur.theme.iconPod }
+  FantomIndex index
 
   ** Whether this is a pod or a pod group
   Bool isGroup
@@ -27,7 +28,9 @@ class FantomSpace : BaseSpace
       : super(frame, name, dir, file)
   {
     this.podName = name
-    this.isGroup = Sys.cur.index.isGroupDir(dir) != null
+    this.isGroup = index.isGroupDir(dir) != null
+
+    index = FantomPlugin.cur.index
 
     view = View.makeBest(frame, this.file)
     nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file))
@@ -38,7 +41,7 @@ class FantomSpace : BaseSpace
     slotsParent.content = slots
   }
 
-  PodInfo? curPod() { Sys.cur.index.pod(podName, false) }
+  PodInfo? curPod() { index.pod(podName, false) }
 
   TypeInfo? curType()
   {
@@ -82,14 +85,14 @@ class FantomSpace : BaseSpace
 
     // match types
     if (!text.isEmpty)
-      acc.addAll(Sys.cur.index.matchTypes(text).map |t->Item| { FantomItem.makeType(t) })
+      acc.addAll(index.matchTypes(text).map |t->Item| { FantomItem.makeType(t) })
 
     // f <file>
     if (text.startsWith("f ") && text.size >= 3)
-      acc.addAll(Sys.cur.index.matchFiles(text[2..-1]))
+      acc.addAll(index.matchFiles(text[2..-1]))
 
     // all matching slots from other types
-    acc.addAll(Sys.cur.index.matchSlots(text)
+    acc.addAll(index.matchSlots(text)
       .findAll |s| {s.type.qname != curType?.qname}
       .findAll |s| {s.name.size>0 && text.size>0 && s.name[0] == text[0]}
       .map |s->Item| { FantomItem.makeSlot(s).setIndent(0) })
@@ -110,7 +113,7 @@ class FantomSpace : BaseSpace
   private Widget? makeSlotNav()
   {
     if (file.ext != "fan") return null
-    pod := Sys.cur.index.pod(this.podName, false)
+    pod := index.pod(this.podName, false)
     if (pod == null) return null
 
     types := pod.types.findAll |t| { return t.file == file.name }

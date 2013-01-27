@@ -14,6 +14,9 @@ const class PluginManager : Service
 
   const File configDir
 
+  ** Plugin name(pod) -> PluginConfig of each plugin
+  private const Unsafe? _pluginConfs
+
   new make(File configDir)
   {
     this.configDir = configDir
@@ -51,7 +54,14 @@ const class PluginManager : Service
 
   internal Void onConfigLoaded(Sys newSys)
   {
-    plugins.vals.each |plugin| {plugin.onConfigLoaded(newSys)}
+    confs := (Str:PluginConfig?) _pluginConfs?.val
+    if(confs == null)
+      confs = Str:PluginConfig?[:]
+    plugins.each |plugin, name|
+    {
+      confs[name] = plugin.readConfig(newSys)
+    }
+    _pluginConfs.val = Unsafe(confs)
   }
 
   internal Void onFrameReady(Frame f)
@@ -59,9 +69,9 @@ const class PluginManager : Service
     plugins.vals.each |plugin| {plugin.onFrameReady(f)}
   }
 
-  internal Void onShutdown()
+  internal Void onShutdown(Bool isKill := false)
   {
-    plugins.vals.each |plugin| {plugin.onShutdown}
+    plugins.vals.each |plugin| {plugin.onShutdown(isKill)}
   }
 
   override Void onStop()
@@ -82,5 +92,13 @@ const class PluginManager : Service
   Image? iconForFile(File f)
   {
     plugins.vals.eachWhile |Plugin p -> Image?| {p.iconForFile(f)}
+  }
+
+  FantomConfig? conf(Str pluginName)
+  {
+    confs := (Str:PluginConfig?) _pluginConfs.val
+    if(confs != null)
+      return (FantomConfig?) confs[pluginName]
+    return null
   }
 }

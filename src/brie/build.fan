@@ -22,7 +22,7 @@ class Build : BuildPod
                "web 1.0",
                "wisp 1.0",
                "petanque 1.0.1+",
-               "netColarUtils 1.0.5+"
+               "netColarUtils 1.0.5+",
     ]
     srcDirs = [`fan/`,
                `fan/space/`,
@@ -33,7 +33,8 @@ class Build : BuildPod
                `fan/fantom/`,
                `fan/widget/`,
                `fan/nav/`,
-               `fan/config/`]
+               `fan/config/`,
+               `fan/project/`]
     resDirs = [`res/`]
     version = Version("1.1.0")
     meta    =  ["license.name"   : "Academic License",

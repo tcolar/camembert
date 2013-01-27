@@ -11,30 +11,18 @@ using netColarUtils
 **
 const class FantomPlugin : Plugin
 {
+  ** FantomIndexing service
+  const FantomIndex index := FantomIndex()
+
+  override PluginConfig? readConfig(Sys sys)
+  {
+    index.reindexAll
+
+    return FantomConfig(sys)
+  }
+
   override Void onInit(File configDir)
   {
-    // Create templates if missing
-    fanClass := configDir + `templates/fantom_class.json`
-    if( ! fanClass.exists)
-      JsonUtils.save(fanClass.out, Template{it.name="Fantom class"; it.order = 3
-        it.extensions=["fan","fwt"]
-        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nclass {name}\n{\n}\n"})
-
-    fanMixin := configDir + `templates/fantom_mixin.json`
-    if( ! fanMixin.exists)
-      JsonUtils.save(fanMixin.out, Template{it.name="Fantom mixin"; it.order = 13
-        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nmixin {name}\n{\n}\n"})
-
-    fanEnum := configDir + `templates/fantom_enum.json`
-    if( ! fanEnum.exists)
-      JsonUtils.save(fanEnum.out, Template{it.name="Fantom enum"; it.order = 23
-        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nenum class {name}\n{\n}\n"})
-
-    licenses := configDir + `licenses/default.json`
-    if( ! licenses.exists)
-      JsonUtils.save(licenses.out, LicenseTpl{it.name="default"
-        it.text="// Copyright 2013 : me - Change this and create new licenses in config/licenses/\n//\n"})
-
     // TODO: init index and so on here
   }
 
@@ -43,18 +31,18 @@ const class FantomPlugin : Plugin
     // todo : start indexer etc ...
   }
 
-  override FileItem[] projects()
+  /*override FileItem[] projects()
   {
     FileItem[] items := [,]
     // pod groups
-    Sys.cur.index.groups.each
+    index.groups.each
     {
       path := groupPath(it)[0..-2]
       indent := 0 ; path.chars.each {if(it == '/') indent++}
       items.add(FileItem.makeProject(it.srcDir, indent, path).setDis(it.name))
     }
     // pods
-    Sys.cur.index.pods.each
+    index.pods.each
     {
       if(srcDir != null)
       {
@@ -64,9 +52,9 @@ const class FantomPlugin : Plugin
       }
     }
     return items
-  }
+  }*/
 
-  private Str podPath(PodInfo pi)
+ /* private Str podPath(PodInfo pi)
   {
     return groupPath(pi.group) + pi.name
   }
@@ -80,41 +68,58 @@ const class FantomPlugin : Plugin
       group = group.parent
     }
     return path
+  }*/
+
+  override |File -> Project?| projectFinder := |File f -> Project?|
+  {
+     if( ! f.exists || ! f.isDir) return null
+     // pod group
+     buildFile := FantomUtils.findBuildGroup(f, f)
+     if(buildFile != null)
+      return Project{
+        it.item = FileItem.makeProject(f)
+        it.item.icon = Sys.cur.theme.iconPodGroup
+        it.plugin = FantomPlugin#
+        it.params = ["isGroup" : "true"]
+      }
+     // pod
+     buildFile = FantomUtils.findBuildPod(f, f)
+     if(buildFile != null)
+      return Project{
+        it.item = FileItem.makeProject(f)
+        it.item.icon = Sys.cur.theme.iconPod
+        it.plugin = FantomPlugin#
+      }
+
+     return null
   }
 
-  override Space? createSpace(File file)
+  override Space createSpace(Project prj)
   {
-    if(file.isDir)
-    {
-      group := Sys.cur.index.isGroupDir(file)
-      if(group != null)
-        return FantomSpace(Sys.cur.frame, group.name, file)
-      pod := Sys.cur.index.isPodDir(file)
-      if(pod != null)
-        return FantomSpace(Sys.cur.frame, pod.name, file)
-    }
-    return null
+    if(prj.plugin != FantomPlugin#)
+      return null
+    return FantomSpace(Sys.cur.frame, prj.item.dis, prj.item.file, null)
   }
 
-  override Int spacePriority(File prjDir)
+  override Int spacePriority(Project prj)
   {
-    pod := Sys.cur.index.isPodDir(prjDir)
-    if(pod != null)
+    if(prj.plugin != FantomPlugin#)
+      return 0
+    // group
+    if(prj.params["isGroup"] == "true")
       return 55
-    group := Sys.cur.index.isGroupDir(prjDir)
-    if(group != null)
-      return 50
-    return 0
+    //pod
+    return 50
   }
 
   override Image? iconForFile(File file)
   {
     if(file.isDir)
     {
-      pod := Sys.cur.index.isPodDir(file)
+      pod := index.isPodDir(file)
       if(pod != null)
         return Sys.cur.theme.iconPod
-      group := Sys.cur.index.isGroupDir(file)
+      group := index.isGroupDir(file)
       if(group != null)
         return Sys.cur.theme.iconPodGroup
     }
@@ -122,7 +127,27 @@ const class FantomPlugin : Plugin
     return null
   }
 
-  override Void onShutdown()
+  override Void onShutdown(Bool isKill := false)
   {
+    if( ! isKill)
+    {
+      index.cache.pool.stop
+      index.crawler.pool.stop
+    }
+    else
+    {
+      index.cache.pool.kill
+      index.crawler.pool.kill
+    }
+  }
+
+  static FantomConfig config()
+  {
+    return PluginManager.cur.conf(FantomPlugin#.pod.name) as FantomConfig
+  }
+
+  static FantomPlugin cur()
+  {
+    return Sys.plugin(FantomPlugin#) as FantomPlugin
   }
 }
