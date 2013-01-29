@@ -282,6 +282,8 @@ class Frame : Window
   ** If prio > minPrio return thge space istance, otherwise null
   private Space? createPluginSpace(File file, Int minPrio)
   {
+  // juts use project with longets path that contains this instead of pthis junk ??
+  // do i still need this space prio stuff ??
     Plugin? plugin
     Project? prj
 
@@ -291,11 +293,13 @@ class Frame : Window
       {
         p := Sys.cur.plugins[project.plugin.pod.name]
         if(p.spacePriority(project) >= minPrio)
+        {
           if(plugin == null || p.spacePriority(project) > plugin.spacePriority(project))
           {
             plugin = p
             prj = project
           }
+        }
       }
     }
     return plugin?.createSpace(prj)

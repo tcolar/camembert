@@ -7,7 +7,6 @@ using compilerDoc
 ** Sidebar to search / display fandocs
 class HelpPane : ContentPane
 {
-  static const gfx::Image fanIcon  := gfx::Image(`fan://icons/x16/database.png`, false)
   static const gfx::Image axonIcon := gfx::Image(`fan://icons/x16/func.png`, false)
   static const gfx::Image backIcon := gfx::Image(`fan://icons/x16/arrowLeft.png`, false)
   static const gfx::Image viewIcon := gfx::Image(`fan://camembert/res/binoculars.png`, false)
@@ -186,7 +185,8 @@ class HelpPane : ContentPane
       else if(searchType.selectedIndex == 2)
         text += "?type=exact"
     }
-    browser.load(`http://127.0.0.1:${port}/$text`)
+    // TODO: /fan/ is harcoded for now
+    browser.load(`http://127.0.0.1:${port}/fan/$text`)
   }
 }
 

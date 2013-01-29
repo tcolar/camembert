@@ -39,6 +39,9 @@ mixin Plugin
   ** Returns the setting object for the given plugin
   ** Called any time config is (re)loaded
   virtual PluginConfig? readConfig(Sys newSys) {null}
+
+  ** Documentation provider for this plugin or null if none
+  virtual DocProvider? docProvider := null
 }
 
 **
