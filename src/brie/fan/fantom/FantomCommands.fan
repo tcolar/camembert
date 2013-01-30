@@ -76,10 +76,12 @@ internal const class FantomBuildCmd : FantomCmd
   override const ExecCmdInteractive interaction := ExecCmdInteractive.never
   override const Bool persist := false
   override const |Console|? callback := |Console c| {
-    f := FantomPlugin.findBuildFile(frame.curFile)
-    pod := plugin.index.podForFile(f)
-    if (pod != null)
-      plugin.index.reindexPod(pod)
+    Desktop.callAsync |->|{
+      f := FantomPlugin.findBuildFile(frame.curFile)
+      pod := plugin.index.podForFile(f)
+      if (pod != null)
+        plugin.index.reindexPod(pod)
+    }
   }
 
   override File? keyFile()
@@ -93,7 +95,7 @@ internal const class FantomBuildCmd : FantomCmd
   override CmdArgs defaultCmd()
   {
     f := FantomPlugin.findBuildFile(frame.curFile)
-    return CmdArgs.makeManual(["{{env_home/bin/fan}}", f.osPath], f.parent.osPath)
+    return CmdArgs.makeManual(["{{env_home}}/bin/fan", f.osPath], f.parent.osPath)
   }
 }
 /*

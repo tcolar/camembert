@@ -55,7 +55,7 @@ abstract const class ExecCmd : Cmd
     }
 
     // TODO: exec(event)
-    cmd.execute(frame.console, [:], callback)
+    cmd.execute(frame.console, variables, callback)
   }
 
   private CmdArgs confirmCmd(CmdArgs cmd)
@@ -141,7 +141,7 @@ const class CmdArgs
     args.each
     {
       param := it
-      variables.each |val, key| { param = param.replace("{{key}}", val) }
+      variables.each |val, key| { param = param.replace("{{$key}}", val) }
       params.add(param)
     }
     console.exec(params, File.os(runDir), callback)
