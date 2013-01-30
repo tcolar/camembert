@@ -18,7 +18,7 @@ class FileSpace : BaseSpace
   override Nav? nav
 
   new make(Frame frame, File dir)
-    : super(frame, FileUtil.pathDis(dir), dir)
+    : super(frame, dir)
   {
     view = View.makeBest(frame, this.file)
     nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file), 0)

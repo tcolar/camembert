@@ -27,13 +27,12 @@ class FantomSpace : BaseSpace
   Widget? slots
   Str podName
 
-  new make(Frame frame, Str name, File dir, File? file := null)
-      : super(frame, name, dir, file)
+  new make(Frame frame, File dir, File? file := null)
+      : super(frame, dir, file)
   {
-    this.podName = name
+    this.podName = dis
     this.index = FantomPlugin.cur.index
-    this.isGroup = index.isGroupDir(dir) != null
-
+    this.isGroup = ProjectRegistry.projects[dir.normalize.uri]?.params?.containsKey("isGroup") ?: false
 
     view = View.makeBest(frame, this.file)
     nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file))
@@ -62,13 +61,12 @@ class FantomSpace : BaseSpace
 
   override Str:Str saveSession()
   {
-    ["pod":podName, "dir":dir.uri.toStr, "file":file.uri.toStr]
+    ["dir":dir.uri.toStr, "file":file.uri.toStr]
   }
 
   static Space loadSession(Frame frame, Str:Str props)
   {
-    make(frame, props.getOrThrow("pod"),
-      props.getOrThrow("dir").toUri.toFile,
+    make(frame, props.getOrThrow("dir").toUri.toFile,
       props.get("file")?.toUri?.toFile)
   }
 

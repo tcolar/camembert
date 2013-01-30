@@ -28,12 +28,12 @@ abstract class BaseSpace : Space
   ** viewparent.content = ...
   ** navParents.content = ....
   ** and so on to set Ui parts
-  new make(Frame frame, Str dis, File dir, File? file := null)
+  new make(Frame frame, File dir, File? file := null)
   {
     this.frame = frame
     if (!dir.exists) throw Err("Dir doesn't exist: $dir")
     if (!dir.isDir) throw Err("Not a dir: $dir")
-    this.dis = dis
+    this.dis = ProjectRegistry.projects[dir.normalize.uri]?.dis ?: FileUtil.pathDis(dir)
     this.dir  = dir.normalize
     file = file ?: dir
     this.file = file

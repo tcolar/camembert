@@ -110,7 +110,7 @@ const class FantomPlugin : Plugin
 
   override Space createSpace(Project prj)
   {
-    return FantomSpace(Sys.cur.frame, prj.dis, prj.dir.toFile, null)
+    return FantomSpace(Sys.cur.frame, prj.dir.toFile, null)
   }
 
   override Int spacePriority(Project prj)
