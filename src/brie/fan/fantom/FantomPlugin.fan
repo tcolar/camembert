@@ -40,6 +40,8 @@ const class FantomPlugin : Plugin
     index.reindexAll
   }
 
+  override Bool isIndexing() {index.isIndexing}
+
   /*override FileItem[] projects()
   {
     FileItem[] items := [,]

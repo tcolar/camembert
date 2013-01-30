@@ -46,7 +46,11 @@ mixin Plugin
   ** Plugin execution commands implemntation
   abstract PluginCommands? commands()
 
+  ** Returns a unique name for this plugin
   virtual Str name() {Pod.of(this).name}
+
+  ** Returns true if the project supports indexing and is currently indexing.
+  virtual Bool isIndexing() {false}
 }
 
 **

@@ -95,6 +95,14 @@ const class PluginManager : Service
     plugins.vals.eachWhile |Plugin p -> Image?| {p.iconForFile(f)}
   }
 
+  ** Wether any plugins are currenty indexing
+  Bool anyIndexing()
+  {
+    if(plugins.vals.find{it.isIndexing} != null)
+      return true
+    return false
+  }
+
   ** Config of a named plugin (name is pod type name)
   FantomConfig? conf(Str pluginName)
   {

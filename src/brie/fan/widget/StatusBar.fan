@@ -101,10 +101,9 @@ internal class StatusBar : ContentPane
     // project scanning
     projects.image = Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
-    // TODO : get indexing status from plugins ?
-    index.image = /*Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing :*/ Sys.cur.theme.iconOk
+    index.image = PluginManager.cur.anyIndexing ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
-        // view file
+    // view file
     v := frame.curView
     if (v != null)
     {
