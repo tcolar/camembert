@@ -27,17 +27,10 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
  - run.fog ? global or plugin folder ??
  - fantom/envs.props
  - theme/default .... dark (~ subliminal)
-# MultiNUmbered : srdDir.1 =; srdDir.2= etc... or just have it(srdDir=) mutiple times ???
-# Multinamed : env.podDir.default = ;  env.podDir.skyspark = ;
-# run.fog -> replace with more generic props based
+\# run.fog -> replace with more generic props based
 # axon_options.props or axon/options.props ?
 
 (2) Cache/persist know projects for better startup lookups / use file watcher to reindex / refind projects
-
-(2) Optimize project indexing / lookup -> file watched and/or folders timstamp hash maybe ?
-not bother with projects in projects ??
-
-(2) hidden folders -> change that to collapsed ??
 
 (2)** make license on camembert level ... free but some plugins require it to be licensed ?
 
@@ -54,6 +47,7 @@ instead of "gray" area when no file, open a "blank" file ?
 run -> terminate any existing process ??
 or maybe have process list somewhere
 separate console from search results ??
+reimplement terminate in here
 
 (3) ** custom run/ commands build/whatever commands
 fantom/commands.fog:  $fan -> env/fan(.exe) automatically
@@ -80,13 +74,9 @@ etc ...
 etc ...
 
 (3) Menus
-file -> same
 nav -> same .... but quick search / goto would need to be plugin specific or moved
 process -> mve all that inside plugin ? or delegate to plugin ? -> terminate : move to console area X
 .... or keep them there but have them call out to plugin specific impls ???
-panels -> same
-options -> add "plugins" options : enable/disable plugins
-help -> same
 plugins -> remove
 plugin[1] "Fantom" .. swicth env
 plugin[1] "Axon" (End : fantom_env), import, licensing, about etc ...
@@ -98,9 +88,7 @@ each plugin -> reindex option (remove reindex from status bar)
 each plugin -> rescan for projects option
 
 FantomPodIndex ->   // TODO: key by path to allow multiple version of same pod ??
-generic indexer or indexer per plugin ?
 fix project finder fo axon plugin using new indexer
-
 
 (3) TrioInfo -> should be in Axon plugin
 

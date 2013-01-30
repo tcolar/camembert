@@ -33,12 +33,11 @@ const class Commands
     buildGroup  = BuildGroupCmd{key = Key(sys.shortcuts.buildGroup)}
     editConfig  = EditConfigCmd{}
     reloadConfig= ReloadConfigCmd{}
-    runPod      = RunPodCmd{key = Key(sys.shortcuts.run)}
+    run         = RunCmd{key = Key(sys.shortcuts.run)}
     runSingle   = RunSingleCmd{key = Key(sys.shortcuts.runSingle)}
-    testPod     = TestPodCmd{key = Key(sys.shortcuts.test)}
+    test        = TestCmd{key = Key(sys.shortcuts.test)}
     testSingle  = TestSingleCmd{key = Key(sys.shortcuts.testSingle)}
     buildAndRun = BuildAndRunCmd{key = Key(sys.shortcuts.buildAndRun)}
-    terminate   = TerminateCmd{}
     searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
     newFile     = NewFileCmd{key = Key(sys.shortcuts.newFile)}
 
@@ -69,13 +68,12 @@ const class Commands
   const Cmd build
   const Cmd editConfig
   const Cmd reloadConfig
-  const Cmd runPod
+  const Cmd run
   const Cmd runSingle
-  const Cmd testPod
+  const Cmd test
   const Cmd testSingle
   const Cmd buildAndRun
   const Cmd buildGroup
-  const Cmd terminate
   const Cmd searchDocs
   const Cmd mostRecent
   const Cmd newFile

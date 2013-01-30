@@ -12,12 +12,16 @@ const class Project
 {
   // TODO: subprojects allowed / what kind ?
 
-  FileItem item
+  const Str dis
+
+  const File dir
+
+  const Image? icon := null
 
   ** Plugin responsible for this project
-  Type plugin
+  const Type plugin
 
-  Str:Str params := [:]
+  const Str:Str params := [:]
 
   new make(|This|? f) {if(f!=null) f(this)}
 }

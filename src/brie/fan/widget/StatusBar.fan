@@ -36,9 +36,13 @@ internal class StatusBar : ContentPane
     this.index = Label
     {
       it.text="Index"
-      it.onMouseUp.add |e| { if (e.id === EventId.mouseUp && e.button == 3 && e.count == 1) onIndexPopup(e) }
     }
 
+    // projects
+    this.projects = Label
+    {
+      it.text="Projects"
+    }
     // file label
     this.file = Label
     {
@@ -64,6 +68,7 @@ internal class StatusBar : ContentPane
           numCols = 3
           hgap = 15
           console,
+          projects,
           index,
           InsetPane(0, 20, 0, 0)
         }
@@ -82,8 +87,8 @@ internal class StatusBar : ContentPane
     // console up/down
     console.image = frame.console.isOpen ? Sys.cur.theme.iconSlideDown : Sys.cur.theme.iconSlideUp
 
-    // indexing
-    index.image = Sys.cur.index.isIndexing ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
+    // project scanning
+    index.image = Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
     // view file
     v := frame.curView
@@ -136,21 +141,13 @@ internal class StatusBar : ContentPane
     menu.open(console, event.pos)
   }
 
-  Void onIndexPopup(Event event)
-  {
-    menu := Menu
-    {
-      MenuItem { text="Reindex All"; onAction.add |e| { Sys.cur.index.reindexAll } },
-    }
-    menu.open(index, event.pos)
-  }
-
 //////////////////////////////////////////////////////////////////////////
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
   private Frame frame
   private Label index
+  private Label projects
   private Label console
   private Label file
   private Label view

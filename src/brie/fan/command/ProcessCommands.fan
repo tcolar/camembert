@@ -1,70 +1,42 @@
-using fwt
-using concurrent
+// History:
+//  Jan 29 13 tcolar Creation
+//
 
-internal const class TerminateCmd : Cmd
+//////////////////////////////////////////////////////////////////////////
+// Process commands -> delegated to plugins
+//////////////////////////////////////////////////////////////////////////
+
+using fwt
+
+internal abstract const class PluginCmd : Cmd
 {
-  new make(|This| f) {f(this)}
-  override const Str name := "Terminate"
-  override Void invoke(Event event)
+  PluginCommands? commands()
   {
-    console.kill
+    pType := frame.curSpace.plugin
+    if(pType== null) return null // TODO: dialog ?
+
+    plugin := Sys.cur.plugin(pType)
+    return plugin.commands
   }
 }
 
-
-**************************************************************************
-** BuildCmd
-**************************************************************************
-
-internal const class BuildCmd : Cmd
+internal const class BuildCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Build"
   override Void invoke(Event event)
   {
-    // save current file
-    frame.save
-
-    f := frame.process.findBuildFile(frame.curFile)
-    if (f == null)
-    {
-      frame.process.warnNoBuildFile(frame)
-      return
-    }
-
-    console.execFan([f.osPath], f.parent) |c|
-    {
-      pod := Sys.cur.index.podForFile(f)
-      if (pod != null)
-        Sys.cur.index.reindexPod(pod)
-    }
+    commands.build.invoke(event)
   }
 }
 
-internal const class BuildGroupCmd : Cmd
+internal const class BuildGroupCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Build Group"
   override Void invoke(Event event)
   {
-    // save current file
-    frame.save
-
-    f := frame.process.findBuildGroup(frame.curFile)
-    if (f == null)
-    {
-      frame.process.warnNoBuildGroupFile(frame)
-      return
-    }
-
-    console.execFan([f.osPath], f.parent) |c|
-    {
-      Sys.cur.index.pods.each |p|
-      {
-        if(p.srcDir != null && FileUtil.contains(f.parent, p.srcDir))
-          Sys.cur.index.reindexPod(p)
-      }
-    }
+    commands.buildGroup.invoke(event)
   }
 }
 
@@ -72,71 +44,49 @@ internal const class BuildGroupCmd : Cmd
 **
 ** Command to run a pod
 **
-internal const class RunPodCmd : Cmd
+internal const class RunCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Run Pod"
   override Void invoke(Event event)
   {
-    cmd := frame.process.findRunCmd(frame)
-
-    f := frame.curFile
-    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    cmd?.execute(console, defaultDir)
+    commands.run.invoke(event)
   }
 }
 
-internal const class BuildAndRunCmd : Cmd
+internal const class BuildAndRunCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "BuildAndRun"
   override Void invoke(Event event)
   {
-    Sys.cur.commands.build.invoke(event)
-    Desktop.callAsync |->|{
-      frame.process.waitForProcess(console, 3min)
-      if(console.lastResult == 0 )
-        Sys.cur.commands.runPod.invoke(event)
-    }
+    commands.buildAndRun.invoke(event)
   }
 }
 
 **
 ** Command to run a single item
 **
-internal const class RunSingleCmd : Cmd
+internal const class RunSingleCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Run Single"
   override Void invoke(Event event)
   {
-    cmd := frame.process.findRunSingleCmd(frame)
-    f := frame.curFile
-    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    cmd?.execute(console, defaultDir)
+    commands.runSingle.invoke(event)
   }
 }
 
 **
 ** Command to test a single item
 **
-internal const class TestPodCmd : Cmd
+internal const class TestCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Test Pod"
   override Void invoke(Event event)
   {
-    f := frame.curFile
-    pod := Sys.cur.index.podForFile(f)?.name
-
-    if(pod == null)
-     return
-
-    folder := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    RunArgs.makeManual(pod, ["fant", pod], null).execute(console, folder)
+    commands.test.invoke(event)
   }
 }
 
@@ -144,18 +94,15 @@ internal const class TestPodCmd : Cmd
 **
 ** Command to test a single item
 **
-internal const class TestSingleCmd : Cmd
+internal const class TestSingleCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "Test Single"
   override Void invoke(Event event)
   {
-    cmd := frame.process.findTestSingleCmd(frame)
-    f := frame.curFile
-    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    cmd?.execute(console, defaultDir)
+    commands.testSingle.invoke(event)
   }
 }
+
 
 

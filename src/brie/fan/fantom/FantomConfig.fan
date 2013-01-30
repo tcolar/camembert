@@ -3,17 +3,18 @@
 //
 
 using netColarUtils
+using concurrent
 
 **
 ** FantomConfig
 **
 @Serializable
-class FantomConfig : PluginConfig
+const class FantomConfig : PluginConfig
 {
   const FantomOptions options
   const FantomEnv[] envs
 
-  Int curEnvIndex := 0
+  const AtomicInt curEnvIndex := AtomicInt()
 
   new make(Sys sys)
   {
@@ -75,14 +76,14 @@ class FantomConfig : PluginConfig
 
   }
 
-  Env? envByName(Str name) {envs.find {it.name == name} }
+  FantomEnv? envByName(Str name) {envs.find {it.name == name} }
 
   Void selectEnv(Str name)
   {
     Int? index := envs.eachWhile |env, index -> Int?| {if(env.name == name) return index; return null}
     if(index != null)
-      curEnvIndex = index
+      curEnvIndex.val = index
   }
 
-  FantomEnv curEnv() {envs[curEnvIndex]}
+  FantomEnv curEnv() {envs[curEnvIndex.val]}
 }

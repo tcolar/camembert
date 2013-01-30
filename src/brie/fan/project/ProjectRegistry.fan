@@ -10,6 +10,7 @@ using netColarUtils
 **
 const class ProjectRegistry : Actor
 {
+  const AtomicBool isScanning := AtomicBool()
 
   new make(Uri[] srcDirs) : super.make(ActorPool())
   {
@@ -22,7 +23,13 @@ const class ProjectRegistry : Actor
     action := items[0] as Str
     if(action == "index")
     {
+      isScanning.val = true
+      // todo: update the status bar ?
+
       cache.scanProjects
+
+      isScanning.val = false
+      // todo: update the status bar ?
     }
     else if(action == "projects")
     {
@@ -31,60 +38,65 @@ const class ProjectRegistry : Actor
     return null
   }
 
-  private ProjectCache cache()
+  private ProjectCache? cache()
   {
     Actor.locals["camembert.projectCache"]
   }
 
   static File:Project projects()
   {
-    return Sys.cur.prjReg.send("projects").get as File:Project
+    return (File:Project) Sys.cur.prjReg.send("projects").get
   }
 }
 
 class ProjectCache
 {
   FileWatcher watcher := FileWatcher()
-  File[] rootDirs
+  Uri[] rootDirs
   ** All known projects
-  File:Project projects := [:]
+  Uri:Project projects := [:]
 
   new make(Uri[] srcDirs)
   {
-    rootDirs := [,]
-    srcDirs.each {rootDirs.add(it.toFile)}
+    rootDirs = srcDirs
   }
 
   ** Look for projects, return the list of new ones
-  File:Project scanProjects(File[] dirs := rootDirs)
+  Uri:Project scanProjects(Uri[] dirs := rootDirs)
   {
     Sys.cur.log.info("Starting project scan in $dirs")
-
-    // remove projects whose sources are gone
-    projects = projects.findAll |prj|
+    Uri:Project newProjects := [:]
+    try
     {
-      return prj.item.file.exists
-    }
 
-    // scan for new projects
-    |File -> Project?|[] pluginFuncs := [,]
-    Sys.cur.plugins.each {pluginFuncs.add(it.projectFinder)}
-
-    File:Project newProjects := [:]
-    // TODO: this will go in full dir depth and look for projects in projects
-    // so might be able to do some optiizations here
-    dirs.each |srcDir|
-    {
-      watcher.changedDirs(srcDir, 10).each |dir|
+      // remove projects whose sources are gone
+      projects = projects.findAll |prj|
       {
-        prj := pluginFuncs.eachWhile {it.call(dir)}
-        if(prj != null)
-          newProjects[dir] = prj
+        return prj.dir.exists
       }
+
+      // scan for new projects
+      |Uri -> Project?|[] pluginFuncs := [,]
+      Sys.cur.plugins.each {pluginFuncs.add(it.projectFinder)}
+
+      // TODO: this will go in full dir depth and look for projects in projects
+      // so might be able to do some optiizations here
+      dirs.each |srcDir|
+      {
+        watcher.changedDirs(srcDir.toFile, 10).each |dir|
+        {
+          Project? prj := pluginFuncs.eachWhile {it.call(dir)}
+          if(prj != null)
+            newProjects[dir] = prj
+        }
+      }
+
+      projects.setAll(newProjects)
     }
-
-    projects.setAll(newProjects)
-
+    catch(Err e)
+    {
+      Sys.cur.log.err("Project Scanning failed.", e)
+    }
     Sys.cur.log.info("Found $newProjects.size projects during scan in $dirs")
 
     return newProjects

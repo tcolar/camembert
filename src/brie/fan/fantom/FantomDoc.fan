@@ -5,12 +5,13 @@
 using gfx
 using fandoc
 using compilerDoc
+using web
 
 **
 ** FantomDoc
 ** Documentation provider for fantom
 **
-const class FantomDoc : DocProvider
+const class FantomDoc : PluginDoc
 {
   const FantomPlugin plugin
 
@@ -21,22 +22,22 @@ const class FantomDoc : DocProvider
 
   static const gfx::Image fanIcon  := gfx::Image(`fan://icons/x16/database.png`, false)
 
-  override gfx::Image icon := fanIcon
+  override const gfx::Image? icon := fanIcon
 
-  override Str html(Str query, MatchKind matchKind)
+  override Str html(WebReq req, Str query, MatchKind matchKind)
   {
     if(query.isEmpty)
       return podList
     else if(query == "axon-home")
       return axonLibs // TODO: -> to axon plugin
     else if(query.contains("ext-"))
-      axonDocs(query)// TODO: -> to axon plugin
+      return axonDocs(req, query)// TODO: -> to axon plugin
     else if(query.contains("::"))
     {
-      itemDoc(query)
+      return itemDoc(req, query)
     }
     else
-      find(query, matchKind)
+      return find(query, matchKind)
   }
 
   ** List all pods except axon library pods
@@ -86,7 +87,7 @@ const class FantomDoc : DocProvider
   }
 
   ** Axon extensions/libs docs
-  private Str axonDocs(Str text)
+  private Str axonDocs(WebReq req, Str text)
   {
     podName := text[0 ..< text.index("/")]
     if(podName.startsWith("ext-"))
@@ -135,7 +136,7 @@ const class FantomDoc : DocProvider
     {
       html := "<h2>$podName Funtions :</h2>"
       // fantom funcs
-      html += readAxonTypeDoc(pod, trioInfo)
+      html += readAxonTypeDoc(req, pod, trioInfo)
       return html
     }
     else if(item == "tags")
@@ -146,7 +147,7 @@ const class FantomDoc : DocProvider
       {
         html += "<div style='background-color:#ffeedd'><a name='$it.name'></a><b>${it.name}</b>"
                     + "</div><div style='background-color:#ddffdd'>$it.kind</div>"
-                    + docStrToHtml(it.doc, true)
+                    + docStrToHtml(req, it.doc, true)
       }
       return html
     }
@@ -165,7 +166,7 @@ const class FantomDoc : DocProvider
   }
 
   ** Get doc for an item(pod, type etc..)
-  private Str itemDoc(Str fqn)
+  private Str itemDoc(WebReq req, Str fqn)
   {
     if(fqn.contains("::index")) fqn = fqn[0 ..< fqn.index("::")]
       if(fqn.contains("::pod-doc")) fqn = fqn[0 ..< fqn.index("::")]
@@ -178,7 +179,7 @@ const class FantomDoc : DocProvider
       text := "<h2>$info.name</h2>"
       info.types.each {text += "<a href='/$it.qname'>$it.name</a>, "}
       text += "<hr/>"
-      text += readPodDoc(info.podFile)
+      text += readPodDoc(req, info.podFile)
       return text
     }
     else
@@ -187,7 +188,7 @@ const class FantomDoc : DocProvider
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.qname</h2>"
-      text += readTypeDoc(info.pod.podFile, info.name)
+      text += readTypeDoc(req, info.pod.podFile, info.name)
       return text
     }
   }
@@ -260,12 +261,12 @@ const class FantomDoc : DocProvider
   }
 
   ** Parse Fandoc into HTML
-  private Str docToHtml(DocFandoc? doc, Bool forAxon := false)
+  private Str docToHtml(WebReq req, DocFandoc? doc, Bool forAxon := false)
   {
-    return docStrToHtml(doc.text, forAxon)
+    return docStrToHtml(req, doc.text, forAxon)
   }
 
-  private Str docStrToHtml(Str? doc, Bool forAxon := false)
+  private Str docStrToHtml(WebReq req, Str? doc, Bool forAxon := false)
   {
     if(doc == null || doc.isEmpty) return "<br/>"
       buf := Buf()
@@ -277,14 +278,14 @@ const class FantomDoc : DocProvider
   }
 
   ** Read doc of a pod
-  private Str readPodDoc(File podFile)
+  private Str readPodDoc(WebReq req, File podFile)
   {
     result := "Failed to read pod doc !"
     try
     {
       doc := DocPod(podFile)
       if(doc.podDoc != null)
-        result = docToHtml(doc.podDoc.doc)
+        result = docToHtml(req, doc.podDoc.doc)
       else
        result = doc.summary
     }
@@ -293,7 +294,7 @@ const class FantomDoc : DocProvider
   }
 
   ** Read doc of a type
-  private Str readTypeDoc(File podFile, Str typeName)
+  private Str readTypeDoc(WebReq req, File podFile, Str typeName)
   {
     result := "Failed to read pod doc !"
     try
@@ -302,7 +303,7 @@ const class FantomDoc : DocProvider
 
       DocType? type := doc.type(typeName, false)
 
-      Str summary := type?.doc != null ? docToHtml(type.doc) : doc.summary
+      Str summary := type?.doc != null ? docToHtml(req, type.doc) : doc.summary
 
       result = summary
       if(type!=null)
@@ -319,7 +320,7 @@ const class FantomDoc : DocProvider
         {
           result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
                   +htmlSig(it) + "</div>"
-                  + docToHtml(it.doc)
+                  + docToHtml(req, it.doc)
         }
       }
     }
@@ -329,7 +330,7 @@ const class FantomDoc : DocProvider
   }
 
   ** Read doc of a type
-  private Str readAxonTypeDoc(PodInfo pod, TrioInfo? info)
+  private Str readAxonTypeDoc(WebReq req, PodInfo pod, TrioInfo? info)
   {
     result := ""
     try
@@ -348,7 +349,7 @@ const class FantomDoc : DocProvider
           {
             result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
                     +htmlSig(it) + "</div>"
-                    + docToHtml(it.doc, true)
+                    + docToHtml(req, it.doc, true)
           }
         }
       }
@@ -363,7 +364,7 @@ const class FantomDoc : DocProvider
         {
           result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
                   +it.sig+ "</div>"
-                  + docStrToHtml(it.doc, true)
+                  + docStrToHtml(req, it.doc, true)
         }
       }
     }

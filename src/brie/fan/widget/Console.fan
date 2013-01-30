@@ -110,17 +110,11 @@ class Console : InsetPane
     proc.kill
   }
 
-  Void execFan(Str[] args, File dir, |Console|? onDone := null, Str bin := "fan")
-  {
-    fanHome := Sys.cur.options.fanHome
-    fan := fanHome + (Desktop.isWindows ? `bin/${bin}.exe` : `bin/${bin}`)
-    args = args.dup.insert(0, fan.osPath)
-    exec(args, dir, onDone)
-  }
-
   Void exec(Str[] cmd, File dir, |Console|? onDone := null)
   {
     open
+    if( Desktop.isWindows && ! cmd.isEmpty && ! cmd[0].endsWith(".exe"))
+      cmd[0] = cmd[0] + ".exe"
     frame.marks = Item[,]
     this.inKill = false
     this.proc = ConsoleProcess(this)

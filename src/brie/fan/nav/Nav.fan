@@ -72,8 +72,9 @@ abstract class Nav
         if(projects.containsKey(f.normalize))
         {
           // Not recursing in pods or pod groups
-          //FileItem.makeProject(f, indent).setDis("${path}$f.name")
-          results.add(projects[f.normalize].item)
+          prj := projects[f.normalize]
+          item := FileItem.makeProject(prj.dir).setDis("${path}$prj.dis")
+          results.add(item)
         }
         else
         {

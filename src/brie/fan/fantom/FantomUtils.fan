@@ -5,7 +5,7 @@
 **
 ** FantomUtils
 **
-static class FantomUtils
+class FantomUtils
 {
   ** Try to find a build file of type buildPod
   ** first in dir/build.fan

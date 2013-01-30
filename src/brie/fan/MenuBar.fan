@@ -41,12 +41,11 @@ class MenuBar : Menu
         it.text = "Process"
         MenuItem{ it.command = Sys.cur.commands.build.asCommand},
         MenuItem{ it.command = Sys.cur.commands.buildGroup.asCommand},
-        MenuItem{ it.command = Sys.cur.commands.runPod.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.run.asCommand},
         MenuItem{ it.command = Sys.cur.commands.runSingle.asCommand},
         MenuItem{ it.command = Sys.cur.commands.buildAndRun.asCommand},
-        MenuItem{ it.command = Sys.cur.commands.testPod.asCommand},
+        MenuItem{ it.command = Sys.cur.commands.test.asCommand},
         MenuItem{ it.command = Sys.cur.commands.testSingle.asCommand},
-        MenuItem{ it.command = Sys.cur.commands.terminate.asCommand},
       }
 
       panels = Menu {

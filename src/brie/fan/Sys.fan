@@ -126,7 +126,7 @@ const class Sys : Service
   {
     if( ! type.fits(Plugin#))
       throw Err("$type.qname is not a plugin instance !")
-    PluginManager.cur.plugins[type.pod.name]
+    return PluginManager.cur.plugins[type.pod.name]
   }
 
   static Sys cur()

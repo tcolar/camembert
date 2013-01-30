@@ -15,6 +15,7 @@ using fwt
 **
 class IndexSpace : Space
 {
+  override Type? plugin := null
   override Widget ui
   override View? view := null
   override Nav? nav := null
@@ -80,7 +81,7 @@ class IndexSpace : Space
     FileItem[] items := [,]
     ProjectRegistry.projects.each |prj|
     {
-      items.addAll(prj.item)
+      items.add(FileItem.makeProject(prj.dir).setIcon(prj.icon))
     }
     items.sort |a, b| { a.sortStr <=> b.sortStr }
     return items

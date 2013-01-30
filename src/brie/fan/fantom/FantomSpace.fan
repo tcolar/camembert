@@ -14,6 +14,9 @@ using fwt
 **
 class FantomSpace : BaseSpace
 {
+  ** Type of Plugin responsible for this space
+  override Type? plugin
+
   override View? view
   override Nav? nav
   override Image icon() { isGroup ? Sys.cur.theme.iconPodGroup : Sys.cur.theme.iconPod }

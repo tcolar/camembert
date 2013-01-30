@@ -3,6 +3,7 @@
 //
 
 using gfx
+using concurrent
 
 **
 ** Manages plugins
@@ -15,7 +16,7 @@ const class PluginManager : Service
   const File configDir
 
   ** Plugin name(pod) -> PluginConfig of each plugin
-  private const Unsafe? _pluginConfs
+  private const AtomicRef _pluginConfs := AtomicRef()
 
   new make(File configDir)
   {
@@ -54,14 +55,14 @@ const class PluginManager : Service
 
   internal Void onConfigLoaded(Sys newSys)
   {
-    confs := (Str:PluginConfig?) _pluginConfs?.val
+    confs := ([Str:PluginConfig]?) _pluginConfs.val
     if(confs == null)
       confs = Str:PluginConfig?[:]
     plugins.each |plugin, name|
     {
       confs[name] = plugin.readConfig(newSys)
     }
-    _pluginConfs.val = Unsafe(confs)
+    _pluginConfs.val = confs
   }
 
   internal Void onFrameReady(Frame f)
@@ -94,9 +95,10 @@ const class PluginManager : Service
     plugins.vals.eachWhile |Plugin p -> Image?| {p.iconForFile(f)}
   }
 
+  ** Config of a named plugin (name is pod type name)
   FantomConfig? conf(Str pluginName)
   {
-    confs := (Str:PluginConfig?) _pluginConfs.val
+    confs := ([Str:PluginConfig]?) _pluginConfs.val
     if(confs != null)
       return (FantomConfig?) confs[pluginName]
     return null

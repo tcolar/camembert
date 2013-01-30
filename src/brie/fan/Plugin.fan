@@ -34,21 +34,26 @@ mixin Plugin
   ** Function that return a project item if the given folder
   ** is deemed a project by the plugin
   ** This function will be called a lot, so keep efficient
-  abstract |File -> Project?| projectFinder
+  abstract |Uri -> Project?| projectFinder()
 
   ** Returns the setting object for the given plugin
   ** Called any time config is (re)loaded
   virtual PluginConfig? readConfig(Sys newSys) {null}
 
   ** Documentation provider for this plugin or null if none
-  virtual DocProvider? docProvider := null
+  abstract PluginDoc? docProvider()
+
+  ** Plugin execution commands implemntation
+  abstract PluginCommands? commands()
+
+  Void name() {Pod.of(this).name}
 }
 
 **
 ** PluginConfig
 ** Container for a given plugin configuration
 **
-mixin PluginConfig
+const mixin PluginConfig
 {
 }
 

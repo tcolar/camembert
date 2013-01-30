@@ -3,18 +3,19 @@
 //
 
 using gfx
+using web
 
 **
-** DocProvider
+** PluginDoc
 ** Documentation provider associated with a plugin
 **
-const mixin DocProvider
+const mixin PluginDoc
 {
   ** An icon for that plugin / language documentation
-  abstract Image icon := null
+  abstract Image? icon()
 
   ** Return html for a given path
   ** Todo: return a file to serve instead ??
-  abstract Str html(Str query, MatchKind matchKind)
+  abstract Str html(WebReq req, Str query, MatchKind matchKind)
 
 }

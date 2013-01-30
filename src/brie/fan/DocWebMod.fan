@@ -20,11 +20,11 @@ const class DocWebMod : WebMod
     query := req.uri.query
     MatchKind matchKind := MatchKind.startsWith
 
-    pName := req.uri.path.get(0) ?: ""
-    plugin := Sys.cur.plugin(pName)
+    pName := req.uri.path.getSafe(0) ?: ""
+    plugin := Sys.cur.plugins[pName]
     if(plugin == null)
     {
-      showDoc(res, "No such plugin: $pName")
+      showDoc("No such plugin: $pName")
       return
     }
 
@@ -32,7 +32,7 @@ const class DocWebMod : WebMod
     if(doc == null)
     {
       // shouldn't happen, but juts in case
-      showDoc(res, "The plugin $pName does not provide documentation.")
+      showDoc("The plugin $pName does not provide documentation.")
       return
     }
 
@@ -43,11 +43,11 @@ const class DocWebMod : WebMod
 
     try
     {
-      showDoc(doc.html(text, matchKind))
+      showDoc(doc.html(req, text, matchKind))
     }
     catch(Err e)
     {
-      showDoc(req, "<b>$e</b><br/><pre>$e.traceToStr</pre>")
+      showDoc("<b>$e</b><br/><pre>$e.traceToStr</pre>")
     }
   }
 

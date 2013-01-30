@@ -30,6 +30,25 @@ class HelpPane : ContentPane
       return
     }
 
+    docProviders := Str:PluginDoc[:] {ordered = true}
+    Sys.cur.plugins.each
+    {
+      if(it.docProvider != null)
+      {
+        docProviders[it.typeof.pod.name] = it.docProvider
+      }
+    }
+    buttons := GridPane{
+      numCols = docProviders.size
+    }
+    docProviders.each |doc, pName|
+    {
+      buttons.add(Button{
+        image = doc.icon
+        onAction.add |Event e| {render("/${pName}/")}
+      })
+    }
+
     content = EdgePane
     {
       search = Text
@@ -59,32 +78,19 @@ class HelpPane : ContentPane
         }
         center = EdgePane
         {
-          left = GridPane{
-            numCols = 2
-            Button{
-              image = fanIcon
-              onAction.add |Event e| {render("")} // pod list
-            },
-            Button{
-              image = axonIcon
-              onAction.add |Event e|
-              {
-                if( ! Sys.cur.plugins.containsKey("camA"+"xonPl"+"ugin"))
-                  browser.loadStr("Axon plugin is not installed.")
-                else
-                  render("axon-home")
-              }
-            },
-          }
-          right = GridPane{
+          left = buttons
+          /*right = GridPane{
             numCols = 2
             Label{it.text = "View src:"},
             Button
             {
               image = viewIcon
-              onAction.add |Event e| {goto(search.text)}
+              onAction.add |Event e|
+              {
+                goto(search.text)
+              }
             },
-          }
+          }*/
         }
       }
       center = BorderPane
@@ -93,6 +99,7 @@ class HelpPane : ContentPane
         it.content = browser
       }
     }
+
     browser.onHyperlink.add |Event e|
     {
       onHyperlink(e)
@@ -125,7 +132,7 @@ class HelpPane : ContentPane
       show
   }
 
-  Void goto(Str where)
+  /*Void goto(Str where)
   {
     if(where.contains("::"))
     {
@@ -141,7 +148,7 @@ class HelpPane : ContentPane
         catch(Err err){err.trace}
       }
     }
-  }
+  }*/
 
   private Void show()
   {
@@ -185,8 +192,8 @@ class HelpPane : ContentPane
       else if(searchType.selectedIndex == 2)
         text += "?type=exact"
     }
-    // TODO: /fan/ is harcoded for now
-    browser.load(`http://127.0.0.1:${port}/fan/$text`)
+    // TODO: add plugin path here
+    browser.load(`http://127.0.0.1:${port}/$text`)
   }
 }
 
