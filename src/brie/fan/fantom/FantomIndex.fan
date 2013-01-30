@@ -25,7 +25,7 @@ const class FantomIndex
   ** Construct with directories to crawl
   new make()
   {
-    dirs := File[,]
+   /* dirs := File[,]
     Sys.cur.options.srcDirs.each |uri|
     {
       try
@@ -50,7 +50,9 @@ const class FantomIndex
       }
       catch (Err e) echo("Invalid podDir: $uri\n  $e")
     }
-    this.podDirs = dirs
+    this.podDirs = dirs*/
+    srcDirs = [,]
+    podDirs = [,]
   }
 
   //////////////////////////////////////////////////////////////////////////

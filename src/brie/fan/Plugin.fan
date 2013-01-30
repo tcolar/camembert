@@ -46,7 +46,7 @@ mixin Plugin
   ** Plugin execution commands implemntation
   abstract PluginCommands? commands()
 
-  Void name() {Pod.of(this).name}
+  virtual Str name() {Pod.of(this).name}
 }
 
 **

@@ -12,40 +12,56 @@ const class ProjectRegistry : Actor
 {
   const AtomicBool isScanning := AtomicBool()
 
-  new make(Uri[] srcDirs) : super.make(ActorPool())
+  const Uri[] srcDirs
+
+  new make(Uri[] srcDirs) : super(ActorPool())
   {
+    this.srcDirs = srcDirs
     Actor.locals["camembert.projectCache"] = ProjectCache(srcDirs)
+   echo("**************** cache : "+Actor.locals["camembert.projectCache"])
   }
 
   override Obj? receive(Obj? msg)
   {
-    items := msg as Obj[]
-    action := items[0] as Str
-    if(action == "index")
+    try
     {
-      isScanning.val = true
-      // todo: update the status bar ?
+      items := msg as Obj[]
+      ProjectCache? c := Actor.locals["camembert.projectCache"]
+      if(c == null)
+      {
+        c = ProjectCache(srcDirs)
+        Actor.locals["camembert.projectCache"] = c
+        c.scanProjects
+        echo("**************** no cache ??")
+        return [:]
+      }
+      action := items[0] as Str
+echo("Action: $action")
+      if(action == "index")
+      {
+        isScanning.val = true
+        // todo: update the status bar ?
+echo(">index")
+        c.scanProjects
+echo("<index")
 
-      cache.scanProjects
-
-      isScanning.val = false
-      // todo: update the status bar ?
-    }
-    else if(action == "projects")
+        isScanning.val = false
+        // todo: update the status bar ?
+      }
+      else if(action == "projects")
+      {
+        return c.projects
+      }
+    }catch(Err e)
     {
-      return cache.projects
+      Sys.cur.log.err("Project Registry thread error", e)
     }
     return null
   }
 
-  private ProjectCache? cache()
+  static Uri:Project projects()
   {
-    Actor.locals["camembert.projectCache"]
-  }
-
-  static File:Project projects()
-  {
-    return (File:Project) Sys.cur.prjReg.send("projects").get
+    return (Uri:Project) Sys.cur.prjReg.send(["projects"]).get
   }
 }
 
@@ -72,7 +88,7 @@ class ProjectCache
       // remove projects whose sources are gone
       projects = projects.findAll |prj|
       {
-        return prj.dir.exists
+        return prj.dir.toFile.exists
       }
 
       // scan for new projects

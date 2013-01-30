@@ -12,10 +12,10 @@ internal abstract const class PluginCmd : Cmd
 {
   PluginCommands? commands()
   {
-    pType := frame.curSpace.plugin
-    if(pType== null) return null // TODO: dialog ?
+    name := frame.curSpace.plugin
+    if(name == null) return null // TODO: dialog ?
 
-    plugin := Sys.cur.plugin(pType)
+    plugin := Sys.cur.plugin(name)
     return plugin.commands
   }
 }
@@ -26,7 +26,7 @@ internal const class BuildCmd : PluginCmd
   override const Str name := "Build"
   override Void invoke(Event event)
   {
-    commands.build.invoke(event)
+    commands?.build?.invoke(event)
   }
 }
 
@@ -36,7 +36,7 @@ internal const class BuildGroupCmd : PluginCmd
   override const Str name := "Build Group"
   override Void invoke(Event event)
   {
-    commands.buildGroup.invoke(event)
+    commands?.buildGroup?.invoke(event)
   }
 }
 
@@ -50,7 +50,7 @@ internal const class RunCmd : PluginCmd
   override const Str name := "Run Pod"
   override Void invoke(Event event)
   {
-    commands.run.invoke(event)
+    commands?.run?.invoke(event)
   }
 }
 
@@ -60,7 +60,7 @@ internal const class BuildAndRunCmd : PluginCmd
   override const Str name := "BuildAndRun"
   override Void invoke(Event event)
   {
-    commands.buildAndRun.invoke(event)
+    commands?.buildAndRun?.invoke(event)
   }
 }
 
@@ -73,7 +73,7 @@ internal const class RunSingleCmd : PluginCmd
   override const Str name := "Run Single"
   override Void invoke(Event event)
   {
-    commands.runSingle.invoke(event)
+    commands?.runSingle?.invoke(event)
   }
 }
 
@@ -86,7 +86,7 @@ internal const class TestCmd : PluginCmd
   override const Str name := "Test Pod"
   override Void invoke(Event event)
   {
-    commands.test.invoke(event)
+    commands?.test?.invoke(event)
   }
 }
 
@@ -100,7 +100,7 @@ internal const class TestSingleCmd : PluginCmd
   override const Str name := "Test Single"
   override Void invoke(Event event)
   {
-    commands.testSingle.invoke(event)
+    commands?.testSingle?.invoke(event)
   }
 }
 

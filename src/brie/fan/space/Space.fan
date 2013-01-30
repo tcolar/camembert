@@ -16,7 +16,7 @@ using concurrent
 mixin Space
 {
   ** Plugin responsibe for this space
-  abstract Type? plugin
+  abstract Str? plugin
 
   ** Display name
   abstract Str dis()

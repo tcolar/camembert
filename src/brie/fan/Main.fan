@@ -22,10 +22,13 @@ class Main
     configVersion := Version(props["version"])
 
     pluginManager := PluginManager(configDir)
+
     pluginManager.start // will call plugins init
 
     sys := Sys{optionsFile = configDir+`options.props`}
+
     sys.start
+
     Frame().open
 
     pluginManager.stop // will call plugins shutdown

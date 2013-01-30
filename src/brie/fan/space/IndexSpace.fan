@@ -15,7 +15,7 @@ using fwt
 **
 class IndexSpace : Space
 {
-  override Type? plugin := null
+  override Str? plugin := null
   override Widget ui
   override View? view := null
   override Nav? nav := null
@@ -27,29 +27,28 @@ class IndexSpace : Space
   new make(Frame frame)
   {
     this.frame = frame
-    ui = InsetPane(0, 5, 5, 5) { makeUi }
+    ui = InsetPane(0, 5, 5, 5) { content = makeUi }
   }
 
   GridPane makeUi()
   {
-    podRoots := ItemList[,]
+    prjRoots := ItemList[,]
     projects := getProjects()
-
     Sys.cur.srcRoots.each |indexDir|
     {
       items := Item[,]
       items.add(FileItem.makeProject(indexDir.toFile).setIcon(Sys.cur.theme.iconHome))
-      items.addAll(projects.findAll{FileUtil.contains(indexDir.toFile, it.file)})
-      podRoots.add(ItemList(frame, items))
+      items.addAll(projects.findAll {FileUtil.contains(indexDir.toFile, it.file)})
+      prjRoots.add(ItemList(frame, items))
     }
 
     grid := GridPane
     {
-      numCols = podRoots.size
+      numCols = prjRoots.size
       valignCells = Valign.fill
       expandRow = 0
     }
-    podRoots.each |g| { grid.add(g) }
+    prjRoots.each |g| { grid.add(g) }
     return grid
   }
 
@@ -81,7 +80,7 @@ class IndexSpace : Space
     FileItem[] items := [,]
     ProjectRegistry.projects.each |prj|
     {
-      items.add(FileItem.makeProject(prj.dir).setIcon(prj.icon))
+      items.add(FileItem.makeProject(prj.dir.toFile).setIcon(prj.icon))
     }
     items.sort |a, b| { a.sortStr <=> b.sortStr }
     return items

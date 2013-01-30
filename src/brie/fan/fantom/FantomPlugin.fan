@@ -12,15 +12,18 @@ using fwt
 **
 const class FantomPlugin : Plugin
 {
-  ** FantomIndexing service
-  const FantomIndex index := FantomIndex()
+  static const Str _name := "camFantomPlugin"
 
-  override const PluginCommands? commands := FantomCommands()
-  override const PluginDoc? docProvider
+  ** FantomIndexing service
+  const FantomIndex index
+
+  override PluginCommands? commands() {FantomCommands()}
+  override PluginDoc? docProvider() {FantomDoc(this)}
+  override Str name() {return _name}
 
   new make()
   {
-    docProvider = FantomDoc(this)
+    index = FantomIndex()
   }
 
   override PluginConfig? readConfig(Sys sys)
@@ -32,7 +35,6 @@ const class FantomPlugin : Plugin
 
   override Void onInit(File configDir)
   {
-    // TODO: init index and so on here
   }
 
   override Void onFrameReady(Frame frame)
@@ -88,7 +90,7 @@ const class FantomPlugin : Plugin
      if(buildFile != null)
       return Project{
         it.dis = f.name
-        it.dir = f
+        it.dir = f.uri
         it.icon = Sys.cur.theme.iconPodGroup
         it.plugin = FantomPlugin#
         it.params = ["isGroup" : "true"]
@@ -98,7 +100,7 @@ const class FantomPlugin : Plugin
      if(buildFile != null)
       return Project{
         it.dis = f.name
-        it.dir = f
+        it.dir = f.uri
         it.icon = Sys.cur.theme.iconPod
         it.plugin = FantomPlugin#
       }
@@ -108,7 +110,7 @@ const class FantomPlugin : Plugin
 
   override Space createSpace(Project prj)
   {
-    return FantomSpace(Sys.cur.frame, prj.dis, prj.dir, null)
+    return FantomSpace(Sys.cur.frame, prj.dis, prj.dir.toFile, null)
   }
 
   override Int spacePriority(Project prj)
@@ -155,12 +157,12 @@ const class FantomPlugin : Plugin
 
   static FantomConfig config()
   {
-    return (FantomConfig) PluginManager.cur.conf(FantomPlugin#.pod.name)
+    return (FantomConfig) PluginManager.cur.conf(_name)
   }
 
   static FantomPlugin cur()
   {
-    return (FantomPlugin) Sys.cur.plugin(FantomPlugin#)
+    return (FantomPlugin) Sys.cur.plugin(_name)
   }
 
   static File? findBuildFile(File? f)

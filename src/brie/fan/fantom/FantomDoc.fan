@@ -18,11 +18,14 @@ const class FantomDoc : PluginDoc
   new make(FantomPlugin plugin)
   {
     this.plugin = plugin
+    this.pluginName = plugin.name
   }
 
   static const gfx::Image fanIcon  := gfx::Image(`fan://icons/x16/database.png`, false)
 
   override const gfx::Image? icon := fanIcon
+
+  override const Str pluginName
 
   override Str html(WebReq req, Str query, MatchKind matchKind)
   {

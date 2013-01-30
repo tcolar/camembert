@@ -17,8 +17,8 @@ internal const class FantomCommands : PluginCommands
 
 internal abstract const class FantomCmd : ExecCmd
 {
-  const FantomPlugin plugin := FantomPlugin.cur
-  const FantomEnv env := FantomPlugin.config.curEnv
+  FantomPlugin plugin() {FantomPlugin.cur}
+  FantomEnv env() {FantomPlugin.config.curEnv}
   override Str:Str variables() {["env_home":env.fantomHome.toFile.osPath]}
 
   /*Void execFan(Str cmd, Str[] args, File dir, Func callback)
@@ -43,7 +43,7 @@ internal const class SwitchConfigCmd : Cmd
       Desktop.callAsync |->|
       {
         FantomPlugin.config.selectEnv(name)
-        plugin := Sys.cur.plugin(FantomPlugin#)
+        plugin := Sys.cur.plugin(name)
         // TODO: we need to reload the fantom index etc ...
       }
     }

@@ -282,16 +282,16 @@ class Frame : Window
   ** If prio > minPrio return thge space istance, otherwise null
   private Space? createPluginSpace(File file, Int minPrio)
   {
-  // juts use project with longets path that contains this instead of pthis junk ??
+  // just use project with longest path that contains this instead of pthis junk ??
   // do i still need this space prio stuff ??
     Plugin? plugin
     Project? prj
 
-    ProjectRegistry.projects.each|project, dir|
+    ProjectRegistry.projects.each|project, uri|
     {
-      if(FileUtil.contains(dir, file))
+      if(FileUtil.contains(uri.toFile, file))
       {
-        p := Sys.cur.plugins[project.plugin.pod.name]
+        p := Sys.cur.plugins[project.plugin.name]
         if(p.spacePriority(project) >= minPrio)
         {
           if(plugin == null || p.spacePriority(project) > plugin.spacePriority(project))

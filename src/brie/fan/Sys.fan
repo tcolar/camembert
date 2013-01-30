@@ -52,14 +52,9 @@ const class Sys : Service
     shortcuts =  Shortcuts.load(optionsFile.parent)
     theme = Theme.load(optionsFile.parent, options.theme)
     commands = Commands(this)
+    prjReg = ProjectRegistry(options.srcDirs)
     wPort := NetUtils.findAvailPort(8787)
     docServer = WispService { port = wPort; root = DocWebMod() }.start
-
-    prjReg = ProjectRegistry(options.srcDirs)
-    prjReg.send("index")
-    // TODO: save / load registry on start / stop
-
-    PluginManager.cur.onConfigLoaded(this)
 
     // read the templates
     tpl := Template[,]
@@ -76,6 +71,15 @@ const class Sys : Service
       lic.add(JsonUtils.load(it.in, LicenseTpl#))
     }
     licenses = lic.sort |a, b| {a.name <=> b.name}
+
+  }
+
+  override Void onStart()
+  {
+    echo("onstart")
+    prjReg.send(["index"]).get
+    // TODO: save / load registry on start / stop
+    PluginManager.cur.onConfigLoaded(this)
   }
 
   override Void onStop()
@@ -121,12 +125,10 @@ const class Sys : Service
   ** All known plugins
   Str:Plugin plugins() {PluginManager.cur.plugins}
 
-  ** Retrieve a given plugin instance by it's pluginType
-  Plugin plugin(Type type)
+  ** Retrieve a given plugin instance by it's name
+  Plugin plugin(Str name)
   {
-    if( ! type.fits(Plugin#))
-      throw Err("$type.qname is not a plugin instance !")
-    return PluginManager.cur.plugins[type.pod.name]
+    return PluginManager.cur.plugins[name]
   }
 
   static Sys cur()

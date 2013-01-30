@@ -62,7 +62,7 @@ const class PluginManager : Service
     {
       confs[name] = plugin.readConfig(newSys)
     }
-    _pluginConfs.val = confs
+    _pluginConfs.val = confs.toImmutable
   }
 
   internal Void onFrameReady(Frame f)

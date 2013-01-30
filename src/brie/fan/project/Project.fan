@@ -14,9 +14,9 @@ const class Project
 
   const Str dis
 
-  const File dir
+  const Uri dir
 
-  const Image? icon := null
+  const Image icon
 
   ** Plugin responsible for this project
   const Type plugin

@@ -18,4 +18,6 @@ const mixin PluginDoc
   ** Todo: return a file to serve instead ??
   abstract Str html(WebReq req, Str query, MatchKind matchKind)
 
+  ** name of the plugin responsible
+  abstract Str pluginName()
 }

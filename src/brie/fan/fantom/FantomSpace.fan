@@ -15,7 +15,7 @@ using fwt
 class FantomSpace : BaseSpace
 {
   ** Type of Plugin responsible for this space
-  override Type? plugin
+  override Str? plugin := FantomPlugin._name
 
   override View? view
   override Nav? nav
@@ -31,9 +31,9 @@ class FantomSpace : BaseSpace
       : super(frame, name, dir, file)
   {
     this.podName = name
+    this.index = FantomPlugin.cur.index
     this.isGroup = index.isGroupDir(dir) != null
 
-    index = FantomPlugin.cur.index
 
     view = View.makeBest(frame, this.file)
     nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file))

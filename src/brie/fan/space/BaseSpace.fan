@@ -10,7 +10,7 @@ using fwt
 **
 abstract class BaseSpace : Space
 {
-  override Type? plugin := null
+  override Str? plugin := null
   override Widget ui
   override File? root() {dir}
   override Str dis

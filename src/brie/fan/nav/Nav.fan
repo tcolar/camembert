@@ -55,7 +55,7 @@ abstract class Nav
 
   ** find items
   Void findItems(File dir, Item[] results, Bool preserveLayout := false,
-        Str path:="", File:Project projects := ProjectRegistry.projects)
+        Str path:="", Uri:Project projects := ProjectRegistry.projects)
   {
     dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
     {
@@ -69,11 +69,11 @@ abstract class Nav
     {
       if (! hidden(f))
       {
-        if(projects.containsKey(f.normalize))
+        if(projects.containsKey(f.normalize.uri))
         {
           // Not recursing in pods or pod groups
-          prj := projects[f.normalize]
-          item := FileItem.makeProject(prj.dir).setDis("${path}$prj.dis")
+          prj := projects[f.normalize.uri]
+          item := FileItem.makeProject(prj.dir.toFile).setDis("${path}$prj.dis")
           results.add(item)
         }
         else
