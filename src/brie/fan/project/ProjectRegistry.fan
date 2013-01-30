@@ -80,11 +80,9 @@ const class ProjectRegistry : Actor
       }
     }catch(Err e)
     {
-      e.trace
-      // if loading the file fails, then trash it (either corrupt or new format)
+      // if loading the file fails, then remove it (either corrupt or new format)
       stateFile.delete
     }
-    echo("laoded $projects.size projects")
     return projects
   }
 

@@ -42,6 +42,17 @@ internal class StatusBar : ContentPane
     this.projects = Label
     {
       it.text="Projects"
+      it.onMouseUp.add |e|
+      {
+        if (e.id === EventId.mouseUp && e.button == 3 && e.count == 1)
+        {
+          menu := Menu
+          {
+           MenuItem { text="Rescan projects"; onAction.add |evt| { ProjectRegistry.scan } },
+          }
+          menu.open(projects, e.pos)
+        }
+      }
     }
     // file label
     this.file = Label
