@@ -17,8 +17,6 @@ const class ProjectRegistry : Actor
   new make(Uri[] srcDirs) : super(ActorPool())
   {
     this.srcDirs = srcDirs
-    Actor.locals["camembert.projectCache"] = ProjectCache(srcDirs)
-   echo("**************** cache : "+Actor.locals["camembert.projectCache"])
   }
 
   override Obj? receive(Obj? msg)
@@ -29,21 +27,18 @@ const class ProjectRegistry : Actor
       ProjectCache? c := Actor.locals["camembert.projectCache"]
       if(c == null)
       {
+        // init the cache on first query.
         c = ProjectCache(srcDirs)
         Actor.locals["camembert.projectCache"] = c
         c.scanProjects
-        echo("**************** no cache ??")
         return [:]
       }
       action := items[0] as Str
-echo("Action: $action")
       if(action == "index")
       {
         isScanning.val = true
         // todo: update the status bar ?
-echo(">index")
         c.scanProjects
-echo("<index")
 
         isScanning.val = false
         // todo: update the status bar ?

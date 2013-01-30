@@ -76,7 +76,6 @@ const class Sys : Service
 
   override Void onStart()
   {
-    echo("onstart")
     prjReg.send(["index"]).get
     // TODO: save / load registry on start / stop
     PluginManager.cur.onConfigLoaded(this)

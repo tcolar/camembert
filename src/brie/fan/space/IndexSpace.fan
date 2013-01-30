@@ -78,12 +78,23 @@ class IndexSpace : Space
   FileItem[] getProjects()
   {
     FileItem[] items := [,]
-    ProjectRegistry.projects.each |prj|
+    indent := 0
+    Uri[] stack  := [,] // path stack
+    ProjectRegistry.projects.vals.sort |a, b|{a.dir.pathStr <=> b.dir.pathStr}.each |prj|
     {
-      items.add(FileItem.makeProject(prj.dir.toFile).setIcon(prj.icon))
+      while(! (stack.isEmpty || contains(stack.peek, prj.dir)))
+        stack.pop
+      item := FileItem.makeProject(prj.dir.toFile, stack.size).setIcon(prj.icon)
+      items.add(item)
+      stack.push(prj.dir)
     }
-    items.sort |a, b| { a.sortStr <=> b.sortStr }
     return items
+  }
+
+  ** whether uri2 is "under" uri
+  private Bool contains(Uri uri, Uri uri2)
+  {
+    return uri2.pathStr.startsWith(uri.pathStr)
   }
 }
 
