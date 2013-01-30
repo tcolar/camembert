@@ -86,17 +86,7 @@ const class FantomPlugin : Plugin
     f := uri.toFile
     if( ! f.exists || ! f.isDir) return null
      // pod group
-     buildFile := FantomUtils.findBuildGroup(f, f)
-     if(buildFile != null)
-      return Project{
-        it.dis = FantomUtils.getPodName(f)
-        it.dir = f.uri
-        it.icon = Sys.cur.theme.iconPodGroup
-        it.plugin = FantomPlugin._name
-        it.params = ["isGroup" : "true"]
-      }
-     // pod
-     buildFile = FantomUtils.findBuildPod(f, f)
+     buildFile := FantomUtils.findBuildPod(f, f)
      if(buildFile != null)
       return Project{
         it.dis = FantomUtils.getPodName(f)
@@ -105,6 +95,16 @@ const class FantomPlugin : Plugin
         it.plugin = FantomPlugin._name
       }
 
+     // pod
+     buildFile = FantomUtils.findBuildGroup(f, f)
+     if(buildFile != null)
+      return Project{
+        it.dis = FantomUtils.getPodName(f)
+        it.dir = f.uri
+        it.icon = Sys.cur.theme.iconPodGroup
+        it.plugin = FantomPlugin._name
+        it.params = ["isGroup" : "true"]
+      }
      return null
   }
 

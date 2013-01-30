@@ -73,7 +73,7 @@ abstract class Nav
         {
           // Not recursing in pods or pod groups
           prj := projects[f.normalize.uri]
-          item := FileItem.makeProject(prj.dir.toFile).setDis("${path}$prj.dis")
+          item := FileItem.makeProject(f).setDis("${path}$prj.dis")
           item.icon = prj.icon
           results.add(item)
         }

@@ -44,7 +44,7 @@ mixin Space
     that := (Space)obj
     if (this is IndexSpace) return -1
     if (that is IndexSpace) return 1
-    if (this.typeof != that.typeof) return this.typeof.name <=> that.typeof.name
+    if (this.typeof != that.typeof) return -1//this.typeof.name <=> that.typeof.name
     return root.normalize <=> that.root.normalize
   }
 

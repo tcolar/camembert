@@ -256,9 +256,6 @@ class Frame : Window
 
   private Space? matchSpace(Item item)
   {
-    // current always trumps others
-    if (curSpace.match(item) > 0) return curSpace
-
     // find best match
     Space? bestSpace := null
     Int bestPriority := 0
@@ -266,7 +263,10 @@ class Frame : Window
     {
       priority := s.match(item)
       if (priority == 0) return
-        if (priority > bestPriority) { bestSpace = s; bestPriority = priority }
+        if (priority >= bestPriority)
+        {
+            bestSpace = s; bestPriority = priority
+        }
     }
     return bestSpace
   }
@@ -291,8 +291,6 @@ class Frame : Window
   ** If prio > minPrio return thge space istance, otherwise null
   private Space? createPluginSpace(File file, Int minPrio)
   {
-  // just use project with longest path that contains this instead of pthis junk ??
-  // do i still need this space prio stuff ??
     Plugin? plugin
     Project? prj
 
@@ -303,10 +301,15 @@ class Frame : Window
         p := Sys.cur.plugins[project.plugin]
         if(p.spacePriority(project) >= minPrio)
         {
-          if(plugin == null || p.spacePriority(project) > plugin.spacePriority(project))
+          if(plugin == null || p.spacePriority(project) >= plugin.spacePriority(project))
           {
-            plugin = p
-            prj = project
+            // Of all the matching plugins with same prio, use the one with the "narrowest" path
+            // ie: "best" subproject
+            if(prj == null || project.dir.pathStr.size > prj.dir.pathStr.size)
+            {
+              plugin = p
+              prj = project
+            }
           }
         }
       }

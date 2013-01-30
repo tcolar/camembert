@@ -105,9 +105,8 @@ class FantomSpace : BaseSpace
   {
     // add 1000 so always preferred over filespace
     // use length so the "Deepest" (sub)pod matches first
-    if (!FileUtil.contains(this.dir, item.file)) return 0
-    // Pods from groups should open in own space
-    if(item.isProject) return 0
+    if ( ! FileUtil.contains(this.dir, item.file)) return 0
+    if(item.isProject && item.file != dir) return 0
     return 1000 + dir.pathStr.size
   }
 
