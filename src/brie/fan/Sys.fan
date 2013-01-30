@@ -52,7 +52,7 @@ const class Sys : Service
     shortcuts =  Shortcuts.load(optionsFile.parent)
     theme = Theme.load(optionsFile.parent, options.theme)
     commands = Commands(this)
-    prjReg = ProjectRegistry(options.srcDirs)
+    prjReg = ProjectRegistry(options.srcDirs, optionsFile.parent)
     wPort := NetUtils.findAvailPort(8787)
     docServer = WispService { port = wPort; root = DocWebMod() }.start
 
@@ -76,7 +76,6 @@ const class Sys : Service
 
   override Void onStart()
   {
-    prjReg.send(["index"]).get
     // TODO: save / load registry on start / stop
     PluginManager.cur.onConfigLoaded(this)
   }

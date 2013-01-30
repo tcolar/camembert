@@ -78,8 +78,9 @@ class Frame : Window
     switchSpace(spaces.first)
     curSpace = spaces.first
 
-    PluginManager.cur.onFrameReady(this)
+    onFrameReady
   }
+
 
   //////////////////////////////////////////////////////////////////////////
   // Access
@@ -111,6 +112,14 @@ class Frame : Window
   History history := History() { private set }
 
   ProcessUtil process := ProcessUtil() { private set }
+
+  Void onFrameReady()
+  {
+    Desktop.callAsync |->| {
+      PluginManager.cur.onFrameReady(this)
+      ProjectRegistry.scan
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////
   // Space Lifecycle
@@ -291,7 +300,6 @@ class Frame : Window
     {
       if(FileUtil.contains(uri.toFile, file))
       {
-      echo("ppn: $project.plugin $Sys.cur.plugins.keys")
         p := Sys.cur.plugins[project.plugin]
         if(p.spacePriority(project) >= minPrio)
         {
@@ -475,7 +483,7 @@ class Frame : Window
   // Private Fields
   //////////////////////////////////////////////////////////////////////////
 
-  private File sessionFile := Sys.cur.optionsFile.parent + `session.props`
+  private File sessionFile := Sys.cur.optionsFile.parent + `state/session.props`
   private SpaceBar spaceBar
   private ContentPane spacePane
   private StatusBar statusBar

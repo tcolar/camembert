@@ -88,9 +88,12 @@ internal class StatusBar : ContentPane
     console.image = frame.console.isOpen ? Sys.cur.theme.iconSlideDown : Sys.cur.theme.iconSlideUp
 
     // project scanning
-    index.image = Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
+    projects.image = Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
-    // view file
+    // TODO : get indexing status from plugins ?
+    index.image = /*Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing :*/ Sys.cur.theme.iconOk
+
+        // view file
     v := frame.curView
     if (v != null)
     {

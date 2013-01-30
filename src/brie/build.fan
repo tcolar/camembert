@@ -17,7 +17,7 @@ class Build : BuildPod
                "concurrent 1.0",
                "fandoc 1.0",
                "syntax 1.0",
-               "gfx 1.0",
+               "gfx 1.0", "util 1.0+",
                "fwt 1.0",
                "web 1.0",
                "wisp 1.0",

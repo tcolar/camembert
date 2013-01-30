@@ -28,8 +28,6 @@ const class FantomPlugin : Plugin
 
   override PluginConfig? readConfig(Sys sys)
   {
-    index.reindexAll
-
     return FantomConfig(sys)
   }
 
@@ -39,7 +37,7 @@ const class FantomPlugin : Plugin
 
   override Void onFrameReady(Frame frame)
   {
-    // todo : start indexer etc ...
+    index.reindexAll
   }
 
   /*override FileItem[] projects()

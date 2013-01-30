@@ -36,10 +36,10 @@ class FantomUtils
   static File? findBuildGroup(File? dir, File? upTo:=dir)
   {
     build :=  dir + `buildall.fan`
-    if(isBuildPod(build, "BuildGroup"))
+    if(dir.name!="src" && isBuildPod(build, "BuildGroup"))
      return build
     build =  dir + `build.fan`
-    if(isBuildPod(build, "BuildGroup"))
+    if(dir.name!="src" && isBuildPod(build, "BuildGroup"))
      return build
     build =  dir + `src/build.fan`
     if(isBuildPod(build, "BuildGroup"))

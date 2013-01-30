@@ -13,7 +13,7 @@ using netColarUtils
 **
 class ProcessUtil
 {
-  File file := Sys.cur.optionsFile.parent + `run.json`
+  File file := Sys.cur.optionsFile.parent + `state/run.json`
 
   ** Args for a command
   private SavedCommands runCmd := SavedCommands()

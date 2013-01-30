@@ -3,20 +3,24 @@
 //
 
 using concurrent
+using util
 using netColarUtils
+using fwt
 
 **
 ** ProjectFinder
 **
 const class ProjectRegistry : Actor
 {
+  const File stateFile
   const AtomicBool isScanning := AtomicBool()
 
   const Uri[] srcDirs
 
-  new make(Uri[] srcDirs) : super(ActorPool())
+  new make(Uri[] srcDirs, File optionsDir) : super(ActorPool())
   {
     this.srcDirs = srcDirs
+    this.stateFile = optionsDir + `state/projects.fog`
   }
 
   override Obj? receive(Obj? msg)
@@ -24,29 +28,30 @@ const class ProjectRegistry : Actor
     try
     {
       items := msg as Obj[]
-      ProjectCache? c := Actor.locals["camembert.projectCache"]
-      if(c == null)
-      {
-        // init the cache on first query.
-        c = ProjectCache(srcDirs)
-        Actor.locals["camembert.projectCache"] = c
-        c.scanProjects
-        return [:]
-      }
       action := items[0] as Str
-      if(action == "index")
+      ProjectCache? c := Actor.locals["camembert.projectCache"]
+      if(action == "scan")
       {
-        isScanning.val = true
-        // todo: update the status bar ?
-        c.scanProjects
-
-        isScanning.val = false
-        // todo: update the status bar ?
+        if(c == null)
+        {
+          // "Lazilly" init the cache on first scan
+           c = ProjectCache(srcDirs)
+          Actor.locals["camembert.projectCache"] = c
+        }
+        _scan(c)
+        saveProjects(c)
       }
       else if(action == "projects")
       {
-        return c.projects
+        // If a a scan wasn't performed yet then use the saved projects
+        // from a previous run for faster startups
+        if( ! isScanning.val && c != null)
+          return c.projects
+        else
+          return savedProjects
       }
+      else
+        Sys.cur.log.err("Unexpected project reistry thread action: $action !")
     }catch(Err e)
     {
       Sys.cur.log.err("Project Registry thread error", e)
@@ -54,12 +59,82 @@ const class ProjectRegistry : Actor
     return null
   }
 
+  internal Void saveProjects(ProjectCache c)
+  {
+    out := stateFile.out
+    out.writeObj(c.projects)
+    out.flush
+    out.close
+  }
+
+  internal Uri:Project savedProjects()
+  {
+    Uri:Project projects := [:]
+    try
+    {
+      if(stateFile.exists)
+      {
+        obj := stateFile.in.readObj
+        if(obj != null && obj is Uri:Project)
+          projects = (Uri:Project) obj
+      }
+    }catch(Err e)
+    {
+      e.trace
+      // if loading the file fails, then trash it (either corrupt or new format)
+      stateFile.delete
+    }
+    echo("laoded $projects.size projects")
+    return projects
+  }
+
+  internal Void _scan(ProjectCache c)
+  {
+    setIsScanning(true)
+    try
+      c.scanProjects
+    finally
+      setIsScanning(false)
+  }
+
+  internal Void setIsScanning(Bool val)
+  {
+    isScanning.val = val
+    try
+    {
+      Desktop.callAsync |->|
+      {
+        frame := Sys.cur.frame
+        frame.updateStatus
+        if( ! val)
+        {
+          // At end of scan, refresh the indexSpace
+          frame.spaces.each
+          {
+            if(it is IndexSpace)
+              it.refresh
+          }
+        }
+      }
+    }
+    catch {}
+  }
+
+
   static Uri:Project projects()
   {
     return (Uri:Project) Sys.cur.prjReg.send(["projects"]).get
   }
+
+  ** start a sync (asynchronous)
+  static Void scan()
+  {
+    Sys.cur.prjReg.send(["scan"])
+  }
 }
 
+// TODO: serialize the filewatcher to file and ruse it next time for faster startup ?
+// But this is quite fast as it is even on large folders
 class ProjectCache
 {
   FileWatcher watcher := FileWatcher()
@@ -90,15 +165,17 @@ class ProjectCache
       |Uri -> Project?|[] pluginFuncs := [,]
       Sys.cur.plugins.each {pluginFuncs.add(it.projectFinder)}
 
-      // TODO: this will go in full dir depth and look for projects in projects
-      // so might be able to do some optiizations here
       dirs.each |srcDir|
       {
-        watcher.changedDirs(srcDir.toFile, 10).each |dir|
+        f := srcDir.toFile
+        if(f.exists && f.isDir)
         {
-          Project? prj := pluginFuncs.eachWhile {it.call(dir)}
-          if(prj != null)
-            newProjects[dir] = prj
+          watcher.changedDirs(f, 10).each |dir|
+          {
+            Project? prj := pluginFuncs.eachWhile {it.call(dir)}
+            if(prj != null)
+              newProjects[dir] = prj
+          }
         }
       }
 
@@ -112,4 +189,12 @@ class ProjectCache
 
     return newProjects
   }
+}
+
+@Serializable
+class Projects
+{
+  const Uri:Project projects
+
+  new make(|This|? f) {if(f != null) f(this)}
 }
