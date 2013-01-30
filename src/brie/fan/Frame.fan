@@ -291,7 +291,8 @@ class Frame : Window
     {
       if(FileUtil.contains(uri.toFile, file))
       {
-        p := Sys.cur.plugins[project.plugin.name]
+      echo("ppn: $project.plugin $Sys.cur.plugins.keys")
+        p := Sys.cur.plugins[project.plugin]
         if(p.spacePriority(project) >= minPrio)
         {
           if(plugin == null || p.spacePriority(project) > plugin.spacePriority(project))

@@ -19,7 +19,7 @@ const class Project
   const Image icon
 
   ** Plugin responsible for this project
-  const Type plugin
+  const Str plugin
 
   const Str:Str params := [:]
 

@@ -92,7 +92,7 @@ const class FantomPlugin : Plugin
         it.dis = f.name
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPodGroup
-        it.plugin = FantomPlugin#
+        it.plugin = FantomPlugin._name
         it.params = ["isGroup" : "true"]
       }
      // pod
@@ -102,7 +102,7 @@ const class FantomPlugin : Plugin
         it.dis = f.name
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPod
-        it.plugin = FantomPlugin#
+        it.plugin = FantomPlugin._name
       }
 
      return null
@@ -115,7 +115,7 @@ const class FantomPlugin : Plugin
 
   override Int spacePriority(Project prj)
   {
-    if(prj.plugin != FantomPlugin#)
+    if(prj.plugin != FantomPlugin._name)
       return 0
     // group
     if(prj.params["isGroup"] == "true")
