@@ -22,7 +22,7 @@ class HelpPane : ContentPane
     try
     {
       // This can fail because of SWT / native browser incompatibilities
-      browser = WebBrowser {}
+      browser = null//WebBrowser {}
     }catch(Err e)
     {
       content = Label{ text = "WebBrowser failed to load !" }
@@ -100,7 +100,7 @@ class HelpPane : ContentPane
       }
     }
 
-    browser.onHyperlink.add |Event e|
+    browser?.onHyperlink?.add |Event e|
     {
       onHyperlink(e)
     }
