@@ -89,7 +89,7 @@ const class FantomPlugin : Plugin
      buildFile := FantomUtils.findBuildGroup(f, f)
      if(buildFile != null)
       return Project{
-        it.dis = f.name
+        it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPodGroup
         it.plugin = FantomPlugin._name
@@ -99,7 +99,7 @@ const class FantomPlugin : Plugin
      buildFile = FantomUtils.findBuildPod(f, f)
      if(buildFile != null)
       return Project{
-        it.dis = f.name
+        it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPod
         it.plugin = FantomPlugin._name

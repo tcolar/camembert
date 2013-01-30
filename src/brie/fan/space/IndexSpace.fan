@@ -85,6 +85,7 @@ class IndexSpace : Space
       while(! (stack.isEmpty || contains(stack.peek, prj.dir)))
         stack.pop
       item := FileItem.makeProject(prj.dir.toFile, stack.size).setIcon(prj.icon)
+      item.dis = prj.dis
       items.add(item)
       stack.push(prj.dir)
     }
