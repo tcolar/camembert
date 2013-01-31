@@ -8,7 +8,7 @@ using gfx
 **
 ** MavenSpace
 **
-class MavenSpace : FileSpace
+class MavenSpace : FileSpaceBase
 {
   override Str? plugin := MavenPlugin._name
 
@@ -25,6 +25,11 @@ class MavenSpace : FileSpace
     // if project we don't want to open them here but in a proper space
     if (item.isProject) return 0
     return 1000 + this.dir.path.size
+  }
+
+  static Space loadSession(Frame frame, Str:Str props)
+  {
+    make(frame, File(props.getOrThrow("dir").toUri, false))
   }
 }
 
