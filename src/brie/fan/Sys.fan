@@ -76,7 +76,6 @@ const class Sys : Service
 
   override Void onStart()
   {
-    // TODO: save / load registry on start / stop
     PluginManager.cur.onConfigLoaded(this)
   }
 

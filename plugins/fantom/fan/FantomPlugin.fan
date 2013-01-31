@@ -29,6 +29,7 @@ const class FantomPlugin : Plugin
 
   override PluginConfig? readConfig(Sys sys)
   {
+    index.podsIndexed.val = false
     return FantomConfig(sys)
   }
 
@@ -104,20 +105,6 @@ const class FantomPlugin : Plugin
     }
     // fantom files handled by standard Theme code
     return null
-  }
-
-  override Void onShutdown(Bool isKill := false)
-  {
-    if( ! isKill)
-    {
-      index.cache.pool.stop
-      index.crawler.pool.stop
-    }
-    else
-    {
-      index.cache.pool.kill
-      index.crawler.pool.kill
-    }
   }
 
   // Utilities
