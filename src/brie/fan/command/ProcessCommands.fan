@@ -47,7 +47,7 @@ internal const class BuildGroupCmd : PluginCmd
 internal const class RunCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
-  override const Str name := "Run Pod"
+  override const Str name := "Run"
   override Void invoke(Event event)
   {
     commands?.run?.invoke(event)
@@ -83,7 +83,7 @@ internal const class RunSingleCmd : PluginCmd
 internal const class TestCmd : PluginCmd
 {
   new make(|This| f) {f(this)}
-  override const Str name := "Test Pod"
+  override const Str name := "Test"
   override Void invoke(Event event)
   {
     commands?.test?.invoke(event)

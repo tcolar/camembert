@@ -11,7 +11,7 @@ using concurrent
 const class PluginManager : Service
 {
   ** Pod name / Plugin implementation instance map
-  const Str:Plugin plugins := [:]
+  const Str:Plugin plugins := [:] {ordered = true}
 
   const File configDir
 
@@ -23,7 +23,7 @@ const class PluginManager : Service
     this.configDir = configDir
     pods := Pod.list.findAll {it.meta.containsKey("camembert.plugin")}
     Str:Plugin temp := [:]
-    pods.each |pod|
+    pods.sort|a, b|{a.name <=> b.name}.each |pod|
     {
       typeName := pod.meta["camembert.plugin"]
       type := pod.type(typeName, false)
@@ -67,7 +67,7 @@ const class PluginManager : Service
 
   internal Void onFrameReady(Frame f)
   {
-    plugins.vals.each |plugin| {plugin.onFrameReady(f)}
+    plugins.vals.sort|a, b|{a.name <=> b.name}.each |plugin| {plugin.onFrameReady(f)}
   }
 
   internal Void onShutdown(Bool isKill := false)

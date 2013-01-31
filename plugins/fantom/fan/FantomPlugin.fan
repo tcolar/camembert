@@ -74,7 +74,7 @@ const class FantomPlugin : Plugin
 
   override Int spacePriority(Project prj)
   {
-    if(prj.plugin != FantomPlugin._name)
+    if(prj.plugin != name)
       return 0
     // group
     if(prj.params["isGroup"] == "true")
