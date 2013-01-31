@@ -23,8 +23,10 @@ class Build : BuildGroup
   {
     childrenScripts =
     [
-      `bocce/build.fan`,
-      `brie/build.fan`,
+      `src/bocce/build.fan`,
+      `src/brie/build.fan`,
+      `plugins/fantom/build.fan`,
+      `plugins/maven/build.fan`,
     ]
   }
 
