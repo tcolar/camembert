@@ -7,7 +7,6 @@ using compilerDoc
 ** Sidebar to search / display fandocs
 class HelpPane : ContentPane
 {
-  static const gfx::Image axonIcon := gfx::Image(`fan://icons/x16/func.png`, false)
   static const gfx::Image backIcon := gfx::Image(`fan://icons/x16/arrowLeft.png`, false)
   static const gfx::Image viewIcon := gfx::Image(`fan://camembert/res/binoculars.png`, false)
 
@@ -15,6 +14,8 @@ class HelpPane : ContentPane
   Text? search
   Combo searchType := Combo{items = ["term*","*term*","exact"]}
   private Frame frame
+  Str:PluginDoc providers := [:]
+  Combo provider
 
   new make(Frame frame)
   {
@@ -30,24 +31,15 @@ class HelpPane : ContentPane
       return
     }
 
-    docProviders := Str:PluginDoc[:] {ordered = true}
     Sys.cur.plugins.each
     {
-      if(it.docProvider != null)
+      provider := it.docProvider
+      if(provider != null)
       {
-        docProviders[it.typeof.pod.name] = it.docProvider
+        providers[provider.dis] = provider
       }
     }
-    buttons := GridPane{
-      numCols = docProviders.size
-    }
-    docProviders.each |doc, pName|
-    {
-      buttons.add(Button{
-        image = doc.icon
-        onAction.add |Event e| {render("/${pName}/")}
-      })
-    }
+    provider = Combo{it.items = providers.keys.sort}
 
     content = EdgePane
     {
@@ -64,21 +56,31 @@ class HelpPane : ContentPane
       {
         top = GridPane
         {
-          numCols = 3
-          expandCol = 3
-          Button{
-          image = backIcon
-          onAction.add |Event e|
-            {
-              browser.back
-            }
-          },
-          searchType,
+          numCols = 2
+          expandCol = 2
+          provider,
           search,
         }
         center = EdgePane
         {
-          left = buttons
+          left = GridPane{
+            numCols = 3
+            Button{
+            image = backIcon
+            onAction.add |Event e|
+              {
+                browser.back
+              }
+            },
+            Button{
+            image = Sys.cur.theme.iconHome
+            onAction.add |Event e|
+              {
+                render("")
+              }
+            },
+            searchType,
+          }
           right = GridPane{
             numCols = 2
             Label{it.text = "View src:"},
@@ -87,8 +89,7 @@ class HelpPane : ContentPane
               image = viewIcon
               onAction.add |Event e|
               {
-                echo("TODO: FIXME")
-                //goto(search.text)
+                gotoDoc
               }
             },
           }
@@ -133,23 +134,18 @@ class HelpPane : ContentPane
       show
   }
 
-  /*Void goto(Str where)
+  Void gotoDoc()
   {
-    if(where.contains("::"))
+    item := providers[provider.selected].findSrc(search.text)
+    if(item != null)
     {
-      if(where.contains("#"))
-        where = where[0 ..< where.index("#")]
-      info := Sys.cur.index.matchTypes(where, MatchKind.exact).first
-      if(info != null)
+      try
       {
-        try
-        {
-         frame.goto(FantomItem(info))
-        }
-        catch(Err err){err.trace}
+       frame.goto(item)
       }
+      catch(Err e){e.trace}
     }
-  }*/
+  }
 
   private Void show()
   {
@@ -165,22 +161,19 @@ class HelpPane : ContentPane
   Void onHyperlink(Event e)
   {
     uri := (e.data as Uri)
-    search.text = uri.pathStr[1 .. -1] + (uri.frag != null ? "#$uri.frag" : "")
+    if(uri.path.size < 1)
+      search.text = uri.pathStr
+    else
+      search.text = uri.path[1..-1].join("/") + (uri.frag != null ? "#$uri.frag" : "")
   }
 
   ** Render a page for the given input text
   ** Delegates to the browser loading from DocWebMod
   internal Void render(Str text)
   {
-    //TODO
-
-    return
-
-    // TODO
-
-    port := Sys.cur.docServer.port
     if(browser == null)
       return
+    port := Sys.cur.docServer.port
     if(visible == false)
       show
     if(text.contains("://"))
@@ -199,8 +192,10 @@ class HelpPane : ContentPane
       else if(searchType.selectedIndex == 2)
         text += "?type=exact"
     }
-    // TODO: add plugin path here
-    browser.load(`http://127.0.0.1:${port}/$text`)
+    if( ! text.isEmpty)
+      text = providers[provider.selected].pluginName + "/$text"
+    target := `http://127.0.0.1:${port}/$text`
+    browser.load(target)
   }
 }
 

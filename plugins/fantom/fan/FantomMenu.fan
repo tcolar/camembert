@@ -21,12 +21,15 @@ class FantomMenu : Menu
       it.text = "Switch config"
     }
 
+    first := true
     FantomPlugin.config.envs.each |env|
     {
       envs.add(MenuItem{
         it.command = SwitchConfigCmd(env.name).asCommand
         it.mode = MenuItemMode.radio
+        it.selected = first
       })
+      first = false
     }
 
     reindex := MenuItem{

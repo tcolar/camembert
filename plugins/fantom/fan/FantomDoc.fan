@@ -28,6 +28,19 @@ const class FantomDoc : PluginDoc
 
   override const Str pluginName
 
+  override const Str dis := "Fantom"
+
+  override FileItem? findSrc(Str query)
+  {
+    // TODO: we could match more precisely (slot)
+    if(query.contains("#"))
+      query = query[0 ..< query.index("#")]
+    info := FantomPlugin.cur.index.matchTypes(query, MatchKind.exact).first
+    if(info.toFile == null || ! info.toFile.exists)
+      return null
+    return info != null ? FantomItem(info) : null
+  }
+
   override Str html(WebReq req, Str query, MatchKind matchKind)
   {
     if(query.isEmpty)
@@ -52,7 +65,7 @@ const class FantomDoc : PluginDoc
     {
       if( ! it.isAxonPod || it.name=="skyspark" || it.name=="proj")
       {
-        pods+="<a href='/${it.name}::pod-doc'>$it.name</a> <br/>"
+        pods+="<a href='/${FantomPlugin._name}/${it.name}::pod-doc'>$it.name</a> <br/>"
       }
     }
     return pods
@@ -86,8 +99,8 @@ const class FantomDoc : PluginDoc
   private Str toExtLink(Str podName)
   {
     if(! podName.endsWith("Ext"))
-      return "/ext-${podName}/"
-    return "/ext-${podName[0..-4]}/"
+      return "/${FantomPlugin._name}/ext-${podName}/"
+    return "/${FantomPlugin._name}/ext-${podName[0..-4]}/"
   }
 
   ** Axon extensions/libs docs
@@ -181,7 +194,7 @@ const class FantomDoc : PluginDoc
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.name</h2>"
-      info.types.each {text += "<a href='/$it.qname'>$it.name</a>, "}
+      info.types.each {text += "<a href='/${FantomPlugin._name}/$it.qname'>$it.name</a>, "}
       text += "<hr/>"
       text += readPodDoc(req, info.podFile)
       return text
@@ -210,7 +223,7 @@ const class FantomDoc : PluginDoc
       results += "<h2>Pods:</h2>"
       pods.each
       {
-        results+="<a href='/${it.name}::index'>$it</a> <br/>"
+        results+="<a href='/${FantomPlugin._name}/${it.name}::index'>$it</a> <br/>"
       }
     }
     types := index.matchTypes(query, kind)
@@ -219,7 +232,7 @@ const class FantomDoc : PluginDoc
       results += "<h2>Types:</h2>"
       types.each
       {
-        results+="<a href='/${it.qname}'>$it.qname</a> <br/>"
+        results+="<a href='/${FantomPlugin._name}/${it.qname}'>$it.qname</a> <br/>"
       }
     }
     if(inclSlots)
@@ -230,7 +243,7 @@ const class FantomDoc : PluginDoc
         results += "<h2>Slots:</h2>"
         slots.each
         {
-          results+="<a href='/${it.type.qname}#$it.name'>$it.qname</a> <br/>"
+          results+="<a href='/${FantomPlugin._name}/${it.type.qname}#$it.name'>$it.qname</a> <br/>"
         }
       }
     }
@@ -407,7 +420,7 @@ const class FantomDoc : PluginDoc
   ** Type signature with link
   private Str htmlType(DocTypeRef type)
   {
-    return "<a href='/$type.qname'>$type.dis</a> "
+    return "<a href='/${FantomPlugin._name}/$type.qname'>$type.dis</a> "
   }
 
   ** Html writer that deals with fixing the links to our server format
@@ -426,7 +439,7 @@ const class FantomDoc : PluginDoc
           uri = "#$uri" // to slot in type
       }
       else
-        uri = "/$uri" // always start with the slash otherwise
+        uri = "/${FantomPlugin._name}/$uri" // always start with the slash otherwise
 
       uri = uri.replace(".", "#") // slots are mapped into anchors
       link.uri = uri;

@@ -15,9 +15,16 @@ const mixin PluginDoc
   abstract Image? icon()
 
   ** Return html for a given path
-  ** Todo: return a file to serve instead ??
+  ** Note, the query will be prefixed with the plugin name for example /fantom/fwt::Button
   abstract Str html(WebReq req, Str query, MatchKind matchKind)
+
+  ** Return a FileItem for the document matching the current source file (if known)
+  ** Query wil be what's in the helPane serach box, ie "fwt::Combo#make" (not prefixed by plugin name)
+  virtual FileItem? findSrc(Str query) {null}
 
   ** name of the plugin responsible
   abstract Str pluginName()
+
+  ** User friendly dsplay name
+  virtual Str dis() {pluginName}
 }
