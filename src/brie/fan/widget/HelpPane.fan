@@ -22,7 +22,7 @@ class HelpPane : ContentPane
     try
     {
       // This can fail because of SWT / native browser incompatibilities
-      browser = null//WebBrowser {}
+      browser = WebBrowser {}
     }catch(Err e)
     {
       content = Label{ text = "WebBrowser failed to load !" }
@@ -79,7 +79,7 @@ class HelpPane : ContentPane
         center = EdgePane
         {
           left = buttons
-          /*right = GridPane{
+          right = GridPane{
             numCols = 2
             Label{it.text = "View src:"},
             Button
@@ -87,10 +87,11 @@ class HelpPane : ContentPane
               image = viewIcon
               onAction.add |Event e|
               {
-                goto(search.text)
+                echo("TODO: FIXME")
+                //goto(search.text)
               }
             },
-          }*/
+          }
         }
       }
       center = BorderPane
@@ -171,6 +172,12 @@ class HelpPane : ContentPane
   ** Delegates to the browser loading from DocWebMod
   internal Void render(Str text)
   {
+    //TODO
+
+    return
+
+    // TODO
+
     port := Sys.cur.docServer.port
     if(browser == null)
       return
