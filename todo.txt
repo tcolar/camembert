@@ -21,11 +21,9 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 (1) -> show current env(if any) in status bar (upon switch space / chnage env)
 
-(1) -> Fix help pane (SWT sigterm crahes :-/ )
-
-(1) Optimize template / license lookup (toStr equals)
-
 (1) Finish the nav collapse/expand using the pattern
+
+(1) Upon new file -> tree does not refresh properly !
 
 (2)** make license on camembert level ... free but some plugins require it to be licensed ?
 
@@ -38,10 +36,6 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 (3) nav -> auto-open folders: <10(10 children or less) ; *(all); .fan, .axon(olders wth .fan or .axon); fan(folder)
 always expand folders that contain sub projects ?
 
-(3) "run custom" commands ? -> or i guess can just reuse run single ??
-
-(3) reimplement switch config
-
 (3)**console:
 process tabs, repeat command etc ... ?
 separate fantom config from editor config
@@ -52,21 +46,7 @@ or maybe have process list somewhere
 separate console from search results ??
 reimplement terminate in here
 
-(3) Menus
-nav -> same .... but quick search / goto would need to be plugin specific or moved
-process -> mve all that inside plugin ? or delegate to plugin ? -> terminate : move to console area X
-.... or keep them there but have them call out to plugin specific impls ???
-plugins -> remove
-plugin[1] "Fantom" .. swicth env
-plugin[1] "Axon" (End : fantom_env), import, licensing, about etc ...
-
 (3) when deleting cur fle, closeeditor or go to prev file
-
-(3) ** Indexing
-each plugin -> reindex option (remove reindex from status bar)
-
-FantomPodIndex ->   // TODO: key by path to allow multiple version of same pod ??
-fix project finder for axon plugin using new indexer
 
 (3) TrioInfo -> should be in Axon plugin
 
@@ -85,9 +65,6 @@ goto -> use :25 instead of 25 for go to line ?
 manyally -> open in side panel ??
 
 (5) undo/redo at file level ?
-
-(3) ** better plugin speration
-"pluginize" help pane -> allow search in html, javascript, java docs etc ...
 
 (5) ** ant projects, maven projects (graddle etc..), play ? and so on
  node support
