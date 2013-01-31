@@ -23,6 +23,8 @@ const class PluginManager : Service
     this.configDir = configDir
     pods := Pod.list.findAll {it.meta.containsKey("camembert.plugin")}
     Str:Plugin temp := [:]
+
+    // find the plugins
     pods.sort|a, b|{a.name <=> b.name}.each |pod|
     {
       typeName := pod.meta["camembert.plugin"]
@@ -42,6 +44,13 @@ const class PluginManager : Service
         {
           echo("Failed instanciating $typeName of plugin $pod.name")
           e.trace
+        }
+        // Fail fast check if space doesn't have the loadSession method
+        // it's too easy to forget it and then get runtime errors
+        pod.types.each
+        {
+          if(it.fits(Space#))
+            it.slot("loadSession") // will throw an Err if slot missing
         }
       }
     }
