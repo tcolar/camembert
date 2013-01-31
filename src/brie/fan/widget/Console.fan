@@ -124,6 +124,17 @@ class Console : InsetPane
     proc.spawn(cmd, dir)
   }
 
+// TODO: make that part of console figure, along with rerun and so on
+/*internal const class TerminateCmd : FantomCmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "Terminate"
+  override Void invoke(Event event)
+  {
+    console.kill
+  }
+}*/
+
   internal Void procDone(Int result)
   {
     if (inKill) log("killed")

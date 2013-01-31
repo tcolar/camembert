@@ -15,12 +15,10 @@ abstract const class ExecCmd : Cmd
   ** Persist to file or not - Whether to remember across restarts, or just for this session
   abstract Bool persist()
 
-  ** The file that this command is run against, could be a single file or the project dir
-  ** The file will be used as the key for peristed command arguments
-  ** Default is current file
-  virtual File? keyFile() {frame.curFile}
+  ** A unique key for the command
+  abstract Str cmdKey()
 
-  ** Return the default cmd args for this commands
+  ** Default command args
   abstract CmdArgs defaultCmd()
 
   ** The variables for this command (Ex: "env_home" : "/tmp/...")
@@ -35,12 +33,9 @@ abstract const class ExecCmd : Cmd
   {
     frame.save
 
-    file := keyFile
+    key := cmdKey
 
-    if(keyFile == null)
-      return
-
-    cmd := frame.process.getCmd(file)
+    cmd := frame.process.getCmd(cmdKey)
 
     if(cmd == null)
     {
@@ -52,15 +47,18 @@ abstract const class ExecCmd : Cmd
       if(interaction == ExecCmdInteractive.always)
         cmd = confirmCmd(cmd)
 
+    if(cmd == null)
+      return // cancelled
+
     if(interaction != ExecCmdInteractive.never)
     {
-      frame.process.setCmd(file, cmd, persist)
+      frame.process.setCmd(cmdKey, cmd, persist)
     }
 
     cmd.execute(frame.console, variables, callback)
   }
 
-  private CmdArgs confirmCmd(CmdArgs cmd)
+  private CmdArgs? confirmCmd(CmdArgs cmd)
   {
     f := frame.curFile
     runArgsFile :=  frame.process.file
@@ -93,7 +91,7 @@ abstract const class ExecCmd : Cmd
         }
       }
 
-      if (Dialog.ok != dialog.open) return cmd
+      if (Dialog.ok != dialog.open) return null
 
       d := dir.text.trim
       params := Str[,]

@@ -7,13 +7,13 @@ using camembert
 
 internal const class FantomCommands : PluginCommands
 {
-  override const Cmd? build := FantomBuildCmd()
-  override const Cmd? buildGroup
-  override const Cmd? run
-  override const Cmd? runSingle
-  override const Cmd? buildAndRun
-  override const Cmd? test
-  override const Cmd? testSingle
+  override const Cmd? build := BuildCmd()
+  override const Cmd? buildGroup := BuildGroupCmd()
+  override const Cmd? run := RunPodCmd(false, false)
+  override const Cmd? runSingle := RunPodCmd(true, false)
+  override const Cmd? test := RunPodCmd(false, true)
+  override const Cmd? testSingle := RunPodCmd(true, true)
+  override const Cmd? buildAndRun := BuildAndRunCmd{}
 }
 
 internal abstract const class FantomCmd : ExecCmd
@@ -28,6 +28,36 @@ internal abstract const class FantomCmd : ExecCmd
   override File folder()
   {
     return FantomPlugin.findBuildFile(frame.curFile).parent
+  }
+  override Str cmdKey()
+  {
+    kf := FantomPlugin.findBuildFile(frame.curFile)
+    if(kf == null)
+      FantomPlugin.warnNoBuildFile(frame)
+    return "[$name]$kf"
+  }
+}
+
+internal abstract const class FantomGroupCmd : ExecCmd
+{
+  FantomPlugin plugin() {FantomPlugin.cur}
+  FantomEnv env() {FantomPlugin.config.curEnv}
+  override Str:Str variables()
+  {
+    ["env_home" : env.fantomHome.toFile.osPath,
+     "project_dir" : FantomPlugin.findBuildGroup(frame.curFile).parent.osPath]
+  }
+  override File folder()
+  {
+    return FantomPlugin.findBuildGroup(frame.curFile).parent
+  }
+
+  override Str cmdKey()
+  {
+    kf := FantomPlugin.findBuildGroup(frame.curFile)
+    if(kf == null)
+      FantomPlugin.warnNoBuildGroupFile(frame)
+    return "[$name]$kf"
   }
 }
 
@@ -46,7 +76,6 @@ internal const class SwitchConfigCmd : Cmd
         FantomPlugin.config.selectEnv(name)
         plugin := FantomPlugin.cur
         plugin.index.reindexAll
-        // TODO: refresh the help pane ?
       }
     }
   }
@@ -57,22 +86,11 @@ internal const class SwitchConfigCmd : Cmd
   }
 }
 
-/*internal const class TerminateCmd : FantomCmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Terminate"
-  override Void invoke(Event event)
-  {
-    console.kill
-  }
-}*/
-
-
 **************************************************************************
 ** BuildCmd
 **************************************************************************
 
-internal const class FantomBuildCmd : FantomCmd
+internal const class BuildCmd : FantomCmd
 {
   override const Str name := "Build"
   override const ExecCmdInteractive interaction := ExecCmdInteractive.never
@@ -86,39 +104,21 @@ internal const class FantomBuildCmd : FantomCmd
     }
   }
 
-  override File? keyFile()
-  {
-    kf := FantomPlugin.findBuildFile(frame.curFile)
-    if(kf == null)
-      FantomPlugin.warnNoBuildFile(frame)
-    return kf
-  }
-
   override CmdArgs defaultCmd()
   {
     f := FantomPlugin.findBuildFile(frame.curFile)
     return CmdArgs.makeManual(["{{env_home}}/bin/fan", f.osPath], "{{project_dir}}")
   }
 }
-/*
-internal const class BuildGroupCmd : FantomCmd
+
+internal const class BuildGroupCmd : FantomGroupCmd
 {
-  new make(|This| f) {f(this)}
   override const Str name := "Build Group"
-  override Void invoke(Event event)
-  {
-    // save current file
-    frame.save
-
-    f := frame.process.findBuildGroup(frame.curFile)
-    if (f == null)
-    {
-      frame.process.warnNoBuildGroupFile(frame)
-      return
-    }
-
-    execFan("fan", [f.osPath], f.parent) |c|
-    {
+  override const ExecCmdInteractive interaction := ExecCmdInteractive.never
+  override const Bool persist := false
+  override const |Console|? callback := |Console c| {
+    Desktop.callAsync |->|{
+      f := FantomPlugin.findBuildGroup(frame.curFile)
       plugin.index.pods.each |p|
       {
         if(p.srcDir != null && FileUtil.contains(f.parent, p.srcDir))
@@ -126,97 +126,61 @@ internal const class BuildGroupCmd : FantomCmd
       }
     }
   }
-}
 
-
-**
-** Command to run a pod
-**
-internal const class RunPodCmd : FantomCmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Run Pod"
-  override Void invoke(Event event)
+  override CmdArgs defaultCmd()
   {
-    cmd := frame.process.findRunCmd(frame)
-
-    f := frame.curFile
-    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    cmd?.execute(console, defaultDir)
+    f := FantomPlugin.findBuildGroup(frame.curFile)
+    return CmdArgs.makeManual(["{{env_home}}/bin/fan", f.osPath], "{{project_dir}}")
   }
 }
 
-internal const class BuildAndRunCmd : FantomCmd
+
+**
+** run / test cmd
+**
+internal const class RunPodCmd : FantomCmd
+{
+  override const Str name
+  override const ExecCmdInteractive interaction
+  override const Bool persist := true
+  override const |Console|? callback := null
+  const Bool single
+  const Bool test
+
+  new make(Bool single, Bool test)
+  {
+    this.single = single
+    this.test = test
+    nm := test ? "Test" : "Run"
+    name = single ? "$nm Single" : "$nm"
+    interaction = single ? ExecCmdInteractive.always : ExecCmdInteractive.onetime
+  }
+
+  override CmdArgs defaultCmd()
+  {
+    f := FantomPlugin.findBuildFile(frame.curFile)
+    pod := plugin.index.podForFile(f)?.name
+
+    target := single ? (pod == null ? f.basename : "${pod}::$f.basename") : pod
+    cmd := test ? "fant" : "fan"
+    return CmdArgs.makeManual(["{{env_home}}/bin/$cmd", target], "{{project_dir}}")
+  }
+}
+
+internal const class BuildAndRunCmd : Cmd
 {
   new make(|This| f) {f(this)}
   override const Str name := "BuildAndRun"
   override Void invoke(Event event)
   {
-    Sys.cur.commands.build.invoke(event)
+    FantomPlugin.cur.commands.build.invoke(event)
     Desktop.callAsync |->|{
       frame.process.waitForProcess(console, 3min)
       if(console.lastResult == 0 )
-        Sys.cur.commands.runPod.invoke(event)
+        FantomPlugin.cur.commands.run.invoke(event)
     }
   }
 }
-
-**
-** Command to run a single item
-**
-internal const class RunSingleCmd : FantomCmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Run Single"
-  override Void invoke(Event event)
-  {
-    cmd := frame.process.findRunSingleCmd(frame)
-    f := frame.curFile
-    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    cmd?.execute(console, defaultDir)
-  }
-}
-
-**
-** Command to test a single item
-**
-internal const class TestPodCmd : FantomCmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Test Pod"
-  override Void invoke(Event event)
-  {
-    f := frame.curFile
-    pod := plugin.index.podForFile(f)?.name
-
-    if(pod == null)
-     return
-
-    folder := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    RunArgs.makeManual(pod, ["fant", pod], null).execute(console, folder)
-  }
-}
-
-
-**
-** Command to test a single item
-**
-internal const class TestSingleCmd : FantomCmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Test Single"
-  override Void invoke(Event event)
-  {
-    cmd := frame.process.findTestSingleCmd(frame)
-    f := frame.curFile
-    defaultDir := frame.process.findBuildFile(f)?.parent ?: f.parent
-
-    cmd?.execute(console, defaultDir)
-  }
-}*/
 
 
 

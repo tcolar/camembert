@@ -16,7 +16,7 @@ class ProcessUtil
   File file := Sys.cur.optionsFile.parent + `state/run.json`
 
   ** Args for a command
-  private SavedCommands runCmd := SavedCommands()
+  private SavedCommands runCmd := SavedCommands{}
 
   new make()
   {
@@ -28,16 +28,16 @@ class ProcessUtil
     catch(Err e) {Sys.cur.log.err("Failed loading saved run commands", e)}
   }
 
-  Void setCmd(File f, CmdArgs cmd, Bool persist)
+  Void setCmd(Str key, CmdArgs cmd, Bool persist)
   {
-    runCmd.cmds[f.normalize.pathStr] = cmd
+    runCmd.cmds[key] = cmd
     if(persist)
       JsonUtils.save(file.out, runCmd)
   }
 
-  CmdArgs? getCmd(File f)
+  CmdArgs? getCmd(Str key)
   {
-    return runCmd.cmds[f.normalize.pathStr]
+    return runCmd.cmds[key]
   }
 
   Int waitForProcess(Console console, Duration timeout := 1min)
@@ -58,4 +58,6 @@ class ProcessUtil
 class SavedCommands
 {
   Str:CmdArgs cmds := [:]
+
+  new make(|This|? f) {if(f!=null) f(this)}
 }

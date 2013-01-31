@@ -63,9 +63,9 @@ internal const class MavenTestCmd : MavenCmd
   override const ExecCmdInteractive interaction := ExecCmdInteractive.onetime
   override const Bool persist := true
 
-  override File? keyFile()
+  override Str cmdKey()
   {
-    return MavenPlugin.findPomFile(frame.curFile, null)
+    return "[$name]"+MavenPlugin.findPomFile(frame.curFile, null)
   }
 
   override CmdArgs defaultCmd()
