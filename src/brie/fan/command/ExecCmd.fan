@@ -57,7 +57,6 @@ abstract const class ExecCmd : Cmd
       frame.process.setCmd(file, cmd, persist)
     }
 
-    // TODO: exec(event)
     cmd.execute(frame.console, variables, callback)
   }
 
@@ -70,7 +69,7 @@ abstract const class ExecCmd : Cmd
     Text[] texts := Text[,]
     (0 .. 6).each |index|
     {
-      texts.add( Text{it.text = cmd.arg(index)} )
+      texts.add( Text{it.text = cmd.arg(index) ?: ""} )
     }
     dialog := Dialog(frame)
     {
@@ -96,7 +95,7 @@ abstract const class ExecCmd : Cmd
 
       if (Dialog.ok != dialog.open) return cmd
 
-      d := (dir.text.trim == folder.osPath) ? null : dir.text.trim
+      d := dir.text.trim
       params := Str[,]
       texts.each
       {
@@ -140,13 +139,21 @@ const class CmdArgs
     if(args.isEmpty)
       return
     params := Str[,]
+    dir := runDir
+    variables.each |val, key|
+    {
+      dir = dir.replace("{{$key}}", val)
+    }
     args.each
     {
       param := it
-      variables.each |val, key| { param = param.replace("{{$key}}", val) }
+      variables.each |val, key|
+      {
+        param = param.replace("{{$key}}", val)
+      }
       params.add(param)
     }
-    console.exec(params, File.os(runDir), callback)
+    console.exec(params, File.os(dir), callback)
   }
 
   Str? arg(Int index)

@@ -20,7 +20,11 @@ internal abstract const class FantomCmd : ExecCmd
 {
   FantomPlugin plugin() {FantomPlugin.cur}
   FantomEnv env() {FantomPlugin.config.curEnv}
-  override Str:Str variables() {["env_home":env.fantomHome.toFile.osPath]}
+  override Str:Str variables()
+  {
+    ["env_home" : env.fantomHome.toFile.osPath,
+     "project_dir" : FantomPlugin.findBuildFile(frame.curFile).parent.osPath]
+  }
   override File folder()
   {
     return FantomPlugin.findBuildFile(frame.curFile).parent
@@ -93,7 +97,7 @@ internal const class FantomBuildCmd : FantomCmd
   override CmdArgs defaultCmd()
   {
     f := FantomPlugin.findBuildFile(frame.curFile)
-    return CmdArgs.makeManual(["{{env_home}}/bin/fan", f.osPath], f.parent.osPath)
+    return CmdArgs.makeManual(["{{env_home}}/bin/fan", f.osPath], "{{project_dir}}")
   }
 }
 /*

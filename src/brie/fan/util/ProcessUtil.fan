@@ -30,14 +30,14 @@ class ProcessUtil
 
   Void setCmd(File f, CmdArgs cmd, Bool persist)
   {
-    runCmd.cmds[f] = cmd
+    runCmd.cmds[f.normalize.pathStr] = cmd
     if(persist)
       JsonUtils.save(file.out, runCmd)
   }
 
   CmdArgs? getCmd(File f)
   {
-    return runCmd.cmds[f]
+    return runCmd.cmds[f.normalize.pathStr]
   }
 
   Int waitForProcess(Console console, Duration timeout := 1min)
@@ -57,5 +57,5 @@ class ProcessUtil
 @Serializable
 class SavedCommands
 {
-  File:CmdArgs cmds := [:]
+  Str:CmdArgs cmds := [:]
 }
