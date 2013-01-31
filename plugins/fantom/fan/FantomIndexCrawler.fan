@@ -9,6 +9,7 @@
 using compiler
 using compilerDoc
 using concurrent
+using camembert
 
 **
 ** FantomIndexCrawler

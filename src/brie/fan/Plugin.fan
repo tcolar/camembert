@@ -14,6 +14,7 @@ mixin Plugin
 
   ** Called once Camembert is ready to use (frame built)
   ** Only called once
+  ** Good place to add menu items if any
   virtual Void onFrameReady(Frame f) {}
 
   ** Called at the end of shutdown for cleanup purposes

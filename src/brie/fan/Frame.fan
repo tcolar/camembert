@@ -359,7 +359,7 @@ class Frame : Window
     updateStatus
   }
 
-  internal Void updateStatus()
+  Void updateStatus()
   {
     title := "Camembert"
     if (curView != null)

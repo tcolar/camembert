@@ -59,7 +59,6 @@ class MenuBar : Menu
         it.text = "Options"
         MenuItem{ it.command = Sys.cur.commands.editConfig.asCommand},
         MenuItem{ it.command = Sys.cur.commands.reloadConfig.asCommand},
-        //configs,
       }
 
       help = Menu {

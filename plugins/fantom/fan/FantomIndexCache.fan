@@ -7,6 +7,7 @@
 //
 
 using compilerDoc
+using camembert
 
 **
 ** FantomIndexCache
@@ -203,7 +204,3 @@ internal class FantomIndexCache
   private Str:TrioInfo trioInfo := [:]
 }
 
-enum class MatchKind
-{
-  exact, startsWith, contains
-}

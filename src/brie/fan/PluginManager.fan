@@ -22,7 +22,7 @@ const class PluginManager : Service
   {
     this.configDir = configDir
     pods := Pod.list.findAll {it.meta.containsKey("camembert.plugin")}
-    Str:Plugin temp := ["camFantomPlugin": (Plugin)FantomPlugin()]
+    Str:Plugin temp := [:]
     pods.each |pod|
     {
       typeName := pod.meta["camembert.plugin"]
@@ -85,7 +85,7 @@ const class PluginManager : Service
     onInit
   }
 
-  internal static PluginManager cur()
+  static PluginManager cur()
   {
     return (PluginManager) Service.find(PluginManager#)
   }
@@ -104,11 +104,11 @@ const class PluginManager : Service
   }
 
   ** Config of a named plugin (name is pod type name)
-  FantomConfig? conf(Str pluginName)
+  PluginConfig? conf(Str pluginName)
   {
     confs := ([Str:PluginConfig]?) _pluginConfs.val
     if(confs != null)
-      return (FantomConfig?) confs[pluginName]
+      return (PluginConfig?) confs[pluginName]
     return null
   }
 }

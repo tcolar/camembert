@@ -12,9 +12,9 @@ class Build : BuildPod
     podName = "camembert"
     summary = "Pure Fantom lightweight IDE - Forked and fermented version of Brie (Brian's Rocking Integrated Environment)"
     depends = ["sys 1.0",
+               "concurrent 1.0",
                "compiler 1.0",
                "compilerDoc 1.0",
-               "concurrent 1.0",
                "fandoc 1.0",
                "syntax 1.0",
                "gfx 1.0", "util 1.0+",
@@ -30,7 +30,6 @@ class Build : BuildPod
                `fan/util/`,
                `fan/command/`,
                `fan/item/`,
-               `fan/fantom/`,
                `fan/widget/`,
                `fan/nav/`,
                `fan/config/`,

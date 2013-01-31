@@ -8,7 +8,7 @@ using netColarUtils
 using fwt
 
 **
-** ProjectFinder
+** ProjectRegistry
 **
 const class ProjectRegistry : Actor
 {
@@ -131,12 +131,11 @@ const class ProjectRegistry : Actor
   }
 }
 
-// TODO: serialize the filewatcher to file and ruse it next time for faster startup ?
-// But this is quite fast as it is even on large folders
 class ProjectCache
 {
   FileWatcher watcher := FileWatcher()
   Uri[] rootDirs
+
   ** All known projects
   Uri:Project projects := [:]
 
@@ -189,10 +188,3 @@ class ProjectCache
   }
 }
 
-@Serializable
-class Projects
-{
-  const Uri:Project projects
-
-  new make(|This|? f) {if(f != null) f(this)}
-}

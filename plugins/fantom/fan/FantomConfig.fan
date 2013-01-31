@@ -4,6 +4,7 @@
 
 using netColarUtils
 using concurrent
+using camembert
 
 **
 ** FantomConfig

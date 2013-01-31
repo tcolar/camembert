@@ -26,6 +26,9 @@ abstract const class ExecCmd : Cmd
   ** The variables for this command (Ex: "env_home" : "/tmp/...")
   virtual Str:Str variables() {[:]}
 
+  ** the folder  where the command will be executed
+  abstract File folder()
+
   abstract |Console|? callback()
 
   override Void invoke(Event event)
@@ -61,7 +64,6 @@ abstract const class ExecCmd : Cmd
   private CmdArgs confirmCmd(CmdArgs cmd)
   {
     f := frame.curFile
-    folder := FantomPlugin.findBuildFile(f)?.parent ?: f.parent
     runArgsFile :=  frame.process.file
     dir := Text{text = cmd.runDir}
     desc := persist ? Label{text = "This will be saved in $runArgsFile.osPath"} : null

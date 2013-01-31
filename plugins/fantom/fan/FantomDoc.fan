@@ -6,6 +6,7 @@ using gfx
 using fandoc
 using compilerDoc
 using web
+using camembert
 
 **
 ** FantomDoc

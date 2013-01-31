@@ -5,6 +5,7 @@
 using gfx
 using netColarUtils
 using fwt
+using camembert
 
 **
 ** FantomPlugin
@@ -31,55 +32,13 @@ const class FantomPlugin : Plugin
     return FantomConfig(sys)
   }
 
-  override Void onInit(File configDir)
-  {
-  }
-
   override Void onFrameReady(Frame frame)
   {
+    (frame.menuBar as MenuBar).plugins.add(FantomMenu(frame))
     index.reindexAll
   }
 
   override Bool isIndexing() {index.isIndexing}
-
-  /*override FileItem[] projects()
-  {
-    FileItem[] items := [,]
-    // pod groups
-    index.groups.each
-    {
-      path := groupPath(it)[0..-2]
-      indent := 0 ; path.chars.each {if(it == '/') indent++}
-      items.add(FileItem.makeProject(it.srcDir, indent, path).setDis(it.name))
-    }
-    // pods
-    index.pods.each
-    {
-      if(srcDir != null)
-      {
-        path := podPath(it)
-        indent := 0 ; path.chars.each {if(it == '/') indent++}
-        items.add(FileItem.makeProject(it.srcDir, indent, path).setDis(it.name))
-      }
-    }
-    return items
-  }*/
-
- /* private Str podPath(PodInfo pi)
-  {
-    return groupPath(pi.group) + pi.name
-  }
-
-  private Str groupPath(PodGroup? group)
-  {
-    path := ""
-    while(group != null)
-    {
-      path = "${group.name}/$path"
-      group = group.parent
-    }
-    return path
-  }*/
 
   override const |Uri -> Project?| projectFinder:= |Uri uri -> Project?|
   {
@@ -92,7 +51,7 @@ const class FantomPlugin : Plugin
         it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPod
-        it.plugin = FantomPlugin._name
+        it.plugin = name
       }
 
      // pod
@@ -102,7 +61,7 @@ const class FantomPlugin : Plugin
         it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPodGroup
-        it.plugin = FantomPlugin._name
+        it.plugin = name
         it.params = ["isGroup" : "true"]
       }
      return null

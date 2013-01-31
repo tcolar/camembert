@@ -3,6 +3,7 @@
 //
 
 using fwt
+using camembert
 
 internal const class FantomCommands : PluginCommands
 {
@@ -20,14 +21,10 @@ internal abstract const class FantomCmd : ExecCmd
   FantomPlugin plugin() {FantomPlugin.cur}
   FantomEnv env() {FantomPlugin.config.curEnv}
   override Str:Str variables() {["env_home":env.fantomHome.toFile.osPath]}
-
-  /*Void execFan(Str cmd, Str[] args, File dir, Func callback)
+  override File folder()
   {
-    env := FantomPlugin.curEnv
-    exe := env.fantomHome + `/bin/$cmd`
-    args = args.dup.insert(0, exe)
-    console.exec(args, dir, callback)
-  }*/
+    return FantomPlugin.findBuildFile(frame.curFile).parent
+  }
 }
 
 internal const class SwitchConfigCmd : Cmd
@@ -43,8 +40,9 @@ internal const class SwitchConfigCmd : Cmd
       Desktop.callAsync |->|
       {
         FantomPlugin.config.selectEnv(name)
-        plugin := Sys.cur.plugin(name)
-        // TODO: we need to reload the fantom index etc ...
+        plugin := FantomPlugin.cur
+        plugin.index.reindexAll
+        // TODO: refresh the help pane ?
       }
     }
   }

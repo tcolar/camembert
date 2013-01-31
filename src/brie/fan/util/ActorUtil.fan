@@ -11,7 +11,7 @@ using concurrent
 **
 ** Generic message to use with Actors
 **
-internal const class Msg
+const class Msg
 {
   new make(Str id, Obj? a := null, Obj? b := null, Obj? c := null, Obj? d :=null)
   {

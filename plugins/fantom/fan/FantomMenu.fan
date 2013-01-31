@@ -3,6 +3,7 @@
 //
 
 using fwt
+using camembert
 
 **
 ** FantomMenu

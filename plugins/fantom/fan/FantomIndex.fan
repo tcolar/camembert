@@ -11,6 +11,7 @@ using fwt
 using syntax
 using concurrent
 using compilerDoc
+using camembert
 
 **
 ** Index maintains listing of files and pods we've crawled
