@@ -9,17 +9,18 @@ using fwt
 @Serializable
 class FileItem : Item
 {
-  const File file
+  const File? file
 
   Bool isProject := false
   Str? sortStr
   Bool collapsed := false {private set}
 
-  new makeFile(File? f, Int indent := 0) : super.makeStr(f.name + (f.isDir ? "/" : ""))
+  new makeFile(File? f, Int indent := 0) : super.makeStr(f== null? "" : f.name + (f.isDir ? "/" : ""))
   {
     this.indent = indent
     this.file = f
-    this.icon = Theme.fileToIcon(f)
+    if(f != null)
+      this.icon = Theme.fileToIcon(f)
   }
 
   new makeProject(File f, Int indent := 0, Str? sortPath := null) : super.makeStr(f.name)

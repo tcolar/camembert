@@ -4,8 +4,6 @@
 
 BUG: Axon -> sometimes endup with duplicated functions ??
 BUG: Axon space -> eval disspears .... nav buttons disappear
-BUG: when deleting a file in the file nav it opens a new space
-BUG: Help pane -> view src  opens the folder but not the file
 
 ************************************************************
 
@@ -28,6 +26,8 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 (1) Finish the nav collapse/expand using the pattern
 
 (2)** make license on camembert level ... free but some plugins require it to be licensed ?
+
+(2) config wizzard / getting started
 
 (3) -> theme swicther without whle config reload ? (store in frame/session not in config)
 

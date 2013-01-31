@@ -17,7 +17,7 @@ const class FantomOptions
   }
 
   ** List of path uri to automatically expand in the nav (Regex)
-  ** The matches will be automatically expanded rather thann collapse
+  ** The matches will be automatically expanded rather than collapsed
   @Setting
   const Str[] navExpandPatterns := ["fan/.*"]
 }

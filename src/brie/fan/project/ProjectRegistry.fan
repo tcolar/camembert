@@ -38,17 +38,27 @@ const class ProjectRegistry : Actor
            c = ProjectCache(srcDirs)
           Actor.locals["camembert.projectCache"] = c
         }
-        _scan(c)
-        saveProjects(c)
+        newProjects := _scan(c)
+
+        saveProjects(c) // perisst for faster startup next time
+
+        if( ! newProjects.isEmpty)
+        {
+          // let the plugins know about the found projects
+          PluginManager.cur.onChangedProjects(newProjects.vals)
+        }
+
       }
       else if(action == "projects")
       {
         // If a a scan wasn't performed yet then use the saved projects
         // from a previous run for faster startups
+        Uri:Project projects := [:]
         if( ! isScanning.val && c != null)
-          return c.projects
+          projects = c.projects
         else
-          return savedProjects
+          projects = savedProjects
+        return projects
       }
       else
         Sys.cur.log.err("Unexpected project reistry thread action: $action !")
@@ -86,13 +96,15 @@ const class ProjectRegistry : Actor
     return projects
   }
 
-  internal Void _scan(ProjectCache c)
+  internal Uri:Project _scan(ProjectCache c)
   {
+    Uri:Project newProjects := [:]
     setIsScanning(true)
     try
-      c.scanProjects
+      newProjects = c.scanProjects
     finally
       setIsScanning(false)
+    return newProjects
   }
 
   internal Void setIsScanning(Bool val)
@@ -122,6 +134,11 @@ const class ProjectRegistry : Actor
   static Uri:Project projects()
   {
     return (Uri:Project) Sys.cur.prjReg.send(["projects"]).get
+  }
+
+  static Uri:Project pluginProjects(Str pluginName)
+  {
+    return projects.findAll{it.plugin == pluginName}
   }
 
   ** start a sync (asynchronous)

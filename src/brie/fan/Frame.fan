@@ -171,19 +171,21 @@ class Frame : Window
 
     // find best open space to handle item
     best:= matchSpace(item)
-    if (best != null)
-    {
-      best.goto(item)
-    }
-    else
+    if (best == null)
     {
       // create new space
       best = create(item)
       if (best == null)
-       { echo("WARN: Cannot create space $item.dis"); return }
+      {
+        echo("WARN: Cannot create space $item.dis")
+        return
+      }
       else
+      {
        spaces.add(best)
+      }
     }
+    best.goto(item)
 
     switchSpace(best)
 
@@ -195,6 +197,7 @@ class Frame : Window
         pos := filePosHis[curView.file]
         if (pos != null) item = Item.makeLoc(pos.line, pos.col, null).setDis(pos.toStr)
       }
+
       if (item != null) curView.onGoto(item)
     }
   }

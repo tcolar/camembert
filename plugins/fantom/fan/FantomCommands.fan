@@ -74,8 +74,7 @@ internal const class SwitchConfigCmd : Cmd
       Desktop.callAsync |->|
       {
         FantomPlugin.config.selectEnv(name)
-        plugin := FantomPlugin.cur
-        plugin.index.reindexAll
+        ReindexAllCmd().invoke(event)
       }
     }
   }
@@ -83,6 +82,21 @@ internal const class SwitchConfigCmd : Cmd
   new make(Str envName)
   {
     this.name = envName
+  }
+}
+
+internal const class ReindexAllCmd : Cmd
+{
+  override const Str name := "Reindex All"
+
+  override Void invoke(Event event)
+  {
+    plugin := FantomPlugin.cur
+    File[] srcDirs := ProjectRegistry.pluginProjects(FantomPlugin._name)
+                      .vals.map |proj -> File| {proj.dir.toFile}
+    File[] podDirs := FantomPlugin.config.curEnv.podDirs
+                      .map |uri -> File| {uri.plusSlash.toFile}
+    plugin.index.reindex(srcDirs, podDirs, true)
   }
 }
 

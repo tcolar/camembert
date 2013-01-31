@@ -81,19 +81,19 @@ const class MavenPlugin : Plugin
   ** Read project name from pom
   static Str prjName(File pom)
   {
-    Str name := pom.parent.name // failsafe
+    Str? name
     try
     {
       root := XParser(pom.in).parseDoc.root
       artifact := root.elem("artifactId").text
       if(artifact.toStr.startsWith("\${"))
       {
-        echo("888888888888")
+        // If a property, try to see if it's declared locally
         artifact = root.elem("properties").elem(artifact.toStr[2 .. -2]).text
       }
       name = artifact.toStr
     }
-    catch(Err e){e.trace}
-    return name
+    catch(Err e){}
+    return name ?: pom.parent.name // failsafe
   }
 }

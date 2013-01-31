@@ -18,53 +18,8 @@ using camembert
 **
 const class FantomIndex
 {
-
-//////////////////////////////////////////////////////////////////////////
-// Constructor
-//////////////////////////////////////////////////////////////////////////
-
-  ** Construct with directories to crawl
-  new make()
-  {
-   /* dirs := File[,]
-    Sys.cur.options.srcDirs.each |uri|
-    {
-      try
-      {
-        file := File(uri, false).normalize
-        if (!file.exists) throw Err("Dir does not exist")
-        if (!file.isDir) throw Err("Not dir")
-        dirs.add(file)
-      }
-      catch (Err e) echo("Invalid srcDir: $uri\n  $e")
-    }
-    this.srcDirs = dirs
-    dirs.clear
-    FantomPlugin.config.curEnv.podDirs.each |uri|
-    {
-      try
-      {
-        file := File(uri, false).normalize
-        if (!file.exists) throw Err("Dir does not exist")
-        if (!file.isDir) throw Err("Not dir")
-        dirs.add(file)
-      }
-      catch (Err e) echo("Invalid podDir: $uri\n  $e")
-    }
-    this.podDirs = dirs*/
-    srcDirs = [,]
-    podDirs = [,]
-  }
-
-  //////////////////////////////////////////////////////////////////////////
-  // Access
-  //////////////////////////////////////////////////////////////////////////
-
-  ** Source directories to crawl and maintain synchronization
-  const File[] srcDirs
-
-  ** Pods directories to crawl and maintain synchronization
-  const File[] podDirs
+  ** Whether we have done the initial pod indexing
+  const AtomicBool podsIndexed := AtomicBool()
 
   ** Are we currently indexing
   Bool isIndexing() { isIndexingRef.val }
@@ -121,11 +76,12 @@ const class FantomIndex
     cache.send(Msg("groupForFile", file)).get(timeout)
   }
 
-  ** Rebuild the entire index asynchronously
-  Void reindexAll()
+  ** Reindex given sources / pods
+  Void reindex(File[] srcDirs, File[] podDirs, Bool clearIndex := false)
   {
-    cache.send(Msg("clearAll"))
-    crawler.send(Msg("reindexAll"))
+    if(clearIndex)
+      cache.send(Msg("clearAll"))
+    crawler.send(Msg("reindex", srcDirs, podDirs))
   }
 
   ** Rebuild index for given pod, if null no-op
@@ -243,7 +199,7 @@ const class FantomIndex
 
       id := msg.id
       if (id === "reindexPod") return c.indexPod(msg.a)
-      if (id === "reindexAll") return c.indexAll
+      if (id === "reindex") return c.reindex(msg.a, msg.b)
 
       echo("ERROR: Unknown msg: $msg.id")
       throw Err("Unknown msg: $msg.id")

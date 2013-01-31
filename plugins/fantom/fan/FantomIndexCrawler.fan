@@ -20,17 +20,22 @@ internal class FantomIndexCrawler
 
   const FantomIndex index
 
-  ** Reindex all pods
-  Duration indexAll()
+  ** Reindex all given sources / pods
+  Duration reindex(File[] srcDirs, File[] podDirs)
   {
     index.setIsIndexing(true)
     try
     {
       t1 := Duration.now
-      index.podDirs.each |dir| { indexPodDir(dir) }
-      index.srcDirs.each |dir| { indexSrcDir(dir) }
+      // we need to index all pods once
+      if( ! index.podsIndexed.val)
+      {
+        podDirs.each |dir| { indexPodDir(dir) }
+        index.podsIndexed.val = true
+      }
+      srcDirs.each |dir| { indexSrcDir(dir) }
 
-      indexTrio
+      indexTrio(podDirs)
 
       t2 := Duration.now
       echo("Index all ${(t2-t1).toLocale}")
@@ -41,13 +46,13 @@ internal class FantomIndexCrawler
 
   ** Index trio func / tags if axonPlugin is avail
   ** We only do  it on indexAll and not updating on pod modif (for now)
-  Void indexTrio()
+  Void indexTrio(File[] podDirs)
   {
     axonPlugin := Sys.cur.plugins["camAxonPlugin"]
     if(axonPlugin != null)
     {
       // Dynamic call for this (no proper plugin indexing infrastructure for now)
-      Str:TrioInfo info := axonPlugin->trioData(index.podDirs)
+      Str:TrioInfo info := axonPlugin->trioData(podDirs)
       index.cache.send(Msg("addTrioInfo", info))
     }
   }
@@ -328,17 +333,5 @@ internal class FantomIndexCrawler
     }
     return lineNum
   }
-
-/*
-  Bool include(File f)
-  {
-    if (f.isDir) return true
-    ext := f.ext
-    if (ext == null) return true
-    if (ext == "class" || ext == "exe") return false
-    return true
-  }
-
-*/
 }
 

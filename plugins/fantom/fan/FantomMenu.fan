@@ -24,12 +24,17 @@ class FantomMenu : Menu
     FantomPlugin.config.envs.each |env|
     {
       envs.add(MenuItem{
-        it.command = SwitchConfigCmd(env.name).asCommand;
+        it.command = SwitchConfigCmd(env.name).asCommand
         it.mode = MenuItemMode.radio
       })
     }
 
+    reindex := MenuItem{
+        it.command = ReindexAllCmd().asCommand
+    }
+
     add(envs)
+    add(reindex)
   }
 }
 

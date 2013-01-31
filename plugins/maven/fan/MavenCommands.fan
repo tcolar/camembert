@@ -16,7 +16,9 @@ internal const class MavenCommands : PluginCommands
   override const Cmd test       := MavenCmd("Test", "test", false)
   override const Cmd testSingle := MavenCmd("TestSingle", "test", true)
   override const Cmd buildAndRun:= BuildAndRunCmd{}
-  //override const Cmd? buildGroup
+
+  // TODO: look in projReg for a parent project as defined in the xml and build that ?
+  //override const Cmd? buildGroup:= MavenCmd("BuildGroup", "compile", false)
 }
 
 internal abstract const class MavenBaseCmd : ExecCmd

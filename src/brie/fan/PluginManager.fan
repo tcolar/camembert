@@ -74,6 +74,14 @@ const class PluginManager : Service
     _pluginConfs.val = confs.toImmutable
   }
 
+  internal Void onChangedProjects(Project[] projects)
+  {
+    plugins.vals.each |plugin|
+    {
+      plugin.onChangedProjects(projects.findAll{it.plugin == plugin.name})
+    }
+  }
+
   internal Void onFrameReady(Frame f)
   {
     plugins.vals.sort|a, b|{a.name <=> b.name}.each |plugin| {plugin.onFrameReady(f)}

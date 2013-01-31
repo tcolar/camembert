@@ -17,6 +17,10 @@ mixin Plugin
   ** Good place to add menu items if any
   virtual Void onFrameReady(Frame f) {}
 
+  ** Called whenever new/updated projects are found (to be reindexed)
+  ** ClearAll can be set to tel the plugin to clear the index fully first
+  virtual Void onChangedProjects(Project[] projects, Bool clearall := false) {}
+
   ** Called at the end of shutdown for cleanup purposes
   ** Might be called twice, once a "Soft" shutdown  (isKill = false) and then a gain a hard kill (isKill = true)
   virtual Void onShutdown(Bool isKill := false) {}
