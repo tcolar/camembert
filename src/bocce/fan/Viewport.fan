@@ -142,7 +142,7 @@ class Viewport
     colView := editor.viewportCols
     colViewNum := colView.end - colView.start
     if (caretCol < colView.start) scrollToCol(caretCol)
-    if (caretCol >= colView.end) scrollToCol(caretCol - colViewNum + 1)
+    if (colView.end > 0 && caretCol >= colView.end) scrollToCol(caretCol - colViewNum + 1)
   }
 
   private Void scrollToLine(Int startLine) { editor.scrollToLine(startLine) }
