@@ -4,6 +4,7 @@
 
 using camembert
 using gfx
+using xml
 
 **
 ** MavenPlugin
@@ -36,7 +37,7 @@ const class MavenPlugin : Plugin
     pom := f + `pom.xml`
     if(pom.exists)
       return Project{
-        it.dis = f.name // todo : should read project name that from pom
+        it.dis = prjName(pom)
         it.dir = f.uri
         it.icon = MavenPlugin.icon
         it.plugin = name
@@ -80,6 +81,19 @@ const class MavenPlugin : Plugin
   ** Read project name from pom
   static Str prjName(File pom)
   {
-    return "TODO"
+    Str name := pom.parent.name // failsafe
+    try
+    {
+      root := XParser(pom.in).parseDoc.root
+      artifact := root.elem("artifactId").text
+      if(artifact.toStr.startsWith("\${"))
+      {
+        echo("888888888888")
+        artifact = root.elem("properties").elem(artifact.toStr[2 .. -2]).text
+      }
+      name = artifact.toStr
+    }
+    catch(Err e){e.trace}
+    return name
   }
 }

@@ -11,12 +11,12 @@ using fwt
 internal const class MavenCommands : PluginCommands
 {
   override const Cmd build      := MavenCmd("Build", "compile", false)
-  //override const Cmd? buildGroup
   override const Cmd run        := MavenCmd("Run", "exec:exec", false)
   override const Cmd runSingle  := MavenCmd("RunSingle", "exec:exec", true)
   override const Cmd test       := MavenCmd("Test", "test", false)
   override const Cmd testSingle := MavenCmd("TestSingle", "test", true)
   override const Cmd buildAndRun:= BuildAndRunCmd{}
+  //override const Cmd? buildGroup
 }
 
 internal abstract const class MavenBaseCmd : ExecCmd
