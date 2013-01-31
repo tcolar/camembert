@@ -11,24 +11,36 @@ using fwt
 const mixin PluginCommands
 {
   ** Build the current project
-  abstract Cmd? build()
+  virtual Cmd build() {NotImplementedCmd{}}
 
   ** Build the project group (if the project is part of a parent project)
-  abstract Cmd? buildGroup()
+  virtual Cmd buildGroup() {NotImplementedCmd{}}
 
   ** Run the project
-  abstract Cmd? run()
+  virtual Cmd run() {NotImplementedCmd{}}
 
   ** Run the current file/item we are on
-  abstract Cmd? runSingle()
+  virtual Cmd runSingle() {NotImplementedCmd{}}
 
   ** Build and run the current project
-  abstract Cmd? buildAndRun()
+  virtual Cmd buildAndRun() {NotImplementedCmd{}}
 
   ** Test the current project
-  abstract Cmd? test()
+  virtual Cmd test() {NotImplementedCmd{}}
 
   ** Test the current file/item we are on
-  abstract Cmd? testSingle()
+  virtual Cmd testSingle() {NotImplementedCmd{}}
+}
+
+internal const class NotImplementedCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "NotImplemented"
+  override Void invoke(Event event)
+  {
+    Desktop.callAsync |->|{
+      Dialog.openInfo(frame, "This command is not implemented for this plugin.")
+    }
+  }
 }
 

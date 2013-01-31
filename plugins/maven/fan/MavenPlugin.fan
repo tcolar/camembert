@@ -76,4 +76,10 @@ const class MavenPlugin : Plugin
 
     return findPomFile(dir.parent, upTo)
   }
+
+  ** Read project name from pom
+  static Str prjName(File pom)
+  {
+    return "TODO"
+  }
 }
