@@ -23,8 +23,6 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 (1) Finish the nav collapse/expand using the pattern
 
-(1) Upon new file -> tree does not refresh properly !
-
 (2)** make license on camembert level ... free but some plugins require it to be licensed ?
 
 (2) config wizzard / getting started
@@ -45,8 +43,6 @@ run -> terminate any existing process ??
 or maybe have process list somewhere
 separate console from search results ??
 reimplement terminate in here
-
-(3) when deleting cur fle, closeeditor or go to prev file
 
 (3) TrioInfo -> should be in Axon plugin
 
