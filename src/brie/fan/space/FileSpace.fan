@@ -14,8 +14,8 @@ using fwt
 **
 class FileSpace : FileSpaceBase
 {
-  new make(Frame frame, File dir)
-    : super(frame, dir)
+  new make(Frame frame, File dir, Int navWidth := 250)
+    : super(frame, dir, navWidth)
   {
   }
 

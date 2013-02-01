@@ -27,6 +27,7 @@ class Build : BuildGroup
       `src/brie/build.fan`,
       `plugins/fantom/build.fan`,
       `plugins/maven/build.fan`,
+      `plugins/node/build.fan`,
     ]
   }
 

@@ -19,7 +19,7 @@ const class MavenConfig : PluginConfig
 
   new make(Sys sys)
   {
-    // load fantom options
+    // load options
     cfgFolder := sys.optionsFile.parent
     optsFile := cfgFolder + `maven/options.props`
     options = (MavenOptions) JsonSettings.load(optsFile, MavenOptions#)

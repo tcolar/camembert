@@ -13,7 +13,7 @@ class MavenSpace : FileSpaceBase
   override Str? plugin := MavenPlugin._name
 
   new make(Frame frame, File dir)
-    : super(frame, dir)
+    : super(frame, dir, 250)
   {
   }
 

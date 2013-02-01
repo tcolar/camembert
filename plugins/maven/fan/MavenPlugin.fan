@@ -33,6 +33,7 @@ const class MavenPlugin : Plugin
   {
     f := uri.toFile
     if( ! f.exists || ! f.isDir) return null
+
      // pom.xml
     pom := f + `pom.xml`
     if(pom.exists)

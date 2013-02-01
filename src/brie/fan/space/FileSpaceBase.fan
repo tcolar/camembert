@@ -13,11 +13,12 @@ abstract class FileSpaceBase : BaseSpace
   override View? view
   override Nav? nav
 
-  new make(Frame frame, File dir)
+  new make(Frame frame, File dir, Int navWidth := 250)
     : super(frame, dir)
   {
     view = View.makeBest(frame, this.file)
-    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file), 0)
+    nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file)
+                  , 0, null, navWidth)
 
     viewParent.content = view
     navParent.content = nav.list
@@ -40,6 +41,7 @@ abstract class FileSpaceBase : BaseSpace
   }
 
   ** Default impl, is to look by file name
+  ** Could be slow in giant file trees (100k files +)
   override Item[] findGotoMatches(Str text)
   {
     if(text.isEmpty)
