@@ -107,12 +107,24 @@ abstract class Nav
         r.matches(f.uri.toStr) ? true : null} ?: false
   }
 
-  virtual Void refresh(File base := root)
+  virtual Void refresh(File? base := root)
   {
     if( ! base.isDir)
       base = base.parent
     FileItem[] newItems := [,]
-    findItems(base, newItems, true)
-    list.refresh(base, newItems)
+    // Refresh from the first base available in the tree
+    // because we can create many dirs at once it can be some ways up
+    while(base != null)
+    {
+      item := list.items.find{(it as FileItem).file.normalize == base.normalize}
+      if (item != null)
+        break
+      base = base.parent
+    }
+    if(base != null)
+    {
+      findItems(base, newItems, true)
+      list.refresh(base, newItems)
+    }
   }
 }

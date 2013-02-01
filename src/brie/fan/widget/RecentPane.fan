@@ -169,7 +169,7 @@ class History
   ** The first item is the most recent navigation and the last
   ** item is the oldest navigation.
   **
-  Item[] items := [,] { private set }
+  FileItem[] items := [,] { private set }
 
   private Int max := 40
 }

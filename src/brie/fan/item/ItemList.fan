@@ -232,7 +232,7 @@ class ItemList : Panel
   {
     Int? start := items.eachWhile |item, index -> Int?|
     {
-      return (item as FileItem).file == base ? index : null
+      return (item as FileItem).file.normalize == base.normalize ? index : null
     }
 
     if(start == null)

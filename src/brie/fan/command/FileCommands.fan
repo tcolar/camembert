@@ -214,9 +214,17 @@ const class DeleteFileCmd : Cmd
 
     frame.curSpace.nav?.refresh(file.parent)
 
-    //if cur file was deleted, got to view default
+    //if cur file was deleted, got to any prev still present in history
     if(! frame.curFile.exists)
-      frame.goto(FileItem.makeFile(frame.curSpace.root))
+    {
+      history := frame.history.items
+      while(! history.isEmpty && ! history[0].file.exists)
+        history.removeAt(0)
+
+      frame.recentPane.update(frame.history)
+
+      frame.goto(history[0])
+    }
   }
   new make(|This| f) {f(this)}
 }
