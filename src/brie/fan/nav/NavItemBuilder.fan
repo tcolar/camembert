@@ -48,6 +48,6 @@ class StdItemBuilder : NavItemBuilder
 
   override FileItem forProj(File f, Str path, Int indent)
   {
-    return FileItem.makeProject(f, indent).setDis("${path}$f.name")
+    return FileItem.makeProject(f, indent).setDis("$f.name")
   }
 }

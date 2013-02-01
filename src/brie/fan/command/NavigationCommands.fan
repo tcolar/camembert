@@ -70,7 +70,7 @@ internal const class GotoCmd : Cmd
     }
 
     // table of matches
-    matches := GotoMatchModel { itemFont = font; width = 500 }
+    matches := GotoMatchModel { itemFont = font; width = 700 }
 
     table := Table
     {

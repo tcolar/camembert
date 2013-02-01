@@ -38,4 +38,35 @@ abstract class FileSpaceBase : BaseSpace
     if (item.isProject) return 0
     return this.dir.path.size
   }
+
+  ** Default impl, is to look by file name
+  override Item[] findGotoMatches(Str text)
+  {
+    if(text.isEmpty)
+      return [,]
+    excludes := ["class", "pyc", "jar"]
+    return fileMatches(text, excludes).map|f -> Item|
+    {
+      path := f.parent.normalize.uri.relTo(dir.normalize.uri).toStr
+      return FileItem.makeFile(f).setDis("$f.name | $path")
+    }
+  }
+
+  ** find files with matching names
+  ** if exts is not null only matches files with NOT matching extension
+  File[] fileMatches(Str text, Str[]? exts := null, Bool excludeDirs := true)
+  {
+    text = text.lower
+    File[] files := [,]
+    dir.walk|f|
+    {
+      if(excludeDirs && f.isDir)
+        return
+      if(exts != null && exts.find{it.lower == f.ext?.lower} != null)
+        return
+      if(f.basename.lower.startsWith(text))
+        files.add(f)
+    }
+    return files
+  }
 }
