@@ -25,7 +25,7 @@ class ProcessUtil
       if(file.exists)
         runCmd = (SavedCommands) JsonUtils.load(file.in, SavedCommands#)
     }
-    catch(Err e) {Sys.cur.log.err("Failed loading saved run commands", e)}
+    catch(Err e) {Sys.log.err("Failed loading saved run commands", e)}
   }
 
   Void setCmd(Str key, CmdArgs cmd, Bool persist)

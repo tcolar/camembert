@@ -182,7 +182,7 @@ const class FantomIndex
     if (id === "clearAll")    return Actor.locals["cache"] = FantomIndexCache(this)
     if (id === "addTrioInfo")  return c.addTrioInfo(msg.a)
 
-    echo("ERROR: Unknown msg: $msg.id")
+    Sys.log.info("ERROR: Unknown msg: $msg.id")
     throw Err("Unknown msg: $msg.id")
   }
 
@@ -201,7 +201,7 @@ const class FantomIndex
       if (id === "reindexPod") return c.indexPod(msg.a)
       if (id === "reindex") return c.reindex(msg.a, msg.b)
 
-      echo("ERROR: Unknown msg: $msg.id")
+      Sys.log.info("ERROR: Unknown msg: $msg.id")
       throw Err("Unknown msg: $msg.id")
     }
     catch (Err e) { e.trace; throw e }

@@ -14,7 +14,6 @@ internal abstract const class PluginCmd : Cmd
   {
     name := frame.curSpace.plugin
     if(name == null) return null // TODO: dialog ?
-
     plugin := Sys.cur.plugin(name)
     return plugin.commands
   }

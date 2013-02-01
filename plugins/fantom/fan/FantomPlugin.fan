@@ -42,7 +42,7 @@ const class FantomPlugin : Plugin
   {
     File[] srcDirs := (File[])projects.map |proj -> File| {proj.dir.toFile}
     File[] podDirs := config.curEnv.podDirs.map |uri -> File| {uri.plusSlash.toFile}
-    echo("chnaged projects: $projects.size $srcDirs")
+    //Sys.log.info("changed projects: $projects.size $srcDirs")
 
     index.reindex(srcDirs, podDirs, clearAll)
   }
@@ -60,7 +60,7 @@ const class FantomPlugin : Plugin
         it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPod
-        it.plugin = name
+        it.plugin = this.typeof.pod.name
       }
 
      // pod
@@ -70,7 +70,7 @@ const class FantomPlugin : Plugin
         it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
         it.icon = Sys.cur.theme.iconPodGroup
-        it.plugin = name
+        it.plugin = this.typeof.pod.name
         it.params = ["isGroup" : "true"]
       }
      return null
@@ -83,7 +83,7 @@ const class FantomPlugin : Plugin
 
   override Int spacePriority(Project prj)
   {
-    if(prj.plugin != name)
+    if(prj.plugin != this.typeof.pod.name)
       return 0
     // group
     if(prj.params["isGroup"] == "true")

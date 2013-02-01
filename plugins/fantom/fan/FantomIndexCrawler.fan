@@ -38,7 +38,7 @@ internal class FantomIndexCrawler
       indexTrio(podDirs)
 
       t2 := Duration.now
-      echo("Index all ${(t2-t1).toLocale}")
+      Sys.log.info("Index all ${(t2-t1).toLocale}")
       return (t2-t1)
     }
     finally index.setIsIndexing(false)
@@ -68,7 +68,7 @@ internal class FantomIndexCrawler
       if(pod.podFile != null)
         indexPodLib(pod.podFile)
       t2 := Duration.now
-      echo("Index pod '$pod.name' ${(t2-t1).toLocale}")
+      Sys.log.info("Index pod '$pod.name' ${(t2-t1).toLocale}")
       return null
     }
     finally index.setIsIndexing(false)

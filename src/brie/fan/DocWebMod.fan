@@ -71,7 +71,7 @@ const class DocWebMod : WebMod
       doc := it.docProvider
       if(doc != null)
       {
-        html += "<a href='/$it.name/'>$doc.dis</a><br/>"
+        html += "<a href='/$doc.pluginName/'>$doc.dis</a><br/>"
       }
     }
     showDoc(html)

@@ -138,6 +138,8 @@ class ItemList : Panel
     }
 
     item := obj as FileItem
+    if(item.file == null)
+      return
 
     if (event.count == 1 && event.button == 1)
     {

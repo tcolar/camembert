@@ -92,7 +92,7 @@ internal const class ReindexAllCmd : Cmd
   override Void invoke(Event event)
   {
     plugin := FantomPlugin.cur
-    File[] srcDirs := ProjectRegistry.pluginProjects(FantomPlugin._name)
+    File[] srcDirs := ProjectRegistry.pluginProjects(FantomPlugin#.pod.name)
                       .vals.map |proj -> File| {proj.dir.toFile}
     File[] podDirs := FantomPlugin.config.curEnv.podDirs
                       .map |uri -> File| {uri.plusSlash.toFile}

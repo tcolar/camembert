@@ -1,6 +1,7 @@
 // History:
 //  Jan 26 13 tcolar Creation
 //
+using camembert
 
 **
 ** FantomUtils
@@ -102,7 +103,7 @@ class FantomUtils
     } catch(Err e) {e.trace}
     if(name == null)
     {
-      echo("Didn't find the podName in $build.osPath - Will use $buildDir.name")
+      Sys.log.info("Didn't find the podName in $build.osPath - Will use $buildDir.name")
     }
     return name ?: buildDir.name
   }

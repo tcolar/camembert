@@ -17,7 +17,7 @@ class Main
   {
     checkConfigFolder
     props := (Env.cur.workDir + `etc/camembert/camembert.props`).readProps
-    echo("props: $props")
+    Sys.log.info("props: $props")
     configDir := File.os(props["configDir"])
     configVersion := Version(props["version"])
 

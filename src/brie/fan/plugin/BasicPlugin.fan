@@ -60,19 +60,19 @@ abstract const class BasicPlugin : Plugin
         it.dis = prjName(f)
         it.dir = f.uri
         it.icon = this.icon
-        it.plugin = name
+        it.plugin = this.typeof.pod.name
       }
      return null
   }
 
   override Space createSpace(Project prj)
   {
-    return BasicSpace(Sys.cur.frame, prj.dir.toFile, name, icon.file.uri)
+    return BasicSpace(Sys.cur.frame, prj.dir.toFile, this.typeof.pod.name, icon.file.uri)
   }
 
   override Int spacePriority(Project prj)
   {
-    if(prj.plugin != name)
+    if(prj.plugin != this.typeof.pod.name)
       return 0
     return 50
   }
@@ -111,7 +111,7 @@ const class BasicConfig : PluginConfig
             env := (BasicEnv) JsonSettings.load(it, envType)
             tmp.add(env)
           }
-          catch(Err e) Sys.cur.log.err("Failed to load $it.osPath !", e)
+          catch(Err e) Sys.log.err("Failed to load $it.osPath !", e)
         }
       }
 
@@ -226,10 +226,10 @@ class BasicSpace : FileSpaceBase
 {
   override Str? plugin
 
-  new make(Frame frame, File dir, Str name, Uri iconUri)
+  new make(Frame frame, File dir, Str plugin, Uri iconUri)
     : super(frame, dir, 220, Image(iconUri))
   {
-    this.plugin = name
+    this.plugin = plugin
   }
 
   override Int match(FileItem item)

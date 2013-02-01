@@ -61,10 +61,10 @@ const class ProjectRegistry : Actor
         return projects
       }
       else
-        Sys.cur.log.err("Unexpected project reistry thread action: $action !")
+        Sys.log.err("Unexpected project reistry thread action: $action !")
     }catch(Err e)
     {
-      Sys.cur.log.err("Project Registry thread error", e)
+      Sys.log.err("Project Registry thread error", e)
     }
     return null
   }
@@ -164,7 +164,7 @@ class ProjectCache
   ** Look for projects, return the list of new ones
   Uri:Project scanProjects(Uri[] dirs := rootDirs)
   {
-    Sys.cur.log.info("Starting project scan in $dirs")
+    Sys.log.info("Starting project scan in $dirs")
     Uri:Project newProjects := [:]
     try
     {
@@ -197,9 +197,9 @@ class ProjectCache
     }
     catch(Err e)
     {
-      Sys.cur.log.err("Project Scanning failed.", e)
+      Sys.log.err("Project Scanning failed.", e)
     }
-    Sys.cur.log.info("Found $newProjects.size projects during scan in $dirs")
+    Sys.log.info("Found $newProjects.size projects during scan in $dirs")
 
     return newProjects
   }

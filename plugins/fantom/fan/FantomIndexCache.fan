@@ -54,7 +54,7 @@ internal class FantomIndexCache
   {
     cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList, null)
     if(cur.srcDir != null && cur.srcDir.uri !=  srcDir.uri)
-      echo("WARNING: Duplicated source root for pod $name : $cur.srcDir.osPath .. $srcDir.osPath\\First one found will be used")
+      Sys.log.info("WARNING: Duplicated source root for pod $name : $cur.srcDir.osPath .. $srcDir.osPath\\First one found will be used")
     else
       pods[name] = PodInfo(name, cur.podFile, cur.types, srcDir, srcFiles, findGroup(srcDir))
     return null
@@ -84,7 +84,7 @@ internal class FantomIndexCache
   {
     cur := pods[name] ?: PodInfo(name, null, TypeInfo[,], null, File#.emptyList, null)
     if(cur.podFile != null && cur.podFile.uri !=  podFile.uri)
-      echo("WARNING: Duplicated pod file for pod $name : $cur.podFile.osPath .. $podFile.osPath\\First one found will be used!")
+      Sys.log.info("WARNING: Duplicated pod file for pod $name : $cur.podFile.osPath .. $podFile.osPath\\First one found will be used!")
     else
       pods[name] = PodInfo(name, podFile, types, cur.srcDir, cur.srcFiles, null)
     return null

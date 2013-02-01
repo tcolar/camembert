@@ -163,7 +163,7 @@ class Frame : Window
     try
       curView?.onUnload
     catch (Err e)
-      Sys.cur.log.err("View.onUnload", e)
+      Sys.log.err("View.onUnload", e)
 
     // Push into history
     if (item != null)
@@ -177,7 +177,7 @@ class Frame : Window
       best = create(item)
       if (best == null)
       {
-        echo("WARN: Cannot create space $item.dis")
+        Sys.log.info("WARN: Cannot create space $item.dis")
         return
       }
       else
@@ -302,7 +302,7 @@ class Frame : Window
       if(FileUtil.contains(uri.toFile, file))
       {
         p := Sys.cur.plugins[project.plugin]
-        if(p.spacePriority(project) >= minPrio)
+        if(p != null && p.spacePriority(project) >= minPrio)
         {
           if(plugin == null || p.spacePriority(project) >= plugin.spacePriority(project))
           {
@@ -413,7 +413,7 @@ class Frame : Window
     try
       if (sessionFile.exists) props = sessionFile.readProps
     catch (Err e)
-      Sys.cur.log.err("Cannot load session: $sessionFile", e)
+      Sys.log.err("Cannot load session: $sessionFile", e)
 
     // read bounds
     this.bounds = Rect(props["frame.bounds"] ?: "100,100,600,500")
@@ -445,7 +445,7 @@ class Frame : Window
         Space space := loader.callList([this, spaceProps])
         spaces.add(space)
       }
-      catch (Err e) Sys.cur.log.err("ERROR: Cannot load space $type", e)
+      catch (Err e) Sys.log.err("ERROR: Cannot load space $type", e)
       }
 
     // always insert IndexSpace
@@ -482,7 +482,7 @@ class Frame : Window
     try
       sessionFile.writeProps(props)
     catch (Err e)
-      Sys.cur.log.err("Cannot save $sessionFile", e)
+      Sys.log.err("Cannot save $sessionFile", e)
   }
 
   //////////////////////////////////////////////////////////////////////////

@@ -35,7 +35,7 @@ const class FantomConfig : PluginConfig
           env := (FantomEnv) JsonSettings.load(it, FantomEnv#)
           tmp.add(env)
         }
-        catch(Err e) Sys.cur.log.err("Failed to load $it.osPath !", e)
+        catch(Err e) Sys.log.err("Failed to load $it.osPath !", e)
       }
     }
 

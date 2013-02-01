@@ -17,6 +17,8 @@ using concurrent
 **
 class Console : InsetPane
 {
+  ConsoleCmd? lastCmd
+
   Menu menu := Menu
   {
     MenuItem
@@ -35,7 +37,26 @@ class Console : InsetPane
   {
     this.frame = frame
     this.list = ItemList(frame, Item[,])
-    this.content = this.list
+    this.content = EdgePane{
+      left = GridPane{
+        Button
+        {
+          image = Image(`fan://icons/x16/refresh.png`)
+          onAction.add {redo}
+        },
+        Button
+        {
+          it.image = Image(`fan://icons/x16/close.png`)
+          it.onAction.add {kill}
+        },
+        Button
+        {
+          image = Image(`fan://icons/x16/file.png`)
+          onAction.add {clear}
+        },
+      }
+      center = this.list
+    }
     this.visible = false
     content.onMouseDown.add |Event event|
     {
@@ -101,18 +122,64 @@ class Console : InsetPane
     Desktop.clipboard.setText(text)
   }
 
+  ** kill and wait for kill to be complete
+  ** Return wether kill succeeded
+  Bool killAndWait()
+  {
+    if(proc == null)
+      return true
+
+    kill
+    start := DateTime.now
+    while(proc != null)
+    {
+      if(DateTime.now - start > 10sec)
+        break
+      Actor.sleep(100ms)
+    }
+    if(proc != null)
+    {
+      append([Item.makeStr("Oooops ... could not terminate the process !")
+              .setIcon(Sys.cur.theme.iconErr)])
+      return false
+    }
+    return true
+  }
+
   Void kill()
   {
-    proc := this.proc
-    if (proc == null) return
-      this.inKill = true
-    log("killing...")
+    if (proc == null)
+      return
+    this.inKill = true
+    log("Stopping.")
     proc.kill
+  }
+
+  Void redo()
+  {
+    if(lastCmd != null)
+    {
+      exec(lastCmd.cmd, lastCmd.dir, lastCmd.onDone)
+    }
   }
 
   Void exec(Str[] cmd, File dir, |Console|? onDone := null)
   {
+    // kill any existing process, don't want multiples for now
+    if( ! killAndWait)
+    {
+      return
+    }
+    clear
+
+    lastCmd = ConsoleCmd{
+      it.cmd = cmd
+      it.dir =dir
+      it.onDone = onDone
+    }
+
     open
+
     if( Desktop.isWindows && ! cmd.isEmpty && ! cmd[0].endsWith(".exe"))
       cmd[0] = cmd[0] + ".exe"
     frame.marks = Item[,]
@@ -124,31 +191,21 @@ class Console : InsetPane
     proc.spawn(cmd, dir)
   }
 
-// TODO: make that part of console figure, along with rerun and so on
-/*internal const class TerminateCmd : FantomCmd
-{
-  new make(|This| f) {f(this)}
-  override const Str name := "Terminate"
-  override Void invoke(Event event)
-  {
-    console.kill
-  }
-}*/
-
   internal Void procDone(Int result)
   {
-    if (inKill) log("killed")
-      lastResult = result
+    // ** WARNING: using **Any** fwt/console access methods here can casue lockups
+    // Even if using Deskop.callAsync
+    lastResult = result
+    proc = null
     if (onDone != null)
     {
       try
         onDone(this)
-      catch (Err e)
-        e.trace
+      catch (Err e){}
     }
-    proc = null
     inKill = false
     onDone = null
+    Sys.log.info("Process killed")
   }
 
   Frame frame { private set }
@@ -157,6 +214,15 @@ class Console : InsetPane
   private ConsoleProcess? proc
   private Bool inKill
   private |Console|? onDone
+}
+
+class ConsoleCmd
+{
+  Str[] cmd
+  File dir
+  |Console|? onDone := null
+
+  new make(|This|? f) {f(this)}
 }
 
 **************************************************************************
@@ -250,7 +316,7 @@ internal const class ConsoleProcess
   private Obj? receive(Msg msg)
   {
     if (msg.id == "spawn") return doSpawn(msg.a, msg.b, msg.c)
-      echo("WARNING: unknown msg: $msg")
+      Sys.log.info("WARNING: unknown msg: $msg")
     throw Err("unknown msg $msg")
   }
 
@@ -305,8 +371,8 @@ internal class ConsoleOutStream : OutStream
 
   Void append(Str str)
   {
-    curStr = curStr + str
     proc := this.proc
+    curStr = curStr + str
     lines := curStr.splitLines
     if (lines.size <= 1) return
       Desktop.callAsync |->| { proc.writeLines(lines[0..-2]) }

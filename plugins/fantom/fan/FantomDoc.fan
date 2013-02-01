@@ -19,7 +19,7 @@ const class FantomDoc : PluginDoc
   new make(FantomPlugin plugin)
   {
     this.plugin = plugin
-    this.pluginName = plugin.name
+    this.pluginName = this.typeof.pod.name
   }
 
   static const gfx::Image fanIcon  := gfx::Image(`fan://icons/x16/database.png`, false)
@@ -65,7 +65,7 @@ const class FantomDoc : PluginDoc
     {
       if( ! it.isAxonPod || it.name=="skyspark" || it.name=="proj")
       {
-        pods+="<a href='/${FantomPlugin._name}/${it.name}::pod-doc'>$it.name</a> <br/>"
+        pods+="<a href='/${pluginName}/${it.name}::pod-doc'>$it.name</a> <br/>"
       }
     }
     return pods
@@ -99,8 +99,8 @@ const class FantomDoc : PluginDoc
   private Str toExtLink(Str podName)
   {
     if(! podName.endsWith("Ext"))
-      return "/${FantomPlugin._name}/ext-${podName}/"
-    return "/${FantomPlugin._name}/ext-${podName[0..-4]}/"
+      return "/${pluginName}/ext-${podName}/"
+    return "/${pluginName}/ext-${podName[0..-4]}/"
   }
 
   ** Axon extensions/libs docs
@@ -194,7 +194,7 @@ const class FantomDoc : PluginDoc
       if(info == null)
         return "$fqn not found !"
       text := "<h2>$info.name</h2>"
-      info.types.each {text += "<a href='/${FantomPlugin._name}/$it.qname'>$it.name</a>, "}
+      info.types.each {text += "<a href='/${pluginName}/$it.qname'>$it.name</a>, "}
       text += "<hr/>"
       text += readPodDoc(req, info.podFile)
       return text
@@ -223,7 +223,7 @@ const class FantomDoc : PluginDoc
       results += "<h2>Pods:</h2>"
       pods.each
       {
-        results+="<a href='/${FantomPlugin._name}/${it.name}::index'>$it</a> <br/>"
+        results+="<a href='/${pluginName}/${it.name}::index'>$it</a> <br/>"
       }
     }
     types := index.matchTypes(query, kind)
@@ -232,7 +232,7 @@ const class FantomDoc : PluginDoc
       results += "<h2>Types:</h2>"
       types.each
       {
-        results+="<a href='/${FantomPlugin._name}/${it.qname}'>$it.qname</a> <br/>"
+        results+="<a href='/${pluginName}/${it.qname}'>$it.qname</a> <br/>"
       }
     }
     if(inclSlots)
@@ -243,7 +243,7 @@ const class FantomDoc : PluginDoc
         results += "<h2>Slots:</h2>"
         slots.each
         {
-          results+="<a href='/${FantomPlugin._name}/${it.type.qname}#$it.name'>$it.qname</a> <br/>"
+          results+="<a href='/${pluginName}/${it.type.qname}#$it.name'>$it.qname</a> <br/>"
         }
       }
     }
@@ -306,7 +306,7 @@ const class FantomDoc : PluginDoc
       else
        result = doc.summary
     }
-    catch(Err e) {Sys.cur.log.err("Failed reading pod doc for $podFile.osPath", e)}
+    catch(Err e) {Sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
     return result
   }
 
@@ -341,7 +341,7 @@ const class FantomDoc : PluginDoc
         }
       }
     }
-    catch(Err e) {Sys.cur.log.err("Failed reading pod doc for $podFile.osPath", e)}
+    catch(Err e) {Sys.log.err("Failed reading pod doc for $podFile.osPath", e)}
 
     return result
   }
@@ -385,7 +385,7 @@ const class FantomDoc : PluginDoc
         }
       }
     }
-    catch(Err e) {Sys.cur.log.err("Failed reading Axon docs for $pod.name", e)}
+    catch(Err e) {Sys.log.err("Failed reading Axon docs for $pod.name", e)}
 
     return result
   }
@@ -420,7 +420,7 @@ const class FantomDoc : PluginDoc
   ** Type signature with link
   private Str htmlType(DocTypeRef type)
   {
-    return "<a href='/${FantomPlugin._name}/$type.qname'>$type.dis</a> "
+    return "<a href='/${pluginName}/$type.qname'>$type.dis</a> "
   }
 
   ** Html writer that deals with fixing the links to our server format
@@ -439,7 +439,7 @@ const class FantomDoc : PluginDoc
           uri = "#$uri" // to slot in type
       }
       else
-        uri = "/${FantomPlugin._name}/$uri" // always start with the slash otherwise
+        uri = "/${pluginName}/$uri" // always start with the slash otherwise
 
       uri = uri.replace(".", "#") // slots are mapped into anchors
       link.uri = uri;

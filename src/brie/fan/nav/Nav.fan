@@ -28,7 +28,7 @@ abstract class Nav
     }
     catch(Err e)
     {
-      Sys.cur.log.err("Failed to load the hidden file patterns !", e)
+      Sys.log.err("Failed to load the hidden file patterns !", e)
     }
     hideFiles = r
   }

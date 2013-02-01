@@ -16,7 +16,7 @@ using camembert
 class FantomSpace : BaseSpace
 {
   ** Type of Plugin responsible for this space
-  override Str? plugin := FantomPlugin._name
+  override Str? plugin := FantomPlugin#.pod.name
 
   override View? view
   override Nav? nav

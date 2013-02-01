@@ -124,7 +124,7 @@ internal const class ReloadConfigCmd : Cmd
   override const Str name := "Reload Config"
   override Void invoke(Event event)
   {
-    Sys.loadConfig
+    Sys.reloadConfig
   }
   new make(|This| f) {f(this)}
 }

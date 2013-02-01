@@ -16,6 +16,9 @@ using netColarUtils
 **
 const class Sys : Service
 {
+  ** Logger
+  static const Log log := Log.get("camembert")
+
   const ProjectRegistry prjReg
 
   ** The main options file
@@ -36,9 +39,6 @@ const class Sys : Service
 
   ** Application level commands
   const Commands commands
-
-  ** Logger
-  const Log log := Log.get("camembert")
 
   const WispService docServer
 
@@ -96,11 +96,11 @@ const class Sys : Service
     PluginManager.cur.onShutdown(true)
     prjReg.pool.kill
 
-    echo("Sys.onStop completed.")
+    Sys.log.info("Sys.onStop completed.")
   }
 
   ** Reload the *whole* config including all plugins
-  static Void loadConfig()
+  static Void reloadConfig()
   {
     frame := Sys.cur.frame
     frame.spaces.each {Sys.cur.frame.closeSpace(it)}
@@ -117,6 +117,8 @@ const class Sys : Service
       it.optionsFile = optionsFile
     }
     sys.start
+    // rescan projects
+    ProjectRegistry.scan
   }
 
   ** All known plugins

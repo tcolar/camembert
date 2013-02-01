@@ -30,19 +30,19 @@ const class PluginManager : Service
       typeName := pod.meta["camembert.plugin"]
       type := pod.type(typeName, false)
       if(type == null)
-        echo("Type $typeName not found for plugin $pod.name !")
+        Sys.log.info("Type $typeName not found for plugin $pod.name !")
       else if( ! type.fits(Plugin#))
-        echo("Type $typeName of plugin $pod.name doesn't implement Plugin mixin !")
+        Sys.log.info("Type $typeName of plugin $pod.name doesn't implement Plugin mixin !")
       else
       {
         try
         {
           temp[pod.name] = (Plugin) type.make
-          echo("Found plugin : ${pod.name}.$typeName")
+          Sys.log.info("Found plugin : ${pod.name}.$typeName")
         }
         catch(Err e)
         {
-          echo("Failed instanciating $typeName of plugin $pod.name")
+          Sys.log.info("Failed instanciating $typeName of plugin $pod.name")
           e.trace
         }
         // Fail fast check if space doesn't have the loadSession method
@@ -76,7 +76,7 @@ const class PluginManager : Service
   {
     plugins.vals.each |plugin|
     {
-      plugin.onChangedProjects(projects.findAll{it.plugin == plugin.name})
+      plugin.onChangedProjects(projects.findAll{it.plugin == plugin.typeof.pod.name})
     }
   }
 
