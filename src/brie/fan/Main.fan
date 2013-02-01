@@ -21,6 +21,11 @@ class Main
     configDir := File.os(props["configDir"])
     configVersion := Version(props["version"])
 
+    if(! (configDir + `options.props`).exists)
+    {
+      Welcome().open
+    }
+
     pluginManager := PluginManager(configDir)
 
     pluginManager.start // will call plugins init

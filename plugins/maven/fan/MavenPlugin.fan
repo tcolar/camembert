@@ -11,9 +11,11 @@ using xml
 **
 const class MavenPlugin : BasicPlugin
 {
+  static const Str _name := "Maven"
+
   override const Image icon := Image(`fan://camMavenPlugin/res/maven.png`)
 
-  override const Str name := "camMavenPlugin"
+  override const Str name := _name
 
   override Uri? defaultEnvHome() {`/usr/share/maven/`}
 

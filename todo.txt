@@ -14,6 +14,19 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 (1) config wizzard / getting started
 
+(3)**console:
+process tabs, repeat command etc ... ?
+separate fantom config from editor config
+make support fantom a plugin ?
+instead of "gray" area when no file, open a "blank" file ?
+run -> terminate any existing process ??
+or maybe have process list somewhere
+separate console from search results ??
+reimplement terminate in here
+fix error links
+have plugins handle error parsing / links
+make console a regular text pane with error links on the side ?
+
 (1) site /readme
 
 -- Test + release
@@ -23,6 +36,8 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 (2) -> show current env(if any) in status bar (upon switch space / chnage env)
 
 (2) Finish the nav collapse/expand using the pattern
+
+(3) real config wizzard / getting started
 
 (3) -> theme swicther without whle config reload ? (store in frame/session not in config)
 

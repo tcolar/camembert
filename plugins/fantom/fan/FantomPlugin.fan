@@ -13,7 +13,7 @@ using camembert
 **
 const class FantomPlugin : Plugin
 {
-  static const Str _name := "camFantomPlugin"
+  static const Str _name := "Fantom"
 
   ** FantomIndexing service
   const FantomIndex index
@@ -115,7 +115,7 @@ const class FantomPlugin : Plugin
 
   static FantomPlugin cur()
   {
-    return (FantomPlugin) Sys.cur.plugin(_name)
+    return (FantomPlugin) Sys.cur.plugin(FantomPlugin#.pod.name)
   }
 
   static File? findBuildFile(File? f)

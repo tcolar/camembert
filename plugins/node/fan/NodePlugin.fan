@@ -11,9 +11,11 @@ using xml
 **
 const class NodePlugin : BasicPlugin
 {
+  static const Str _name := "Node"
+
   override const Image icon := Image(`fan://camNodePlugin/res/node.png`)
 
-  override const Str name := "camNodePlugin"
+  override const Str name := _name
 
   override Uri? defaultEnvHome() {`/usr/local/`}
 

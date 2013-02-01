@@ -64,12 +64,10 @@ const class PluginManager : Service
 
   internal Void onConfigLoaded(Sys newSys)
   {
-    //confs := ([Str:PluginConfig]?) _pluginConfs.val
-    //if(confs == null)
     confs := Str:PluginConfig?[:]
     plugins.each |plugin, name|
     {
-      confs[name] = plugin.readConfig(newSys)
+      confs[plugin.name] = plugin.readConfig(newSys)
     }
     _pluginConfs.val = confs.toImmutable
   }

@@ -13,6 +13,8 @@ using gfx
 **
 abstract const class BasicPlugin : Plugin
 {
+  //abstract static const Str _name
+
   ** Icon for this plugin projects
   abstract Image icon()
 
@@ -168,7 +170,8 @@ class BasicMenu : Menu
     }
 
     first := true
-    config := (BasicConfig) pluginType.method("config").call(pluginType.pod.name)
+    nm := pluginType.field("_name",false)?.get ?: pluginType.pod.name
+    config := (BasicConfig) pluginType.method("config").call(nm)
     config.envs.each |env|
     {
       envs.add(MenuItem{
@@ -195,7 +198,8 @@ const class BasicSwitchEnvCmd : Cmd
     {
       Desktop.callAsync |->|
       {
-        config := (BasicConfig) pluginType.method("config").call(pluginType.pod.name)
+        nm := pluginType.field("_name",false)?.get ?: pluginType.pod.name
+        config := (BasicConfig) pluginType.method("config").call(nm)
         config.selectEnv(name)
       }
     }

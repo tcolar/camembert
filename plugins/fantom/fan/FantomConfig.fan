@@ -21,12 +21,12 @@ const class FantomConfig : PluginConfig
   {
     // load fantom options
     cfgFolder := sys.optionsFile.parent
-    optsFile := cfgFolder + `fantom/options.props`
+    optsFile := cfgFolder + `Fantom/options.props`
     options = (FantomOptions) JsonSettings.load(optsFile, FantomOptions#)
 
     // load envs
     tmp:= FantomEnv[,]
-    (cfgFolder + `fantom/`).listFiles.each
+    (cfgFolder + `Fantom/`).listFiles.each
     {
       if(it.name.startsWith("env_"))
       {
@@ -42,7 +42,7 @@ const class FantomConfig : PluginConfig
     if(tmp.isEmpty)
     {
       // create & add default env
-      env := (FantomEnv) JsonSettings.load(cfgFolder + `fantom/env_default.props`, FantomEnv#)
+      env := (FantomEnv) JsonSettings.load(cfgFolder + `Fantom/env_default.props`, FantomEnv#)
       tmp.add(env)
     }
     envs = tmp.sort |a, b| {a.order <=> b.order}
