@@ -10,7 +10,7 @@ mixin NavItemBuilder
 {
   abstract Item forFile(File f, Str path, Int indent)
   abstract Item forDir(File f, Str path, Int indent, Bool collapsed)
-  abstract Item forProj(File f, Str path, Int indent)
+  abstract Item forProj(Project prj, Str path, Int indent)
 
   abstract Space space
 
@@ -46,8 +46,8 @@ class StdItemBuilder : NavItemBuilder
       return FileItem.makeFile(f, indent).setDis("${path}$f.name/").setCollapsed(false)
   }
 
-  override FileItem forProj(File f, Str path, Int indent)
+  override FileItem forProj(Project prj, Str path, Int indent)
   {
-    return FileItem.makeProject(f, indent).setDis("$f.name")
+    return FileItem.makeProject(prj.dir.toFile, indent).setDis(prj.dis)
   }
 }

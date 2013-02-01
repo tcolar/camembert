@@ -74,7 +74,7 @@ abstract class Nav
         {
           // Not recursing in projects
           prj := projects[f.normalize.uri]
-          item := navBuilder.forProj(f, path, 1)
+          item := navBuilder.forProj(prj, path, 1)
           item.icon = prj.icon
           results.add(item)
         }
