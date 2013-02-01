@@ -9,79 +9,25 @@ using xml
 **
 ** MavenPlugin
 **
-const class MavenPlugin : Plugin
+const class MavenPlugin : BasicPlugin
 {
-  static const Image icon := Image(`fan://camMavenPlugin/res/maven.png`)
+  override const Image icon := Image(`fan://camMavenPlugin/res/maven.png`)
 
-  static const Str _name := "camMavenPlugin"
+  override const Str name := "camMavenPlugin"
 
-  override PluginCommands? commands() {MavenCommands()}
-  override Str name() {return _name}
-  override PluginDoc? docProvider() {null}
+  override Uri? defaultEnvHome() {`/usr/share/maven/`}
 
-  override PluginConfig? readConfig(Sys sys)
+  override PluginCommands? commands() {MavenCommands(this)}
+
+  override Bool isProject(File dir)
   {
-    return MavenConfig(sys)
-  }
-
-  override Void onFrameReady(Frame frame)
-  {
-    (frame.menuBar as MenuBar).plugins.add(MavenMenu(frame))
-  }
-
-  override const |Uri -> Project?| projectFinder:= |Uri uri -> Project?|
-  {
-    f := uri.toFile
-    if( ! f.exists || ! f.isDir) return null
-
-     // pom.xml
-    pom := f + `pom.xml`
-    if(pom.exists)
-      return Project{
-        it.dis = prjName(pom)
-        it.dir = f.uri
-        it.icon = MavenPlugin.icon
-        it.plugin = name
-      }
-     return null
-  }
-
-  override Space createSpace(Project prj)
-  {
-    return MavenSpace(Sys.cur.frame, prj.dir.toFile)
-  }
-
-  override Int spacePriority(Project prj)
-  {
-    if(prj.plugin != name)
-      return 0
-    return 50
-  }
-
-  static MavenConfig config()
-  {
-    return (MavenConfig) PluginManager.cur.conf(_name)
-  }
-
-  static MavenPlugin cur()
-  {
-    return (MavenPlugin) Sys.cur.plugin(_name)
-  }
-
-  static File? findPomFile(File? dir, File? upTo)
-  {
-    if(dir == null || dir == upTo)
-      return null
-    pom :=  dir + `pom.xml`
-    if(pom.exists)
-      return pom
-
-    return findPomFile(dir.parent, upTo)
+    return (dir + `pom.xml`).exists
   }
 
   ** Read project name from pom
-  static Str prjName(File pom)
+  override Str prjName(File prjDir)
   {
+    pom := prjDir + `pom.xml`
     Str? name
     try
     {

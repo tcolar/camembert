@@ -33,6 +33,7 @@ class Build : BuildPod
                `fan/widget/`,
                `fan/nav/`,
                `fan/config/`,
+               `fan/plugin/`,
                `fan/project/`]
     resDirs = [`res/`]
     version = Version("1.1.0")

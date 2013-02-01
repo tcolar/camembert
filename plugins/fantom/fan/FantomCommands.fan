@@ -9,7 +9,7 @@ internal const class FantomCommands : PluginCommands
 {
   override const Cmd build      := BuildCmd()
   override const Cmd buildGroup := BuildGroupCmd()
-  override const Cmd run         := RunPodCmd(false, false)
+  override const Cmd run        := RunPodCmd(false, false)
   override const Cmd runSingle  := RunPodCmd(true, false)
   override const Cmd test       := RunPodCmd(false, true)
   override const Cmd testSingle := RunPodCmd(true, true)

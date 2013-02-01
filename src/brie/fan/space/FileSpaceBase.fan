@@ -12,10 +12,12 @@ abstract class FileSpaceBase : BaseSpace
 {
   override View? view
   override Nav? nav
+  override Image icon
 
-  new make(Frame frame, File dir, Int navWidth := 250)
+  new make(Frame frame, File dir, Int navWidth := 250, Image? icon := null)
     : super(frame, dir)
   {
+    this.icon = icon ?: Sys.cur.theme.iconDir
     view = View.makeBest(frame, this.file)
     nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file)
                   , 0, null, navWidth)
@@ -23,8 +25,6 @@ abstract class FileSpaceBase : BaseSpace
     viewParent.content = view
     navParent.content = nav.list
   }
-
-  override Image icon() { Sys.cur.theme.iconDir }
 
   override Str:Str saveSession()
   {

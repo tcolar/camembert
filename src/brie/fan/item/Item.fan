@@ -30,7 +30,7 @@ class Item
 
   This setDis(Str dis) {this.dis = dis; return this}
 
-  This setIcon(Image icon) {this.icon = icon; return this}
+  This setIcon(Image? icon) {this.icon = icon; return this}
 
   This setLoc(ItemLoc loc) {this.loc = loc; return this}
 
