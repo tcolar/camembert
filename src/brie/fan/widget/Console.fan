@@ -58,7 +58,7 @@ class Console : InsetPane
       center = this.list
     }
     this.visible = false
-    content.onMouseDown.add |Event event|
+    list.onMouseDown.add |Event event|
     {
       if(event.button == 3)
        menu.open(event.widget, event.pos)
