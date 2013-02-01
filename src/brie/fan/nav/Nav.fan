@@ -55,7 +55,8 @@ abstract class Nav
 
   ** find items
   Void findItems(File dir, Item[] results, Bool preserveLayout := false,
-        Str path:="", Uri:Project projects := ProjectRegistry.projects)
+        Str path:="", Int? cLimit := null,
+        Uri:Project projects := ProjectRegistry.projects)
   {
     dir.listFiles.sort |a, b| {a.name  <=> b.name}.each |f|
     {
@@ -71,7 +72,7 @@ abstract class Nav
       {
         if(projects.containsKey(f.normalize.uri))
         {
-          // Not recursing in pods or pod groups
+          // Not recursing in projects
           prj := projects[f.normalize.uri]
           item := navBuilder.forProj(f, path, 1)
           item.icon = prj.icon
@@ -80,7 +81,7 @@ abstract class Nav
         else
         {
           sub := f.list.findAll{! hidden(f)}.size
-          Bool? expandable := sub > collapseLimit && sub > 0
+          Bool? expandable := sub > (cLimit ?: collapseLimit) && sub != 0
           if(preserveLayout)
           {
             // keep layout of existing item if known
@@ -94,7 +95,7 @@ abstract class Nav
           {
             results.add(navBuilder.forDir(f, path, 0, false))
             // recurse
-            findItems(f, results, preserveLayout, "${path}$f.name/", projects)
+            findItems(f, results, preserveLayout, "${path}$f.name/", cLimit, projects)
           }
         }
       }

@@ -165,7 +165,7 @@ class ItemList : Panel
         menu.add(MenuItem{it.text="Refresh tree"
           it.onAction.add |e| {frame.curSpace.nav?.refresh(item.file)} })
         menu.add(MenuItem{it.text="Expand tree"
-          it.onAction.add |e| {expand(item, true)} })
+          it.onAction.add |e| {collapse(item);expand(item, true)} })
         menu.add(MenuItem{it.text="Collapse"
           it.onAction.add |e| {collapse(item)} })
       }
@@ -220,7 +220,8 @@ class ItemList : Panel
       return (item as FileItem).file == base.file ? index : null
     }
     newItems := FileItem[,]
-    frame.curSpace.nav?.findItems(base.file, newItems, false, (index == 0 ? "" : base.dis))
+    frame.curSpace.nav?.findItems(base.file, newItems, false,
+                     (index == 0 ? "" : base.dis), recurse ? 1000 : null)
     items.insertAll(index + 1, newItems)
 
     update

@@ -15,8 +15,6 @@ class FancyNav : Nav
       FileItem? curItem, Int collapseLimit := 50, Str? dis := null, Int listWidth:=200)
     : super(collapseLimit, navBuilder)
   {
-    this.collapseLimit = collapseLimit
-
     root = dir
     files := [FileItem.makeProject(dir, 0).setIcon(navBuilder.icon)]
     if(dis!=null)
