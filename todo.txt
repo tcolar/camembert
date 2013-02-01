@@ -12,21 +12,6 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 [TODO / Ideas]
 
-(1) config wizzard / getting started
-
-(3)**console:
-process tabs, repeat command etc ... ?
-separate fantom config from editor config
-make support fantom a plugin ?
-instead of "gray" area when no file, open a "blank" file ?
-run -> terminate any existing process ??
-or maybe have process list somewhere
-separate console from search results ??
-reimplement terminate in here
-fix error links
-have plugins handle error parsing / links
-make console a regular text pane with error links on the side ?
-
 (1) site /readme
 
 -- Test + release
@@ -46,15 +31,9 @@ make console a regular text pane with error links on the side ?
 (3) nav -> auto-open folders: <10(10 children or less) ; *(all); .fan, .axon(olders wth .fan or .axon); fan(folder)
 always expand folders that contain sub projects ?
 
-(3)**console:
-process tabs, repeat command etc ... ?
-separate fantom config from editor config
-make support fantom a plugin ?
-instead of "gray" area when no file, open a "blank" file ?
-run -> terminate any existing process ??
-or maybe have process list somewhere
+(3) **console:
+process tabs
 separate console from search results ??
-reimplement terminate in here
 
 (3) TrioInfo -> should be in Axon plugin
 
