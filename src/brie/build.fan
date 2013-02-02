@@ -10,7 +10,7 @@ class Build : BuildPod
   new make()
   {
     podName = "camembert"
-    summary = "Pure Fantom lightweight IDE - Forked and fermented version of Brie (Brian's Rocking Integrated Environment)"
+    summary = "Lightweight IDE (Get camembertIde to get all plugins too)"
     depends = ["sys 1.0",
                "concurrent 1.0",
                "compiler 1.0",
