@@ -117,8 +117,12 @@ const class Sys : Service
       it.optionsFile = optionsFile
     }
     sys.start
-    // rescan projects
+
+    // rescan projects after a sys chnage
     ProjectRegistry.scan
+
+    // also update menus
+    PluginManager.cur.onFrameReady(Sys.cur.frame, false)
   }
 
   ** All known plugins

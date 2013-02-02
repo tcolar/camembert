@@ -45,10 +45,14 @@ abstract const class BasicPlugin : Plugin
     return BasicConfig(sys, name, defaultEnvHome, optionsType, envType)
   }
 
-  override Void onFrameReady(Frame frame)
+  override Void onFrameReady(Frame frame, Bool initial := true)
   {
+    // remove if alreday in
+    plugins := (frame.menuBar as MenuBar).plugins
+    plugins.remove(plugins.children.find{it->text == name})
+
     if(defaultEnvHome != null)
-      (frame.menuBar as MenuBar).plugins.add(BasicMenu(frame, name, this.typeof))
+      plugins.add(BasicMenu(frame, name, this.typeof))
   }
 
   override const |Uri -> Project?| projectFinder:= |Uri uri -> Project?|

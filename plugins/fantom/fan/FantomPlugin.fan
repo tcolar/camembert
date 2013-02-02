@@ -33,9 +33,13 @@ const class FantomPlugin : Plugin
     return FantomConfig(sys)
   }
 
-  override Void onFrameReady(Frame frame)
+  override Void onFrameReady(Frame frame, Bool initial := true)
   {
-    (frame.menuBar as MenuBar).plugins.add(FantomMenu(frame))
+    // remove if alreday in
+    plugins := (frame.menuBar as MenuBar).plugins
+    plugins.remove(plugins.children.find{it->text == name})
+
+    plugins.add(FantomMenu(frame))
   }
 
   override Void onChangedProjects(Project[] projects, Bool clearAll := false)

@@ -13,9 +13,9 @@ mixin Plugin
   virtual Void onInit(File configDir) {}
 
   ** Called once Camembert is ready to use (frame built)
-  ** Only called once
   ** Good place to add menu items if any
-  virtual Void onFrameReady(Frame f) {}
+  ** It canbe called again (with initail=false) after a complete "Reload config" event
+  virtual Void onFrameReady(Frame f, Bool initial:=true) {}
 
   ** Called whenever new/updated projects are found (to be reindexed)
   ** ClearAll can be set to tel the plugin to clear the index fully first

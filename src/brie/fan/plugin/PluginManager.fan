@@ -80,9 +80,9 @@ const class PluginManager : Service
     }
   }
 
-  internal Void onFrameReady(Frame f)
+  internal Void onFrameReady(Frame f, Bool initial:= true)
   {
-    plugins.vals.sort|a, b|{a.name <=> b.name}.each |plugin| {plugin.onFrameReady(f)}
+    plugins.vals.sort|a, b|{a.name <=> b.name}.each |plugin| {plugin.onFrameReady(f, initial)}
   }
 
   internal Void onShutdown(Bool isKill := false)
