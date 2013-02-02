@@ -20,7 +20,6 @@ class build : BuildPod
                "compiler 1.0",
                "compilerDoc 1.0",
                "netColarUtils 1.0.3+",
-               "netColarUI 1.0.0+",
                "fandoc 1.0",
                "syntax 1.0",
                "web 1.0",

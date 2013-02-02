@@ -20,7 +20,6 @@ class build : BuildPod
                "util 1.0+",
                "camembert 1.1.0+",
                "netColarUtils 1.0.3+",
-               "netColarUI 1.0.0+",
                ]
     version = Version("1.0.0")
     srcDirs = [`fan/`]
