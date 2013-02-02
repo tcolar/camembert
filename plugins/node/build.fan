@@ -17,6 +17,7 @@ class build : BuildPod
                "gfx 1.0",
                "fwt 1.0",
                "xml 1.0",
+               "util 1.0+",
                "camembert 1.1.0+",
                "netColarUtils 1.0.3+",
                "netColarUI 1.0.0+",

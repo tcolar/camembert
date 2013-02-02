@@ -66,6 +66,7 @@ internal const class MavenCmd : BasicPluginCmd
     p2 := str.index("]", p1); if (p2 == null) return null
     if(p1 > c || c > p2) return null
     file := File.os(str[7..<p1].trim)
+    if(! file.exists) return null
     line := str[p1+2..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
     text := file.name + str[p1 .. -1]

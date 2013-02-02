@@ -27,7 +27,8 @@ internal abstract const class FantomCmd : ExecCmd
   override Str:Str variables()
   {
     ["env_home" : env.fantomHome.toFile.osPath,
-     "project_dir" : FantomPlugin.findBuildFile(frame.curFile).parent.osPath]
+     "project_dir" : FantomPlugin.findBuildFile(frame.curFile).parent.osPath,
+     "cur_file" : frame.curFile.osPath]
   }
   override File folder()
   {
@@ -53,7 +54,8 @@ internal abstract const class FantomGroupCmd : ExecCmd
   override Str:Str variables()
   {
     ["env_home" : env.fantomHome.toFile.osPath,
-     "project_dir" : FantomPlugin.findBuildGroup(frame.curFile).parent.osPath]
+     "project_dir" : FantomPlugin.findBuildGroup(frame.curFile).parent.osPath,
+     "cur_file" : frame.curFile.osPath]
   }
   override File folder()
   {

@@ -5,6 +5,7 @@
 using camembert
 using gfx
 using xml
+using util
 
 **
 ** NodePlugin
@@ -28,5 +29,19 @@ const class NodePlugin : BasicPlugin
     return (dir + `package.json`).exists
   }
 
-  //TODO: override Str prjName(File prjDir)
+  override Str prjName(File prjDir)
+  {
+    Str? name
+    json := prjDir + `package.json`
+    if(json.exists)
+    {
+      try
+      {
+        data := (Str:Obj?) JsonInStream(json.in).readJson
+        name = data["name"]
+      }
+      catch(Err e){e.trace}
+    }
+    return name ?: prjDir.name  // fallback
+  }
 }

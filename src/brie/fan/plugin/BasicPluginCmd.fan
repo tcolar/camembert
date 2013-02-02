@@ -18,7 +18,8 @@ abstract const class BasicPluginCmd : ExecCmd
   override Str:Str variables()
   {
     return ["env_home" : env.envHome.toFile.osPath,
-     "project_dir" : plugin.findProject(frame.curFile).osPath]
+     "project_dir" : plugin.findProject(frame.curFile).osPath,
+     "cur_file" : frame.curFile.osPath]
   }
 
   override const |Console|? callback := null

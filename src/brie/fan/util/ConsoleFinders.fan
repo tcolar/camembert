@@ -16,7 +16,8 @@ const class ConsoleFinders
     c  := str.index(",", p1); if (c == null) return null
     p2 := str.index(")", p1); if (p2 == null) return null
     if(p1 > c || c > p2) return null
-    file := File.os(str[0..<p1])
+    file := File.os(str[0..<p1].trim)
+    if(! file.exists) return null
     line := str[p1+1..<c].toInt(10, false) ?: 1
     col  := str[c+1..<p2].toInt(10, false) ?: 1
     text := file.name + str[p1..-1]
@@ -31,9 +32,9 @@ const class ConsoleFinders
     if(str.size < 4) return null
     c1 := str.index(":", 4); if (c1 == null) return null
     c2 := str.index(":", c1+1); if (c2 == null) return null
-    file := File.os(str[0..<c1])
+    file := File.os(str[0..<c1].trim)
     if (!file.exists) return null
-      line := str[c1+1..<c2].toInt(10, false) ?: 1
+    line := str[c1+1..<c2].toInt(10, false) ?: 1
     text := file.name + str[c1..-1]
     return FileItem.makeFile(file).setDis(text).setLoc(ItemLoc {it.line = line-1})
             .setIcon(Sys.cur.theme.iconErr)

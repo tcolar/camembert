@@ -14,17 +14,11 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 (1) site /readme
 
-(1) -> console parse error messages properly
-maven :  [ERROR] /home/tcolar/DEV/fantom_dev/perso/algo/src/test/java/ArrayTest.java:[38,14] error: '.class' expected
-java : fwt::MenuItemPeer.widgetSelected (MenuItemPeer.java:108)
-Java/fan : camembert::Console.copyText (Console.fan:122)
-node: at Object.<anonymous> (/home/tcolar/DEV/node/projects/server302/test/test.js:11:1)
-
 -- Test + release
 
-(2) -> generalize env / plugin support ?
-
 (2) -> show current env(if any) in status bar (upon switch space / chnage env)
+
+(2) -> Create project feature (per plugin)
 
 (2) Finish the nav collapse/expand using the pattern
 
