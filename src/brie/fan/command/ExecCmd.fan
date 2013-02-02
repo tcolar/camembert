@@ -29,6 +29,8 @@ abstract const class ExecCmd : Cmd
 
   abstract |Console|? callback()
 
+  abstract |Str -> Item?|? itemFinder()
+
   override Void invoke(Event event)
   {
     frame.save
@@ -55,7 +57,7 @@ abstract const class ExecCmd : Cmd
       frame.process.setCmd(cmdKey, cmd, persist)
     }
 
-    cmd.execute(frame.console, variables, callback)
+    cmd.execute(frame.console, variables, callback, itemFinder)
   }
 
   private CmdArgs? confirmCmd(CmdArgs cmd)
@@ -132,7 +134,8 @@ const class CmdArgs
     this.runDir = runDir.trim
   }
 
-  Void execute(Console console, Str:Str variables, |Console|? callback := null)
+  Void execute(Console console, Str:Str variables, |Console|? callback := null,
+              |Str -> Item?|? itemFinder := null)
   {
     if(args.isEmpty)
       return
@@ -151,7 +154,9 @@ const class CmdArgs
       }
       params.add(param)
     }
-    console.exec(params, File.os(dir), callback)
+    cmd := ConsoleCmd{it.args = params; it.dir = File.os(dir);
+                      it.onDone = callback; it.itemFinder = itemFinder}
+    console.exec(cmd)
   }
 
   Str? arg(Int index)

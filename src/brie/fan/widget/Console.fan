@@ -159,11 +159,11 @@ class Console : InsetPane
   {
     if(lastCmd != null)
     {
-      exec(lastCmd.cmd, lastCmd.dir, lastCmd.onDone)
+      exec(lastCmd)
     }
   }
 
-  Void exec(Str[] cmd, File dir, |Console|? onDone := null)
+  Void exec(ConsoleCmd cmd)
   {
     // kill any existing process, don't want multiples for now
     if( ! killAndWait)
@@ -172,23 +172,19 @@ class Console : InsetPane
     }
     clear
 
-    lastCmd = ConsoleCmd{
-      it.cmd = cmd
-      it.dir =dir
-      it.onDone = onDone
-    }
+    lastCmd = cmd
 
     open
 
-    if( Desktop.isWindows && ! cmd.isEmpty && ! cmd[0].endsWith(".exe"))
-      cmd[0] = cmd[0] + ".exe"
+    if( Desktop.isWindows && ! cmd.args.isEmpty && ! cmd.args[0].endsWith(".exe"))
+      cmd.args[0] = cmd.args[0] + ".exe"
     frame.marks = Item[,]
     this.inKill = false
-    this.proc = ConsoleProcess(this)
-    this.onDone = onDone
+    this.proc = ConsoleProcess(this, cmd.itemFinder)
+    this.onDone = cmd.onDone
     list.clear
-    log("Running: $cmd in $dir.osPath")
-    proc.spawn(cmd, dir)
+    log("Running: $cmd.args in $cmd.dir.osPath")
+    proc.spawn(cmd.args, cmd.dir)
   }
 
   internal Void procDone(Int result)
@@ -216,11 +212,17 @@ class Console : InsetPane
   private |Console|? onDone
 }
 
-class ConsoleCmd
+const class ConsoleCmd
 {
-  Str[] cmd
-  File dir
-  |Console|? onDone := null
+  const Str[] args
+
+  const File dir
+
+  ** Will be called back when done
+  const |Console|? onDone := null
+
+  ** Create fileItem for given error lines (ie: errors)
+  const |Str -> Item?|? itemFinder := null
 
   new make(|This|? f) {f(this)}
 }
@@ -231,10 +233,13 @@ class ConsoleCmd
 
 internal const class ConsoleProcess
 {
-  new make(Console console)
+  const |Str -> Item?|? itemFinder := null
+
+  new make(Console console, |Str -> Item?|? itemFinder := null)
   {
     Actor.locals["console"] = console
     actor = Actor(ActorPool()) |msg| { receive(msg) }
+    this.itemFinder = itemFinder
   }
 
   Void spawn(Str[] cmd, File dir)
@@ -260,7 +265,7 @@ internal const class ConsoleProcess
     {
       try
       {
-        item := parseLine(line)
+        item := itemFinder?.call(line) ?: Item(line)
         console.list.addItem(item)
         if ((item is FileItem))
           frame.marks = frame.marks.dup.add(item)
@@ -272,45 +277,6 @@ internal const class ConsoleProcess
       }
     }
     console.list.scrollToLine(console.list.lineCount)
-  }
-
-  private Item parseLine(Str str)
-  {
-    // Fantom "file(line,col): msg"
-    // Javac  "file:col: msg"
-    if (str.size > 4)
-    {
-      item := parseFan(str);  if (item != null) return item
-      item  = parseJava(str); if (item != null) return item
-    }
-    return Item(str)
-  }
-
-  private FileItem? parseFan(Str str)
-  {
-    p1 := str.index("(", 4); if (p1 == null) return null
-    c  := str.index(",", p1); if (c == null) return null
-    p2 := str.index(")", p1); if (p2 == null) return null
-    if(p1 > c || c > p2) return null
-    file := File.os(str[0..<p1])
-    line := str[p1+1..<c].toInt(10, false) ?: 1
-    col  := str[c+1..<p2].toInt(10, false) ?: 1
-    text := file.name + str[p1..-1]
-    return FileItem.makeFile(file).setDis(text).setLoc(
-          ItemLoc{it.line = line-1; it.col  = col-1}).setIcon(
-          Sys.cur.theme.iconErr)
-  }
-
-  private Item? parseJava(Str str)
-  {
-    c1 := str.index(":", 4); if (c1 == null) return null
-    c2 := str.index(":", c1+1); if (c2 == null) return null
-    file := File.os(str[0..<c1])
-    if (!file.exists) return null
-      line := str[c1+1..<c2].toInt(10, false) ?: 1
-    text := file.name + str[c1..-1]
-    return FileItem.makeFile(file).setDis(text).setLoc(ItemLoc {it.line = line-1})
-            .setIcon(Sys.cur.theme.iconErr)
   }
 
   private Obj? receive(Msg msg)

@@ -20,6 +20,10 @@ internal abstract const class FantomCmd : ExecCmd
 {
   FantomPlugin plugin() {FantomPlugin.cur}
   FantomEnv env() {FantomPlugin.config.curEnv}
+  override const |Str -> Item?|? itemFinder := |Str str -> Item?|
+  {
+    return ConsoleFinders.fanFinder(str) ?: ConsoleFinders.javaFinder(str)
+  }
   override Str:Str variables()
   {
     ["env_home" : env.fantomHome.toFile.osPath,
@@ -42,6 +46,10 @@ internal abstract const class FantomGroupCmd : ExecCmd
 {
   FantomPlugin plugin() {FantomPlugin.cur}
   FantomEnv env() {FantomPlugin.config.curEnv}
+  override const |Str -> Item?|? itemFinder := |Str str -> Item?|
+  {
+    return ConsoleFinders.fanFinder(str) ?: ConsoleFinders.javaFinder(str)
+  }
   override Str:Str variables()
   {
     ["env_home" : env.fantomHome.toFile.osPath,
