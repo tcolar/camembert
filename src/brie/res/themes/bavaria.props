@@ -87,7 +87,7 @@ edComment = {"fg":"#007700",
 lineNumberColor = "#aaaaaa"
 
 # Color of the caret
-caretColor = "#ffffff"
+caretColor = "#000000"
 
 # Color of the scrollbar bg
 scrollBg = "#d9e5f3"

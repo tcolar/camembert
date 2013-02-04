@@ -23,6 +23,7 @@ const class BasicPluginCmd : ExecCmd
     this.args = args
     this.interaction = interaction
     this.persist = interaction != ExecCmdInteractive.never
+    this.itemFinder = itemFinder
   }
 
   override Str:Str variables()
