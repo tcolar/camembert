@@ -69,9 +69,9 @@ class ItemList : Panel, Themable
 
   override Int colw
 
-  private Int itemh() { font.height.max(18) }
+  Int itemh() { font.height.max(18) }
 
-  private Int width
+  Int width
 
 //////////////////////////////////////////////////////////////////////////
 // Items
@@ -122,7 +122,7 @@ class ItemList : Panel, Themable
     }
   }
 
-  private Void paintItem(Graphics g, Item item, Int x, Int y)
+  virtual Void paintItem(Graphics g, Item item, Int x, Int y)
   {
     if (item === this.highlight)
     {
