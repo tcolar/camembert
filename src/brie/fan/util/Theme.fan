@@ -160,7 +160,7 @@ const class Theme
   {
     Font? font
     if(Env.cur.os == "win32")
-      return "Consolas"
+      return "Arial" // "Consolas" -> apparently consolas is not there by deafult
     else if(Env.cur.os == "macosx")
       return "Menlo"
     else if(Env.cur.os == "linux")
