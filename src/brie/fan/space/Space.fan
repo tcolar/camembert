@@ -65,5 +65,6 @@ mixin Space
   ** Go to the given item. (in Editor & Nav)
   ** If null, refresh current item
   abstract Void goto(FileItem? item)
+
 }
 

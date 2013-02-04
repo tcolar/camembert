@@ -38,6 +38,12 @@ internal class StatusBar : ContentPane
       it.text="Index"
     }
 
+    this.env = Label
+    {
+      it.halign = Halign.right
+      it.text = "Current Environment"
+    }
+
     // projects
     this.projects = Label
     {
@@ -58,15 +64,15 @@ internal class StatusBar : ContentPane
     this.file = Label
     {
       it.text="File"
-      it.halign = Halign.left
+      //it.halign = Halign.left
       it.onMouseDown.add |e| { if (e.button == 1) frame.save }
     }
 
     // view (line/col status, etc)
     this.view = Label
     {
-      it.text = "View"
-      it.halign = Halign.right
+      it.text = "View information"
+     // it.halign = Halign.right
     }
 
     // put it all together
@@ -84,7 +90,15 @@ internal class StatusBar : ContentPane
           InsetPane(0, 20, 0, 0)
         }
         it.center = file
-        it.right = ConstraintPane { minw = 150; view, }
+        it.right = ConstraintPane
+        {
+          minw = 300
+          EdgePane
+          {
+            center = env
+            right = view
+          },
+        }
       }
     }
   }
@@ -102,6 +116,11 @@ internal class StatusBar : ContentPane
     projects.image = Sys.cur.prjReg.isScanning.val ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
     index.image = PluginManager.cur.anyIndexing ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
+
+    if(frame.curSpace.plugin != null)
+      env.text = frame.curEnv != null ? "[$frame.curEnv]" : "[default]"
+    else
+      env.text = ""
 
     // view file
     v := frame.curView
@@ -121,6 +140,8 @@ internal class StatusBar : ContentPane
     // relayout
     file.relayout
     view.relayout
+    env.relayout
+    env.parent.relayout
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -164,5 +185,6 @@ internal class StatusBar : ContentPane
   private Label console
   private Label file
   private Label view
+  private Label env
 }
 

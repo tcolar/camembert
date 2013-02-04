@@ -14,8 +14,6 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 (1) show env name in statusbar
 
-(1) fix fantom runsingle cmd -> not picking class/file name
-
 (2) theme  loading -> check fonts !!
 -> make font  a variable in theme ?? != per os
 

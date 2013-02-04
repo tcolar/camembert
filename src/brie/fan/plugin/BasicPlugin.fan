@@ -202,6 +202,7 @@ const class BasicSwitchEnvCmd : Cmd
     {
       Desktop.callAsync |->|
       {
+        frame.curEnv = name
         nm := pluginType.field("_name",false)?.get ?: pluginType.pod.name
         config := (BasicConfig) pluginType.method("config").call(nm)
         config.selectEnv(name)

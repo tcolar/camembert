@@ -494,5 +494,6 @@ class Frame : Window
   private ContentPane spacePane
   private StatusBar statusBar
   private File:Pos filePosHis := [:]
+  Str? curEnv
 }
 
