@@ -28,6 +28,7 @@ class Build : BuildGroup
       `plugins/fantom/build.fan`,
       `plugins/maven/build.fan`,
       `plugins/node/build.fan`,
+      `src/camembertIde/build.fan`,
     ]
   }
 

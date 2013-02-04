@@ -21,7 +21,7 @@ class Build : BuildPod
                "fwt 1.0",
                "web 1.0",
                "wisp 1.0",
-               "petanque 1.0.1+",
+               "petanque 1.0.3+",
                "netColarUtils 1.0.5+",
                //"rhino 1.7+"
     ]
@@ -37,7 +37,7 @@ class Build : BuildPod
                `fan/plugin/`,
                `fan/project/`]
     resDirs = [`res/`, `res/themes/`]
-    version = Version("1.1.0")
+    version = Version("1.1.1")
     meta    =  ["license.name"   : "Academic License",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
     docSrc  = true

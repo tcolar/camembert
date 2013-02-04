@@ -17,10 +17,10 @@ class build : BuildPod
                "gfx 1.0",
                "fwt 1.0",
                "xml 1.0",
-               "camembert 1.1.0+",
+               "camembert 1.1.1+",
                "netColarUtils 1.0.3+",
                ]
-    version = Version("1.0.0")
+    version = Version("1.1.1")
     srcDirs = [`fan/`]
     resDirs = [`res/`]
     meta    = ["license.name" : "MIT",
