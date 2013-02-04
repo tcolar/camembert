@@ -12,8 +12,6 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 [TODO / Ideas]
 
-(1) show env name in statusbar
-
 (2) theme  loading -> check fonts !!
 -> make font  a variable in theme ?? != per os
 
