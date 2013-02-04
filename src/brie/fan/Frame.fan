@@ -47,7 +47,7 @@ class Frame : Window
     this.console   = Console(this)
     this.helpPane = HelpPane(this)
     this.recentPane = RecentPane(this)
-    this.content = EdgePane
+    this.content = BgEdgePane
     {
       it.top = spaceBar
       it.center = SashPane

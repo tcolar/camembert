@@ -19,7 +19,7 @@ class ImageView : View
   new make(Frame frame, File file) : super(frame, file)
   {
     image = Image(file)
-    details := EdgePane
+    details := BgEdgePane
     {
       it.top = InsetPane(6)
       {
@@ -35,7 +35,7 @@ class ImageView : View
         it.border = Border("1,0,1,0 $Desktop.sysNormShadow,#000,$Desktop.sysHighlightShadow")
       }
     }
-    content = EdgePane
+    content = BgEdgePane
     {
       center = ImageViewWidget(image)
       bottom = details

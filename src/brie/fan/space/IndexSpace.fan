@@ -27,10 +27,10 @@ class IndexSpace : Space
   new make(Frame frame)
   {
     this.frame = frame
-    ui = InsetPane(0, 5, 5, 5) { content = makeUi }
+    ui = InsetPane(0, 5, 5, 5) {content = makeUi}
   }
 
-  GridPane makeUi()
+  Widget makeUi()
   {
     prjRoots := ItemList[,]
     projects := getProjects()
@@ -49,7 +49,7 @@ class IndexSpace : Space
       expandRow = 0
     }
     prjRoots.each |g| { grid.add(g) }
-    return grid
+    return BgEdgePane{it.left=grid}
   }
 
   override Str:Str saveSession()
@@ -98,4 +98,5 @@ class IndexSpace : Space
     return uri2.pathStr.startsWith(uri.pathStr)
   }
 }
+
 

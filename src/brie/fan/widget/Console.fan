@@ -37,7 +37,7 @@ class Console : InsetPane
   {
     this.frame = frame
     this.list = ItemList(frame, Item[,])
-    this.content = EdgePane{
+    this.content = BgEdgePane{
       left = GridPane{
         Button
         {

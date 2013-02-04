@@ -31,7 +31,7 @@ const class Sys : Service
   const Options options
 
   ** Theme
-  const Theme theme
+  const AtomicRef _theme := AtomicRef()
 
   const Template[] templates
 
@@ -50,7 +50,7 @@ const class Sys : Service
     if(f!=null) f(this)
     options = Options.load(optionsFile)
     shortcuts =  Shortcuts.load(optionsFile.parent)
-    theme = Theme.load(optionsFile.parent, options.theme)
+    _theme.val = Theme.load(`${optionsFile.parent}${options.theme}.props`.toFile)
     commands = Commands(this)
     prjReg = ProjectRegistry(options.srcDirs, optionsFile.parent)
     wPort := NetUtils.findAvailPort(8787)
@@ -72,6 +72,11 @@ const class Sys : Service
     }
     licenses = lic.sort |a, b| {a.name <=> b.name}
 
+  }
+
+  Theme theme()
+  {
+    return _theme.val
   }
 
   override Void onStart()

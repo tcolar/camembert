@@ -14,7 +14,7 @@ using petanque
 **
 ** ItemList
 **
-class ItemList : Panel
+class ItemList : Panel, Themable
 {
   //////////////////////////////////////////////////////////////////////////
   // Constructor
@@ -25,8 +25,22 @@ class ItemList : Panel
     this.frame = frame
     this.width = width
     this.items = items
-    update
     onMouseUp.add |e| { doMouseUp(e) }
+    updateTheme()
+    colw = font.width("m")
+    update
+  }
+
+  override Void updateTheme()
+  {
+    t := Sys.cur.theme
+    wallpaperColor = t.bg
+    viewportColor = t.bg
+    font = t.font
+    selectedItemColor = t.selectedItem
+    fontColor = t.fontColor
+    colw = font.width("m")
+    repaint
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -37,7 +51,9 @@ class ItemList : Panel
 
   Item[] items := [,] {set{&items = it; update}}
 
-  Font font := Sys.cur.theme.font
+  Font? font
+  Color? selectedItemColor
+  Color? fontColor
 
   Item? highlight { set { &highlight = it; repaint } }
 
@@ -51,7 +67,7 @@ class ItemList : Panel
 
   override Int colCount := 5 { private set }
 
-  override const Int colw := font.width("m")
+  override Int colw
 
   private Int itemh() { font.height.max(18) }
 
@@ -92,6 +108,8 @@ class ItemList : Panel
 //////////////////////////////////////////////////////////////////////////
   override Void onPaintLines(Graphics g, Range lines)
   {
+    g.font = font
+
     x := 0
     y := 0
     itemh := this.itemh
@@ -108,11 +126,11 @@ class ItemList : Panel
   {
     if (item === this.highlight)
     {
-      g.brush = Sys.cur.theme.selectedItem
+      g.brush = selectedItemColor
       g.fillRect(0, y, size.w, itemh)
     }
     x += item.indent*20
-    g.brush = Sys.cur.theme.fontColor
+    g.brush = fontColor
     if (item.icon != null) g.drawImage(item.icon, x, y)
     g.drawText(item.dis, x+20, y)
   }

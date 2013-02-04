@@ -162,8 +162,8 @@ const class FantomDoc : PluginDoc
       // fantom funcs
       trioInfo.tags.each
       {
-        html += "<div style='background-color:#ffeedd'><a name='$it.name'></a><b>${it.name}</b>"
-                    + "</div><div style='background-color:#ddffdd'>$it.kind</div>"
+        html += "<div class='bg1'><a name='$it.name'></a><b>${it.name}</b>"
+                    + "</div><div class='bg2'>$it.kind</div>"
                     + docStrToHtml(req, it.doc, true)
       }
       return html
@@ -173,7 +173,7 @@ const class FantomDoc : PluginDoc
       html := "<h2>$podName Axon src :</h2>"
       trioInfo.funcs.each
       {
-        html += "<div style='background-color:#ffeedd'><a name='$it.name'></a><b>${it.name}</b></div>"
+        html += "<div class='bg1'><a name='$it.name'></a><b>${it.name}</b></div>"
              + "<pre>$it.src</pre>"
       }
       return html
@@ -330,12 +330,12 @@ const class FantomDoc : PluginDoc
         {
           result += "<a href='#${it.name}'>$it.name</a>, "
         }
-        result += "<hr/><div style='background-color:#ccccff'><b>Inheritance</b></div>"
+        result += "<hr/><div class='bg1'><b>Inheritance</b></div>"
         type.base.eachr{result += htmlType(it)+" - "}
-        result += "<div style='background-color:#ccccff'><b>Local slots</b></div>"
+        result += "<div class='bg1'><b>Local slots</b></div>"
         type.slots.each
         {
-          result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
+          result += "<div  class='bg2'><a name='$it.name'></a>"
                   +htmlSig(it) + "</div>"
                   + docToHtml(req, it.doc)
         }
@@ -364,7 +364,7 @@ const class FantomDoc : PluginDoc
         {
           type.slots.each
           {
-            result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
+            result += "<div  class='bg2'><a name='$it.name'></a>"
                     +htmlSig(it) + "</div>"
                     + docToHtml(req, it.doc, true)
           }
@@ -379,7 +379,7 @@ const class FantomDoc : PluginDoc
         }
         info.funcs.each
         {
-          result += "<div style='background-color:#ffeedd'><a name='$it.name'></a>"
+          result += "<div class='bg2'><a name='$it.name'></a>"
                   +it.sig+ "</div>"
                   + docStrToHtml(req, it.doc, true)
         }

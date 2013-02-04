@@ -12,7 +12,7 @@ using fwt
 **
 ** SpaceBar
 **
-internal class SpaceBar : Canvas
+internal class SpaceBar : Canvas, Themable
 {
   new make(Frame frame)
   {
@@ -27,6 +27,17 @@ internal class SpaceBar : Canvas
           { onPopup(e, tab.space); return }
         if (e.button == 1) { frame.select(tab.space); return }
       }
+  }
+
+  override Void updateTheme()
+  {
+    font  = Sys.cur.theme.font
+    bgBar = Sys.cur.theme.bg
+    bgTab = Sys.cur.theme.spacePillBg
+    bgCur = Sys.cur.theme.selectedItem
+    fg = Sys.cur.theme.fontColor
+
+    repaint
   }
 
   Void onLoad()

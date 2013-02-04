@@ -90,7 +90,28 @@ const class DocWebMod : WebMod
     res.headers["Content-Type"] = "text/html"
     res.statusCode = 200
     out := res.out
-    out.print("<html><body>$html</body></html>").close
+    out.print(
+"<html>
+ <header>
+  <style type='text/css'>
+  body
+  {
+    color : $Sys.cur.theme.fontColor ;
+    background-color : $Sys.cur.theme.bg ;
+  }
+  .bg1 {background-color : $Sys.cur.theme.selectedItem}
+  .bg2 {background-color : $Sys.cur.theme.edSelectBg}
+  a:link {color : $Sys.cur.theme.edStr.fg ;}
+  a:visited {color : $Sys.cur.theme.edStr.fg ;}
+  a:hover {color : $Sys.cur.theme.edStr.fg ;}
+  a:active {color : $Sys.cur.theme.edStr.fg ;}
+  </style>
+ </header>
+ <body>
+ $html
+ </body>
+ </html>"
+ ).close
   }
 }
 

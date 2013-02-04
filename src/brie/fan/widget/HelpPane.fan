@@ -5,7 +5,7 @@ using fandoc
 using compilerDoc
 
 ** Sidebar to search / display fandocs
-class HelpPane : ContentPane
+class HelpPane : ContentPane, Themable
 {
   static const gfx::Image backIcon := gfx::Image(`fan://icons/x16/arrowLeft.png`, false)
   static const gfx::Image viewIcon := gfx::Image(`fan://camembert/res/binoculars.png`, false)
@@ -45,7 +45,7 @@ class HelpPane : ContentPane
     {
       search = Text
       {
-        text=""
+        text = ""
         onAction.add |Event e|
         {
           render(search.text)
@@ -107,6 +107,11 @@ class HelpPane : ContentPane
       onHyperlink(e)
     }
     render("")
+  }
+
+  override Void updateTheme()
+  {
+    browser?.refresh
   }
 
   private Void hide()

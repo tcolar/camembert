@@ -120,10 +120,9 @@ const class Theme
   const Str name := "default"
 
   ** Reload theme
-  static Theme load(File configDir, Str name)
+  static Theme load(File file)
   {
-    template := configDir+ `themes/${name}.props`
-    return (Theme) JsonSettings.load(template, Theme#)
+    return (Theme) JsonSettings.load(file, Theme#)
   }
 
   ** Default constructor with it-block

@@ -42,7 +42,7 @@ abstract class BaseSpace : Space
     navParent = InsetPane(0, 5, 0, 5)
     ui = EdgePane
     {
-      left = EdgePane
+      left = BgEdgePane
       {
         left = navParent
         right = slotsParent

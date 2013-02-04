@@ -10,14 +10,17 @@ class RecentPane : ContentPane
   new make(Frame frame)
   {
     this.frame = frame
-    content = EdgePane
+    content =  BgEdgePane
     {
-      top = Label {text = "Recent Items (Modif+Number)"}
-      picker = RecentPicker(frame.history.items) |item, e|
-      {
-        frame.goto(item)
-      }
-      center = picker
+        top = BgLabel
+        {
+          text = "Recent Items (Modif+Number)"
+        }
+        picker = RecentPicker(frame.history.items) |item, e|
+        {
+          frame.goto(item)
+        }
+        center = picker
     }
   }
 
@@ -58,11 +61,11 @@ class RecentPane : ContentPane
   }
 }
 
-class RecentPicker : EdgePane
+class RecentPicker : BgEdgePane
 {
   Table table
   RecentPickerModel mdl
-  new make(Item[] items, |Item, Event| onAction)
+  new make(Item[] items, |Item, Event| onAction) : super()
   {
     mdl = RecentPickerModel(items)
     table = Table
@@ -95,7 +98,10 @@ class RecentPicker : EdgePane
 
 class RecentPickerModel : TableModel
 {
-  new make(Item[] items) { this.items = items }
+  new make(Item[] items)
+  {
+    this.items = items
+  }
 
   override Int numCols() { return 3 }
   override Int numRows() { return items.size }
@@ -109,8 +115,9 @@ class RecentPickerModel : TableModel
     }
   }
   override Image? image(Int col, Int row) { col==1 ? (items[row].icon ?: def) : null}
-  override Font? font(Int col, Int row) { col==0 ? accFont : null }
-  override Color? fg(Int col, Int row)  { col==0 ? accColor : null }
+  override Font? font(Int col, Int row) { Sys.cur.theme.font }
+  override Color? fg(Int col, Int row)  { Sys.cur.theme.fontColor }
+  override Color? bg(Int col, Int row)  { Sys.cur.theme.bg }
   override Str text(Int col, Int row)
   {
     switch (col)
