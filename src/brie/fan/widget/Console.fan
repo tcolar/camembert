@@ -176,8 +176,6 @@ class Console : InsetPane
 
     open
 
-    if( Desktop.isWindows && ! cmd.args.isEmpty && ! cmd.args[0].endsWith(".exe"))
-      cmd.args[0] = cmd.args[0] + ".exe"
     frame.marks = Item[,]
     this.inKill = false
     this.proc = ConsoleProcess(this, cmd.itemFinder)
@@ -291,6 +289,8 @@ internal const class ConsoleProcess
     Int result := -1
     try
     {
+      if( Desktop.isWindows && ! cmd.isEmpty && ! cmd[0].lower.endsWith(".exe"))
+        cmd[0] = cmd[0] + ".exe"
       proc := Process(cmd, dir)
       procRef.val = Unsafe(proc)
       proc.out = ConsoleOutStream(this)
