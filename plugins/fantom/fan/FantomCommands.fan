@@ -184,8 +184,9 @@ internal const class RunPodCmd : FantomCmd
   {
     f := FantomPlugin.findBuildFile(frame.curFile)
     pod := plugin.index.podForFile(f)?.name
+    bn := frame.curFile.basename
 
-    target := single ? (pod == null ? f.basename : "${pod}::$f.basename") : pod
+    target := single ? (pod == null ? f.basename : "${pod}::$bn") : pod
     cmd := test ? "fant" : "fan"
     return CmdArgs.makeManual(["{{env_home}}/bin/$cmd", target], "{{project_dir}}")
   }
