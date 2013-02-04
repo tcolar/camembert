@@ -289,8 +289,8 @@ internal const class ConsoleProcess
     Int result := -1
     try
     {
-      if( Desktop.isWindows && ! cmd.isEmpty && ! cmd[0].lower.endsWith(".exe"))
-        cmd[0] = cmd[0] + ".exe"
+      if( Desktop.isWindows && ! cmd.isEmpty && ! cmd[0].endsWith(".exe"))
+        cmd = [cmd[0] + ".exe"].addAll(cmd[0 .. -1])
       proc := Process(cmd, dir)
       procRef.val = Unsafe(proc)
       proc.out = ConsoleOutStream(this)
