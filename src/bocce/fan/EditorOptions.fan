@@ -48,7 +48,7 @@ const class EditorOptions
   const Color bgCurLine             := Color(0xee_ee_ee) // Color(0xE6FFDA)
   const Color highlight             := Color(0xff_ff_66)
   const Color div                   := Color(0xdd_dd_dd)
-  const Color caretColor            := Color.black
+  const Color caretColor            := Color.yellow
   const Color scrollFg              := Color(0x70_40_40_40, true)
   const Color scrollBg              := Color(0x70_c0_c0_c0, true)
   const Color selectBg              := Desktop.sysListSelBg

@@ -235,7 +235,7 @@ class Viewport
     // bracket match higlights
     if (brackets != null)
     {
-      g.brush = options.highlight
+      g.brush = options.bracketMatch.bg
       if (brackets.start.line == linei)
         g.fillRect(linex  + brackets.start.col*colw, liney, colw, lineh)
       if (brackets.end.line == linei)
