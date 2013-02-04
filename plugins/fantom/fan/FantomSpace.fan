@@ -39,7 +39,7 @@ class FantomSpace : BaseSpace
     nav = FancyNav(frame, dir, StdItemBuilder(this), FileItem.makeFile(this.file))
     slots = makeSlotNav
 
-    viewParent.content = view
+    viewParent.content = view ?: FillerPane(Sys.cur.theme.bg)
     navParent.content = nav.list
     slotsParent.content = slots
   }
