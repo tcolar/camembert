@@ -292,7 +292,7 @@ class Viewport
     if (focused && linei == caretLine && controller.caretVisible)
     {
       caretx := linex0 + (caretCol * colw)
-      g.brush = Color.black
+      g.brush = options.caretColor
       g.drawLine(caretx, liney, caretx, liney+lineh)
     }
   }
