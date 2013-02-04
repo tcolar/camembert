@@ -80,7 +80,10 @@ const class FantomIndex
   Void reindex(File[] srcDirs, File[] podDirs, Bool clearIndex := false)
   {
     if(clearIndex)
+    {
       cache.send(Msg("clearAll"))
+      podsIndexed.val = false
+    }
     crawler.send(Msg("reindex", srcDirs, podDirs))
   }
 
