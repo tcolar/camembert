@@ -73,6 +73,21 @@ const class Theme
   @Setting{help = ["Color of line number addicator"]}
   const Color lineNumberColor         := Color(0xaa_aa_aa)
 
+  @Setting{help = ["Color of the caret"]}
+  const Color caretColor              := Color(0x00_00_00)
+
+  @Setting{help = ["Color of the scrollbar bg"]}
+  const Color scrollBg                := Color(0xdd_dd_dd)
+
+  @Setting{help = ["Color of the scrollbar handle"]}
+  const Color scrollFg                := Color(0xbb_bb_bb)
+
+  @Setting{help = ["Color for help docs bg 1"]}
+  const Color helpBg1                 := Color(0xaa_ff_aa)
+
+  @Setting{help = ["Color for help docs bg 1"]}
+  const Color helpBg2                 := Color(0xaa_aa_ff)
+
   // not making those settings for now ...
   const Image iconHome      := Image(`fan://camembert/res/home.png`)
   const Image iconFile      := Image(`fan://icons/x16/file.png`)
@@ -132,16 +147,25 @@ const class Theme
   }
 
   ** Best programming fonts(IMO) available standard for the current os
-  Font bestFont(Int size)
+  static Font bestFont(Int? size)
+  {
+    Font? font
+    sz := size == null ? "" : "${size}pt "
+    bf := bestFontName
+    // fallback to whatever java/SWT uses as the default
+    return Font("$sz bf", false) ?: Desktop.sysFont.toSize(size)
+  }
+
+  static Str bestFontName()
   {
     Font? font
     if(Env.cur.os == "win32")
-      font = Font("${size}pt Consolas", false)
+      return "Consolas"
     else if(Env.cur.os == "macosx")
-      return Font("${size}pt Menlo", false)
+      return "Menlo"
     else if(Env.cur.os == "linux")
-      return Font("${size}pt DejaVu Sans Mono", false)
+      return "DejaVu Sans Mono"
     // fallback to whatever java/SWT uses as the default
-    return font ?: Desktop.sysFont.toSize(size)
+    return Desktop.sysFont.toStr
   }
 }

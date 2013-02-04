@@ -52,6 +52,11 @@ class TextView : View
       it.options.strLiteral = Sys.cur.theme.edStr
       it.options.text = Sys.cur.theme.edText
       it.options.lineNumberColor = Sys.cur.theme.lineNumberColor
+      it.options.caretColor = Sys.cur.theme.caretColor
+      it.options.scrollFg  = Sys.cur.theme.scrollFg
+      it.options.scrollBg  = Sys.cur.theme.scrollBg
+      it.gutterColor =  Sys.cur.theme.scrollBg
+      it.thumbColor = Sys.cur.theme.scrollFg
     }
     editor.onFocus.add |e| { onFocusCheckFileTime }
     editor.onModify.add |e| { this.dirty = true }

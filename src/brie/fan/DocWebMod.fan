@@ -99,8 +99,8 @@ const class DocWebMod : WebMod
     color : $Sys.cur.theme.fontColor ;
     background-color : $Sys.cur.theme.bg ;
   }
-  .bg1 {background-color : $Sys.cur.theme.selectedItem}
-  .bg2 {background-color : $Sys.cur.theme.edSelectBg}
+  .bg1 {background-color : $Sys.cur.theme.helpBg1}
+  .bg2 {background-color : $Sys.cur.theme.helpBg2}
   a:link {color : $Sys.cur.theme.edStr.fg ;}
   a:visited {color : $Sys.cur.theme.edStr.fg ;}
   a:hover {color : $Sys.cur.theme.edStr.fg ;}

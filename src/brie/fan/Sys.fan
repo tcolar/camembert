@@ -123,6 +123,11 @@ const class Sys : Service
     }
     sys.start
 
+    // Update theme menu
+    m := (frame.menuBar as MenuBar)
+    m.buildThemesMenu
+    m.relayout; m.repaint
+
     // rescan projects after a sys chnage
     ProjectRegistry.scan
 

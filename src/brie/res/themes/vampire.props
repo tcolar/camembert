@@ -1,0 +1,103 @@
+## This is a setting files. The format is key = value
+## where the value is formatted in JSON format.
+
+# Default font : for anyhting but the editor
+font = "bold 9pt {{font}}"
+
+# Default font color : for anyhting but the editor
+fontColor = "#771111"
+
+# Background color : for anyhting but the editor
+bg = "#000000"
+
+# Background of space 'pills'
+spacePillBg = "#000000"
+
+# Background of selected items
+selectedItem = "#101010"
+
+# Font used in editor pane'
+edFont = "bold 10pt {{font}}"
+
+# Editor pane background color'
+edBg = "#000000"
+
+# Editor pane background behind current line'
+edCurLineBg = "#101010"
+
+# Background Color for text selection in Editor'
+edSelectBg = "#101010"
+
+# Where to show color indicators (lines in the editor background)
+edCols = [2,79]
+
+# Color for the color indicators
+edColsColor = "#202020"
+
+# Default color of text in the editor
+edText = {"fg":"#771111",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# brackets in editor
+edBracket = {"fg":"#770077",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# brackets match in editor
+edBracketMatch = {"fg":"#770077",
+"bg":"#301010",
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# keywords in editors
+edKeyword = {"fg":"#660033",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Numbers in editor
+edNum = {"fg":"#330033",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Strings in editor
+edStr = {"fg":"#661133",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Comments in editor
+edComment = {"fg":"#75715e",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Color of line number addicator
+lineNumberColor = "#333333"
+
+
+# Color of the caret
+caretColor = "#ff0000"
+
+# Color of the scrollbar bg
+scrollBg = "#000000"
+
+# Color of the scrollbar handle
+scrollFg = "#222222"
+
+# Color for help docs bg 1
+helpBg1 = "#222222"
+
+# Color for help docs bg 1
+helpBg2 = "#111111"

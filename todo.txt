@@ -12,14 +12,12 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 
 [TODO / Ideas]
 
-(1) create few themes, copy them to conf if new (replace font depending on platform)
-
 (1) show env name in statusbar
 
-(1) theme  loading -> check fonts !!
--> make font  a variable in theme ?? != per os
-
 (1) fix fantom runsingle cmd -> not picking class/file name
+
+(2) theme  loading -> check fonts !!
+-> make font  a variable in theme ?? != per os
 
 (2) user can define a vanilla project (any folder) then can use user defined commands in it (icon?)
 

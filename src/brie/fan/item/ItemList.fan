@@ -40,6 +40,8 @@ class ItemList : Panel, Themable
     selectedItemColor = t.selectedItem
     fontColor = t.fontColor
     colw = font.width("m")
+    gutterColor = t.scrollBg
+    thumbColor = t.scrollFg
     repaint
   }
 

@@ -19,7 +19,8 @@ class MenuBar : Menu
 
   new make()
   {
-     themes = buildThemesMenu
+    themes = Menu{it.text = "Themes"}
+    buildThemesMenu
 
     file = Menu {
       it.text = "File"
@@ -82,15 +83,15 @@ class MenuBar : Menu
     add(help)
   }
 
-  Menu buildThemesMenu()
+  Void buildThemesMenu()
   {
-    menu := Menu{it.text = "Themes"}
+    themes.removeAll
     dir := Sys.cur.optionsFile + `themes/`
     dir.listFiles.sort.each |file|
     {
       if(file.ext == "props")
       {
-        menu.add(MenuItem
+        themes.add(MenuItem
         {
           it.command = SwitchTheme(file).asCommand;
           it.mode = MenuItemMode.radio
@@ -98,6 +99,5 @@ class MenuBar : Menu
         })
       }
     }
-    return menu
   }
 }

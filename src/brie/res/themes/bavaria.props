@@ -1,0 +1,102 @@
+## This is a setting files. The format is key = value
+## where the value is formatted in JSON format.
+
+# Default font : for anyhting but the editor
+font = "9pt {{font}}"
+
+# Default font color : for anyhting but the editor
+fontColor = "#000000"
+
+# Background color : for anyhting but the editor
+bg = "#c3d8ed"
+
+# Background of space 'pills'
+spacePillBg = "#e6eef1"
+
+# Background of selected items
+selectedItem = "#e6eef1"
+
+# Font used in editor pane'
+edFont = "11pt {{font}}"
+
+# Editor pane background color'
+edBg = "#e6eef1"
+
+# Editor pane background behind current line'
+edCurLineBg = "#d9e5f3"
+
+# Background Color for text selection in Editor'
+edSelectBg = "#ffff00"
+
+# Where to show color indicators (lines in the editor background)
+edCols = [2,79]
+
+# Color for the color indicators
+edColsColor = "#57b3c2"
+
+# Default color of text in the editor
+edText = {"fg":"#000000",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# brackets in editor
+edBracket = {"fg":"#ff0000",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# brackets match in editor
+edBracketMatch = {"fg":"#ff0000",
+"bg":"#ffff00",
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# keywords in editors
+edKeyword = {"fg":"#0b06ff",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Numbers in editor
+edNum = {"fg":"#50c8ea",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Strings in editor
+edStr = {"fg":"#007777",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Comments in editor
+edComment = {"fg":"#007700",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Color of line number addicator
+lineNumberColor = "#aaaaaa"
+
+# Color of the caret
+caretColor = "#ffffff"
+
+# Color of the scrollbar bg
+scrollBg = "#d9e5f3"
+
+# Color of the scrollbar handle
+scrollFg = "#9999ff"
+
+# Color for help docs 1
+helpBg1 = "#e6eef1"
+
+# Color for help docs 2
+helpBg2 = "#c3d8ed"

@@ -1,0 +1,103 @@
+## This is a setting files. The format is key = value
+## where the value is formatted in JSON format.
+
+# Default font : for anyhting but the editor
+font = "9pt {{font}}"
+
+# Default font color : for anyhting but the editor
+fontColor = "#b00263"
+
+# Background color : for anyhting but the editor
+bg = "#ffccfa"
+
+# Background of space 'pills'
+spacePillBg = "#ffacda"
+
+# Background of selected items
+selectedItem = "#ff81c8"
+
+# Font used in editor pane'
+edFont = "11pt {{font}}"
+
+# Editor pane background color'
+edBg = "#ffccfa"
+
+# Editor pane background behind current line'
+edCurLineBg = "#ff81c8"
+
+# Background Color for text selection in Editor'
+edSelectBg = "#b765c7"
+
+# Where to show color indicators (lines in the editor background)
+edCols = [2,79]
+
+# Color for the color indicators
+edColsColor = "#b765c7"
+
+# Default color of text in the editor
+edText = {"fg":"#b00263",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# brackets in editor
+edBracket = {"fg":"#ff0000",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# brackets match in editor
+edBracketMatch = {"fg":"#ff0000",
+"bg":"#ffff00",
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# keywords in editors
+edKeyword = {"fg":"#0000ff",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Numbers in editor
+edNum = {"fg":"#770077",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Strings in editor
+edStr = {"fg":"#007777",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Comments in editor
+edComment = {"fg":"#007700",
+"bg":null,
+"font":null,
+"underlineColor":null,
+"underline":"none"}
+
+# Color of line number addicator
+lineNumberColor = "#aaaaaa"
+
+
+# Color of the caret
+caretColor = "#dd6699"
+
+# Color of the scrollbar bg
+scrollBg = "#ffacda"
+
+# Color of the scrollbar handle
+scrollFg = "#b00263"
+
+# Color for help docs bg 1
+helpBg1 = "#ffacda"
+
+# Color for help docs bg 1
+helpBg2 = "#e052a3"

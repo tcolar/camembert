@@ -19,6 +19,7 @@ class Main
     props := (Env.cur.workDir + `etc/camembert/camembert.props`).readProps
     Sys.log.info("props: $props")
     configDir := File.os(props["configDir"])
+    installTemplates(configDir)
     configVersion := Version(props["version"])
 
     if(! (configDir + `options.props`).exists)
@@ -75,6 +76,26 @@ class Main
     props.writeProps(["configDir" : "$path.text.trim",
                       "version" : Pod.find("camembert").version.toStr
                     ])
+
+  }
+
+  static Void installTemplates(File configDir)
+  {
+    dir := (configDir + `themes/`).create
+    Main#.pod.files.each
+    {
+      p := it.uri.path
+      if(p.size > 2 && p[-2] == "themes")
+      {
+        target := dir + `$it.name`
+        if( ! target.exists)
+        {
+          text := it.readAllStr.replace("{{font}}", Theme.bestFontName().toStr)
+          target.create.out.print(text).close
+        }
+      }
+    }
+    //DejaVu Sans Mono
   }
 }
 

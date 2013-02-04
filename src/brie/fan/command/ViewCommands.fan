@@ -39,7 +39,6 @@ internal const class SwitchTheme : Cmd
   override Void invoke(Event event)
   {
     Sys.cur._theme.val = Theme.load(file)
-    // TODO: set the new theme
     updateTheme(frame)
     frame.spaces.each
     {
