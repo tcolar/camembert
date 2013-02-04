@@ -50,7 +50,7 @@ const class Sys : Service
     if(f!=null) f(this)
     options = Options.load(optionsFile)
     shortcuts =  Shortcuts.load(optionsFile.parent)
-    _theme.val = Theme.load(`${optionsFile.parent}${options.theme}.props`.toFile)
+    _theme.val = Theme.load(`${optionsFile.parent}/themes/${options.theme}.props`.toFile)
     commands = Commands(this)
     prjReg = ProjectRegistry(options.srcDirs, optionsFile.parent)
     wPort := NetUtils.findAvailPort(8787)

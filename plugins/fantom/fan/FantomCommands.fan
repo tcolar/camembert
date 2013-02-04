@@ -83,6 +83,7 @@ internal const class SwitchConfigCmd : Cmd
     {
       Desktop.callAsync |->|
       {
+        frame.curEnv = name
         FantomPlugin.config.selectEnv(name)
         ReindexAllCmd().invoke(event)
       }
