@@ -19,7 +19,7 @@ const class MavenPlugin : BasicPlugin
 
   override Bool isProject(File dir)
   {
-    return (dir + `pom.xml`).exists
+    return dir.isDir && (dir + `pom.xml`).exists
   }
 
   ** Read project name from pom

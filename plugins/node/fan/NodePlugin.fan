@@ -21,7 +21,7 @@ const class NodePlugin : BasicPlugin
   {
     if(dir.path.contains("node_modules"))
       return false
-    return (dir + `package.json`).exists
+    return dir.isDir && (dir + `package.json`).exists
   }
 
   override Str prjName(File prjDir)

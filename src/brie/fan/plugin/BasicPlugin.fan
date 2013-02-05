@@ -35,7 +35,7 @@ abstract const class BasicPlugin : Plugin
   virtual File? findProject(File curFile)
   {
     File? f := curFile
-    while(f!=null && ! isProject(f))
+    while(f != null && ! isProject(f))
       f = f.parent
     return f
   }
