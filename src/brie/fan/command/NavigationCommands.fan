@@ -146,7 +146,7 @@ internal const class GotoCmd : Cmd
       // if we got actual selection from table use that
     // otherwise assume top match from table
     if (selected == null) selected = matches.items.first
-      if (selected == null) return
+    if (selected == null) return
       frame.goto(selected)
   }
 

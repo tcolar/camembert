@@ -21,10 +21,10 @@ class FileItem : Item
     this.file = f
     if(f != null)
       this.icon = Theme.fileToIcon(f)
-    if(f == null)
+    /*if(f == null)
     {
       Err("null fileitem!").trace
-    }
+    }*/
   }
 
   new makeProject(File f, Int indent := 0, Str? sortPath := null) : super.makeStr(f.name)
