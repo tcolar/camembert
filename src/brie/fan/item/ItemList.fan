@@ -26,6 +26,7 @@ class ItemList : Panel, Themable
     this.width = width
     this.items = items
     onMouseUp.add |e| { doMouseUp(e) }
+    onMouseWheel.add |e| { mouseWheel(e) }
     updateTheme()
     colw = font.width("m")
     update

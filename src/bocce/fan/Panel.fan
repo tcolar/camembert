@@ -278,7 +278,7 @@ abstract class Panel : Canvas
     if (hdrag != null) { e.consume; hdrag = null }
   }
 
-  internal Void mouseWheel(Event e)
+  Void mouseWheel(Event e)
   {
     if (e.delta.y != 0)
     {
