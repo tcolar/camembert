@@ -18,7 +18,7 @@ class FantomMenu : Menu
 
     envs = Menu
     {
-      it.text = "Switch config"
+      it.text = "Switch env"
     }
 
     first := true
