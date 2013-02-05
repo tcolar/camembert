@@ -11,7 +11,7 @@ fontColor = "#000000"
 bg = "#c3d8ed"
 
 # Background of space 'pills'
-spacePillBg = "#e6eef1"
+spacePillBg = "#c3d8ed"
 
 # Background of selected items
 selectedItem = "#e6eef1"

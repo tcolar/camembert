@@ -299,6 +299,9 @@ internal const class ConsoleProcess
     catch (Err e)
     {
       e.trace
+      cons := c.val as Console
+      cons.log(e.traceToStr)
+      return null
     }
     finally
     {
