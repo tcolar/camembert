@@ -41,7 +41,7 @@ internal class StatusBar : ContentPane
     this.env = Label
     {
       it.halign = Halign.right
-      it.text = "Current Environment"
+      it.text = "Current Space and Environment"
     }
 
     // projects
@@ -118,7 +118,10 @@ internal class StatusBar : ContentPane
     index.image = PluginManager.cur.anyIndexing ? Sys.cur.theme.iconIndexing : Sys.cur.theme.iconOk
 
     if(frame.curSpace.plugin != null)
-      env.text = frame.curEnv != null ? "[$frame.curEnv]" : "[default]"
+    {
+      name := Sys.cur.plugin(frame.curSpace.plugin).name
+      env.text = "[$name:" + (frame.curEnv != null ? "$frame.curEnv]" : "default]")
+    }
     else
       env.text = ""
 
