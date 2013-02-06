@@ -125,7 +125,7 @@ const class NodeDocs : PluginDocs
 
     kids.each |child|
     {
-      html.add("<a name='$child.name'><div class='bg2'>$child.dis</div>")
+      html.add("<a name='$child.name'><div class='bg1'>$child.dis</div>")
       html.add("</a>$child.desc")
     }
 
