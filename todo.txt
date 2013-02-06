@@ -16,6 +16,18 @@ build + run group
 debug command
 etc ...
 
+(2) remember recent projects (files?)
+
+(3) index all terms (ala lucene) or index only useful stuff ( find methods etc ... ? )
+
+(3) Manually define and/or rebase a project
+
+(2) Ctrl + P  : quick search files + quick search in file
+
+(2) hide nav ?
+
+(2) Allow run command on anything, even if not in filespace
+
 (2) theme  loading -> check fonts !!
 -> make font  a variable in theme ?? != per os
 

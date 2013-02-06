@@ -313,22 +313,26 @@ const class FindCmd : Cmd
       return
     }
 
-    if ( ! FileUtils.isTextFile(f)) return
+    if ( ! FileUtils.isTextFile(f, 1000000)) return
 
-    f.readAllLines.each |line, linei|
+    try
     {
-      chars := matchCase ? line : line.lower
-      col := chars.index(str)
-      while (col != null)
+      f.readAllLines.each |line, linei|
       {
-        span := Span(linei, col, linei, col+str.size)
-        dis := "$f.name(${linei+1}) [${col+1}-${col+1+str.size}]: $line.trim"
-        matches.add(FileItem.makeFile(f).setDis(dis).setLoc(
-              ItemLoc{it.line = linei; it.col  = col; it.span = span}).setIcon(
-              Sys.cur.theme.iconMark))
-        col = chars.index(str, col+str.size)
+        chars := matchCase ? line : line.lower
+        col := chars.index(str)
+        while (col != null)
+        {
+          span := Span(linei, col, linei, col+str.size)
+          dis := "$f.name(${linei+1}) [${col+1}-${col+1+str.size}]: $line.trim"
+          matches.add(FileItem.makeFile(f).setDis(dis).setLoc(
+                ItemLoc{it.line = linei; it.col  = col; it.span = span}).setIcon(
+                Sys.cur.theme.iconMark))
+          col = chars.index(str, col+str.size)
+        }
       }
     }
+    catch(Err e){}
   }
 
   const AtomicRef lastStr := AtomicRef("")
