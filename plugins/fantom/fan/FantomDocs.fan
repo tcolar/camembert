@@ -12,7 +12,7 @@ using camembert
 ** FantomDoc
 ** Documentation provider for fantom
 **
-const class FantomDoc : PluginDoc
+const class FantomDocs : PluginDocs
 {
   const FantomPlugin plugin
 

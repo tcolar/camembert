@@ -19,6 +19,8 @@ etc ...
 (2) theme  loading -> check fonts !!
 -> make font  a variable in theme ?? != per os
 
+(2) Node.js documentation
+
 (2) user can define a vanilla project (any folder) then can use user defined commands in it (icon?)
 
 (2) -> Create project feature (per plugin)
@@ -26,6 +28,10 @@ etc ...
 (2) Finish the nav collapse/expand using the pattern
 
 (3) real config wizzard / getting started
+
+(3) Js indexer -> rhino ?
+
+(3) Java indexer -> jar reflection ?
 
 (3) nav -> enhance for java projects ... flat not so good here, to many subfolders
 

@@ -5,7 +5,7 @@
 using fwt
 using camembert
 
-internal const class FantomCommands : PluginCommands
+const class FantomCommands : PluginCommands
 {
   override const Cmd build      := BuildCmd()
   override const Cmd buildGroup := BuildGroupCmd()
@@ -16,7 +16,7 @@ internal const class FantomCommands : PluginCommands
   override const Cmd buildAndRun:= BuildAndRunCmd{}
 }
 
-internal abstract const class FantomCmd : ExecCmd
+abstract const class FantomCmd : ExecCmd
 {
   FantomPlugin plugin() {FantomPlugin.cur}
   FantomEnv env() {FantomPlugin.config.curEnv}

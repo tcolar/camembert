@@ -14,16 +14,19 @@ using camembert
 const class FantomPlugin : Plugin
 {
   static const Str _name := "Fantom"
+  const FantomDocs docProv
+  const FantomCommands cmds := FantomCommands()
 
   ** FantomIndexing service
   const FantomIndex index
 
-  override PluginCommands? commands() {FantomCommands()}
-  override PluginDoc? docProvider() {FantomDoc(this)}
+  override PluginCommands? commands() {cmds}
+  override PluginDocs? docProvider() {docProv}
   override Str name() {return _name}
 
   new make()
   {
+    docProv = FantomDocs(this)
     index = FantomIndex()
   }
 

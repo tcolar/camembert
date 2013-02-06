@@ -46,7 +46,7 @@ mixin Plugin
   virtual PluginConfig? readConfig(Sys newSys) {null}
 
   ** Documentation provider for this plugin or null if none
-  virtual PluginDoc? docProvider() {null}
+  virtual PluginDocs? docProvider() {null}
 
   ** Plugin execution commands implemntation
   abstract PluginCommands? commands()

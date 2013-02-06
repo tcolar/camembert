@@ -12,10 +12,19 @@ using util
 const class NodePlugin : BasicPlugin
 {
   static const Str _name := "Node"
+  const NodeDocs docProv := NodeDocs()
+  const NodeCommands cmds
+
   override const Image icon := Image(`fan://camNodePlugin/res/node.png`)
   override Uri? defaultEnvHome() {`/usr/local/`}
   override const Str name := _name
-  override PluginCommands? commands() {NodeCommands(this)}
+  override PluginCommands? commands() {  cmds}
+  override PluginDocs? docProvider() {docProv}
+
+  new make()
+  {
+    cmds = NodeCommands(this)
+  }
 
   override Bool isProject(File dir)
   {
@@ -41,7 +50,7 @@ const class NodePlugin : BasicPlugin
   }
 }
 
-internal const class NodeCommands : PluginCommands
+const class NodeCommands : PluginCommands
 {
   override const Cmd run
   override const Cmd runSingle

@@ -12,14 +12,21 @@ using xml
 const class MavenPlugin : BasicPlugin
 {
   static const Str _name := "Maven"
+  const PluginCommands cmds
+
   override const Image icon := Image(`fan://camMavenPlugin/res/maven.png`)
   override const Str name := _name
   override Uri? defaultEnvHome() {`/usr/share/maven/`}
-  override PluginCommands? commands() {MavenCommands(this)}
+  override PluginCommands? commands() {cmds}
 
   override Bool isProject(File dir)
   {
     return dir.isDir && (dir + `pom.xml`).exists
+  }
+
+  new make()
+  {
+    cmds = MavenCommands(this)
   }
 
   ** Read project name from pom

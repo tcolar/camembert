@@ -9,7 +9,7 @@ using web
 ** PluginDoc
 ** Documentation provider associated with a plugin
 **
-const mixin PluginDoc
+const mixin PluginDocs
 {
   ** An icon for that plugin / language documentation
   abstract Image? icon()

@@ -14,7 +14,7 @@ class HelpPane : ContentPane, Themable
   Text? search
   Combo searchType := Combo{items = ["term*","*term*","exact"]}
   private Frame frame
-  Str:PluginDoc providers := [:]
+  Str:PluginDocs providers := [:]
   Combo provider
 
   new make(Frame frame)

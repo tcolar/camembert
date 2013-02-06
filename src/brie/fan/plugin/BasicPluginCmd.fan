@@ -11,19 +11,22 @@ const class BasicPluginCmd : ExecCmd
   override const Bool persist
   override const |Str -> Item?|? itemFinder
   const BasicPlugin plugin
-  const BasicEnv env
   const Str[] args
 
   new make(BasicPlugin plugin, Str name, Str[] args,
            ExecCmdInteractive interaction, |Str -> Item?|? itemFinder := null)
   {
     this.plugin = plugin
-    this.env = BasicPlugin.config(plugin.name).curEnv
     this.name = name
     this.args = args
     this.interaction = interaction
     this.persist = interaction != ExecCmdInteractive.never
     this.itemFinder = itemFinder
+  }
+
+  BasicEnv env()
+  {
+    BasicPlugin.config(plugin.name).curEnv
   }
 
   override Str:Str variables()

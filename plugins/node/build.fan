@@ -18,6 +18,8 @@ class build : BuildPod
                "fwt 1.0",
                "xml 1.0",
                "util 1.0+",
+               "web 1.0+",
+               "concurrent 1.0+",
                "camembert 1.1.1+",
                "netColarUtils 1.0.5+",
                ]
