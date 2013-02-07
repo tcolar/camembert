@@ -37,9 +37,9 @@ abstract class BaseSpace : Space
     this.dir  = dir.normalize
     file = file ?: dir
     this.file = file
-    slotsParent = InsetPane(0, 5, 0, 0)
-    viewParent = InsetPane(0, 5, 0, 0)
-    navParent = InsetPane(0, 5, 0, 5)
+    slotsParent = InsetPane(0, 3, 0, 0)
+    viewParent = InsetPane(0, 3, 0, 3)
+    navParent = InsetPane(0, 3, 0, 3)
     ui = BgEdgePane
     {
       left = BgEdgePane

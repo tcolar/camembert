@@ -59,14 +59,18 @@ abstract const class BasicPlugin : Plugin
   {
     f := uri.toFile
     if( ! f.exists || ! f.isDir) return null
-    if(isProject(f))
-      return Project{
-        it.dis = prjName(f)
-        it.dir = f.uri
-        it.icon = this.icon
-        it.plugin = this.typeof.pod.name
+    try
+    {
+      if(isProject(f))
+        return Project{
+          it.dis = prjName(f)
+          it.dir = f.uri
+          it.icon = this.icon
+          it.plugin = this.typeof.pod.name
       }
-     return null
+    }
+    catch(Err e){}
+    return null
   }
 
   override Space createSpace(Project prj)

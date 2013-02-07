@@ -139,7 +139,7 @@ const class Sys : Service
   Str:Plugin plugins() {PluginManager.cur.plugins}
 
   ** Retrieve a given plugin instance by it's name
-  Plugin plugin(Str name)
+  Plugin? plugin(Str name)
   {
     return PluginManager.cur.plugins[name]
   }

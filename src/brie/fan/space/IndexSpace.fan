@@ -27,7 +27,7 @@ class IndexSpace : Space
   new make(Frame frame)
   {
     this.frame = frame
-    ui = InsetPane(0, 5, 5, 5) {content = makeUi}
+    ui = InsetPane(0, 3, 3, 3) {content = makeUi}
   }
 
   Widget makeUi()

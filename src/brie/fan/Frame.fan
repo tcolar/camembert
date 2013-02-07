@@ -209,11 +209,21 @@ class Frame : Window
     if(space <=> curSpace != 0)
     {
       curSpace = space
+      // update space  ui
       spacePane.content = space.ui
       deepRelayout(spacePane)
+      // update spacebar
       spaceBar.onLoad
       spaceBar.relayout
+      // update status bar
       updateStatus
+      // update helpPane (select matching docs for this space, in combo)
+      if(space.plugin!= null)
+      {
+        plugin := Sys.cur.plugin(space.plugin)
+        if(plugin.docProvider != null)
+          helpPane.provider.selected = plugin.docProvider.dis
+      }
     }
   }
 
