@@ -149,14 +149,21 @@ class ItemList : Panel, Themable
     items.getSafe(line)
   }
 
-  private Void doMouseUp(Event event)
+  virtual Void doMouseUp(Event event)
   {
     obj := itemAtLine(yToLine(event.pos.y))
-    if(obj==null ||  ! (obj is FileItem))
+    event.consume
+
+    if(obj==null)
     {
-      event.consume
       return
     }
+
+    if (event.count == 1 && event.button == 1)
+      obj.selected(frame)
+
+    if(! (obj is FileItem))
+      return
 
     item := obj as FileItem
     if(item.file == null)
@@ -164,8 +171,6 @@ class ItemList : Panel, Themable
 
     if (event.count == 1 && event.button == 1)
     {
-      event.consume
-      item.selected(frame)
       if(item.file.isDir && ! item.isProject)
       {
         toggleCollapse(item)
@@ -173,9 +178,9 @@ class ItemList : Panel, Themable
       return
     }
 
+
     if (event.id === EventId.mouseUp && event.button == 3 && event.count == 1)
     {
-      event.consume
       menu := item.popup(frame)
 
       if(item.file.isDir)

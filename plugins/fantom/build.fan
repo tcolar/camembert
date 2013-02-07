@@ -23,9 +23,9 @@ class build : BuildPod
                "syntax 1.0",
                "web 1.0",
                "wisp 1.0",
-               "camembert 1.1.1+",
+               "camembert 1.1.3+",
                ]
-    version = Version("1.1.1")
+    version = Version("1.1.3")
     srcDirs = [`fan/`]
     resDirs = [,]
     meta    = ["license.name" : "MIT",

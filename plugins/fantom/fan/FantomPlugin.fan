@@ -49,7 +49,6 @@ const class FantomPlugin : Plugin
   {
     File[] srcDirs := (File[])projects.map |proj -> File| {proj.dir.toFile}
     File[] podDirs := config.curEnv.podDirs.map |uri -> File| {uri.plusSlash.toFile}
-    //Sys.log.info("changed projects: $projects.size $srcDirs")
 
     index.reindex(srcDirs, podDirs, clearAll)
   }
