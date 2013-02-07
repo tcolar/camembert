@@ -18,14 +18,14 @@ class build : BuildPod
                "fwt 1.0",
                "compiler 1.0",
                "compilerDoc 1.0",
-               "netColarUtils 1.0.5+",
                "fandoc 1.0",
                "syntax 1.0",
                "web 1.0",
                "wisp 1.0",
-               "camembert 1.1.3+",
+               "netColarUtils 1.0.5+",
+               "camembert 1.1.4+",
                ]
-    version = Version("1.1.3")
+    version = Version("1.1.4")
     srcDirs = [`fan/`]
     resDirs = [,]
     meta    = ["license.name" : "MIT",

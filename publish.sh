@@ -26,4 +26,6 @@ fanr publish -r http://repo.status302.com/fanr/ ${env}camMavenPlugin.pod
 fanr publish -r http://repo.status302.com/fanr/ ${env}camNodePlugin.pod
 fanr publish -r http://repo.status302.com/fanr/ ${env}camembertIde.pod
 
+fanr publish -r http://repo.status302.com/fanr/ ${env}camAxonPlugin.pod
+
 
