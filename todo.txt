@@ -10,8 +10,6 @@ axon -> new axon file -> validate/fix func name, requires lower case first lette
 
 [TODO / Ideas]
 
-(1) when switching space select proper doc in helpnae combo
-
 (1) axon plugin -> show axon-home link in helppane
 
 (2) build + run group command

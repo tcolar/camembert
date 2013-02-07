@@ -49,6 +49,8 @@ const class NodeDocs : PluginDocs
 
   ** Return html for a given path
   ** Note, the query will be prefixed with the plugin name for example /fantom/fwt::Button
+  **
+  ** TODO: actually use matchkind
   override Str html(WebReq req, Str query, MatchKind matchKind)
   {
     docs := ([Uri:NodeDoc]?) _docs.val

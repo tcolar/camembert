@@ -43,6 +43,7 @@ const class FantomDocs : PluginDocs
 
   override Str html(WebReq req, Str query, MatchKind matchKind)
   {
+
     if(query.isEmpty)
       return podList
     else if(query == "axon-home")
@@ -54,7 +55,7 @@ const class FantomDocs : PluginDocs
       return itemDoc(req, query)
     }
     else
-      return find(query, matchKind)
+      return find(query, req.uri.path[0] == this.typeof.pod.name, matchKind)
   }
 
   ** List all pods except axon library pods
@@ -212,7 +213,9 @@ const class FantomDocs : PluginDocs
 
   ** Search pods, types, slots for items matching the query
   ** And returns a search result page
-  private Str find(Str query, MatchKind kind := MatchKind.startsWith, Bool inclSlots := true)
+  ** IsFantom means wether it's for fantom or axon
+  private Str find(Str query, Bool isFantom, MatchKind kind := MatchKind.startsWith,
+                   Bool inclSlots := true)
   {
     index := plugin.index
 
@@ -226,7 +229,7 @@ const class FantomDocs : PluginDocs
         results+="<a href='/${pluginName}/${it.name}::index'>$it</a> <br/>"
       }
     }
-    types := index.matchTypes(query, kind)
+    TypeInfo[] types := isFantom ? index.matchTypes(query, kind) : [,]
     if(! types.isEmpty)
     {
       results += "<h2>Types:</h2>"
@@ -235,7 +238,7 @@ const class FantomDocs : PluginDocs
         results+="<a href='/${pluginName}/${it.qname}'>$it.qname</a> <br/>"
       }
     }
-    if(inclSlots)
+    if(inclSlots && isFantom)
     {
       slots := index.matchSlots(query, kind).findAll{ ! type.isAxonLib}
       if(! slots.isEmpty)
@@ -247,6 +250,12 @@ const class FantomDocs : PluginDocs
         }
       }
     }
+
+    if(isFantom)
+      return results
+
+     // ..... Axon only
+
     funcs := index.matchFuncs(query, kind)
     slots := index.matchSlots(query, kind).findAll{ type.isAxonLib}
     if( ! funcs.isEmpty || ! slots.isEmpty)
