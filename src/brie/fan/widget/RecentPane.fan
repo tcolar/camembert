@@ -102,6 +102,8 @@ class History
 
     // create history item
     item := FileItem.makeFile(link.file).setSpace(space)
+    if(link.icon != null)
+      item.icon = link.icon
 
     // remove any item that matches file (regardless of space)
     dup := items.findAll{it is FileItem}.findIndex |x|
