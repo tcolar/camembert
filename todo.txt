@@ -3,10 +3,8 @@
 [Axon Plugin]
 
 BUG: Axon -> sometimes endup with duplicated functions ??
-BUG: Axon space switching -> eval disspears .... nav buttons disappear
-axonPlugin -> specify an env where to find documentation (pods)
 axon -> pull/edit rules
-axon -> new faxon file -> validate/fix func name, requires lower case first letter !
+axon -> new axon file -> validate/fix func name, requires lower case first letter !
 
 *************************************************************
 
@@ -19,8 +17,6 @@ axon -> new faxon file -> validate/fix func name, requires lower case first lett
 (2) build + run group command
 
 (2) debug command
-
-(2) recent items pane -> axon icon does not show
 
 (2) remember recent projects (files?)
 

@@ -210,11 +210,21 @@ class Frame : Window
     {
       curSpace = space
       spacePane.content = space.ui
-      spacePane.relayout
+      deepRelayout(spacePane)
       spaceBar.onLoad
       spaceBar.relayout
       updateStatus
     }
+  }
+
+  ** Recursively relayout the whole widget and children
+  ** I had some issues with the space not relayout-ing properly
+  ** some subcomponent would disapear etc ...
+  ** So while this is not optimal this works
+  static Void deepRelayout(Widget w)
+  {
+    w.children.each { deepRelayout(it) }
+    w.relayout
   }
 
   Int? spaceIndex(Space space)
