@@ -3,12 +3,22 @@
 [Axon Plugin]
 
 BUG: Axon -> sometimes endup with duplicated functions ??
-axon -> pull/edit rules
+(2) -> axon : refresh added project rigt away?
 axon -> new axon file -> validate/fix func name, requires lower case first letter !
+Axon error -> alow click on error (console parser) [file:line] format
+Axon : view/edit sparks rules (json ?)
+axon : run sparks / view results (builtin sparks sync ?)
+axon : view grids results as graph
+axon : axon sparks : view errors, reset cache & retest
+axon: view server logs
 
 *************************************************************
 
 [TODO / Ideas]
+
+(1) -> when creating a project (ie: axon), add it to project regsitry right away
+
+(1) New file -> new file name should be sensible default for env (.fan, .js, .axon etc...)
 
 (2) Allow run command on anything, even if not in filespace
 
@@ -18,7 +28,7 @@ axon -> new axon file -> validate/fix func name, requires lower case first lette
 
 (2) hide nav ?
 
-(2) build + run group command
+(2) build and run group command
 
 (2) debug command
 

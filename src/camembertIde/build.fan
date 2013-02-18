@@ -14,7 +14,7 @@ class build : BuildPod
     podName = "camembertIde"
     summary = "Metapackage for Camembert and all plugins."
     depends = [
-               "camembert 1.1.4+",
+               "camembert 1.1.5+",
 
                "camFantomPlugin 1.1.4+",
                "camNodePlugin 1.1.4+",
@@ -22,7 +22,7 @@ class build : BuildPod
 
                "sys 1.0+"
                ]
-    version = Version("1.1.4") // sync with camembert version
+    version = Version("1.1.5") // sync with camembert version
     srcDirs = [`fan/`]
     meta    = ["license.name" : "MIT",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]

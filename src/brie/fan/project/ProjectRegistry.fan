@@ -60,6 +60,16 @@ const class ProjectRegistry : Actor
           projects = savedProjects
         return projects
       }
+      else if(action == "add")
+      {
+        newPrj := c.addProject(items[1] as Uri)
+        if(newPrj != null)
+          PluginManager.cur.onChangedProjects([newPrj])
+      }
+      else if(action == "remove")
+      {
+        c.removeProject(items[1] as Uri)
+      }
       else
         Sys.log.err("Unexpected project reistry thread action: $action !")
     }catch(Err e)
@@ -119,15 +129,20 @@ const class ProjectRegistry : Actor
         if( ! val)
         {
           // At end of scan, refresh the indexSpace
-          frame.spaces.each
-          {
-            if(it is IndexSpace)
-              it.refresh
-          }
+          refreshIndexSpace
         }
       }
     }
     catch {}
+  }
+
+  Void refreshIndexSpace()
+  {
+    Sys.cur.frame.spaces.each
+    {
+      if(it is IndexSpace)
+        it.refresh
+    }
   }
 
 
@@ -139,6 +154,17 @@ const class ProjectRegistry : Actor
   static Uri:Project pluginProjects(Str pluginName)
   {
     return projects.findAll{it.plugin == pluginName}
+  }
+
+  ** Manually register a new project
+  static Void register(Uri dir)
+  {
+     Sys.cur.prjReg.send(["add", dir]).get
+  }
+
+  static Void unRegister(Uri dir)
+  {
+     Sys.cur.prjReg.send(["remove", dir]).get
   }
 
   ** start a sync (asynchronous)
@@ -202,6 +228,21 @@ class ProjectCache
     Sys.log.info("Found $newProjects.size projects during scan in $dirs")
 
     return newProjects
+  }
+
+  Project? addProject(Uri? dir)
+  {
+    |Uri -> Project?|[] pluginFuncs := [,]
+    Sys.cur.plugins.each {pluginFuncs.add(it.projectFinder)}
+    Project? prj := pluginFuncs.eachWhile {it.call(dir)}
+    if(prj != null)
+      projects[dir] = prj
+    return prj
+  }
+
+  Void removeProject(Uri? dir)
+  {
+    projects.remove(dir)
   }
 }
 

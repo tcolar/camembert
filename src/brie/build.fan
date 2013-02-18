@@ -25,7 +25,7 @@ class Build : BuildPod
                "netColarUtils 1.0.5+",
                //"rhino 1.7+"
     ]
-    version = Version("1.1.4")
+    version = Version("1.1.5")
     srcDirs = [`fan/`,
                `fan/space/`,
                `fan/view/`,
