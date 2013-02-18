@@ -11,7 +11,7 @@ class Build : BuildPod
   {
     podName = "camembert"
     summary = "Lightweight IDE (Get camembertIde to get all plugins too)"
-    depends = ["sys 1.0",
+    depends = ["sys 1.0.64+",
                "concurrent 1.0",
                "compiler 1.0",
                "compilerDoc 1.0",

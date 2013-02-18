@@ -20,7 +20,7 @@ class build : BuildPod
                "camNodePlugin 1.1.4+",
                "camMavenPlugin 1.1.3+",
 
-               "sys 1.0+"
+               "sys 1.0.64+"
                ]
     version = Version("1.1.5") // sync with camembert version
     srcDirs = [`fan/`]
