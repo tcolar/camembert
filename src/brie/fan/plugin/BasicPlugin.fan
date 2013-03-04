@@ -126,7 +126,7 @@ const class BasicConfig : PluginConfig
       if(tmp.isEmpty)
       {
         // create & add default env
-        env := BasicEnv{it.envHome = defaultEnvHome}
+        env := envType == BasicEnv# ? BasicEnv{it.envHome = defaultEnvHome} : envType.make()
         JsonSettings{}.save(env, (cfgFolder + `$name/env_default.props`).out)
         tmp.add(env)
       }

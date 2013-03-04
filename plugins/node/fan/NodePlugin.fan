@@ -18,7 +18,7 @@ const class NodePlugin : BasicPlugin
   override const Image icon := Image(`fan://camNodePlugin/res/node.png`)
   override Uri? defaultEnvHome() {`/usr/local/`}
   override const Str name := _name
-  override PluginCommands? commands() {  cmds}
+  override PluginCommands? commands() { cmds}
   override PluginDocs? docProvider() {docProv}
 
   new make()

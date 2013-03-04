@@ -118,7 +118,7 @@ const class PluginManager : Service
     return false
   }
 
-  ** Config of a named plugin (name is pod type name)
+  ** Config of a named plugin
   PluginConfig? conf(Str pluginName)
   {
     confs := ([Str:PluginConfig]?) _pluginConfs.val

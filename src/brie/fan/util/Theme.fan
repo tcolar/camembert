@@ -96,6 +96,8 @@ const class Theme
   const Image iconFan       := Image(`fan://icons/x16/fileFan.png`)
   const Image iconJava      := Image(`fan://icons/x16/fileJava.png`)
   const Image iconJs        := Image(`fan://icons/x16/fileJs.png`)
+  const Image iconPython    := Image(`fan://camembert/res/filePython.png`)
+  const Image iconRuby      := Image(`fan://camembert/res/fileRuby.png`)
   const Image iconCs        := Image(`fan://icons/x16/fileCs.png`)
   const Image iconErr       := Image(`fan://icons/x16/err.png`)
   const Image iconOk        := Image(`fan://camembert/res/ok.png`)
@@ -127,6 +129,8 @@ const class Theme
     if (f.ext == "fan")  return t.iconFan
     if (f.ext == "java") return t.iconJava
     if (f.ext == "js")   return t.iconJs
+    if (f.ext == "py")   return t.iconPython
+    if (f.ext == "rb")   return t.iconRuby
     if (f.ext == "cs")   return t.iconCs
 
     return t.iconFile

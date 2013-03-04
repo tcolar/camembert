@@ -16,7 +16,21 @@ axon: view server logs
 
 [TODO / Ideas]
 
-(1) -> when creating a project (ie: axon), add it to project regsitry right away
+(1) Installer / standalone app, especially for winblows where it's a pain to install
+
+(2) java documentation
+
+(2) python support
+
+(2) python documentation (pydoc ? -> ugly and super old) .. sphynx ? .. custom ??
+
+(2) ant projects plugin
+
+(2) Ruby projects support
+
+(3) Scala projects support
+
+(3) Make project support (c / c++)
 
 (1) New file -> new file name should be sensible default for env (.fan, .js, .axon etc...)
 
