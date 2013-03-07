@@ -38,7 +38,13 @@ const class RubyDocs : PluginDocs
     // ok, ri looks good, make use of it
     if(query.isEmpty)
       return index(ri)
-    else return search(ri, query)
+    else
+    {
+      // with ruby a trailing '?' can be meaningful (part of id)
+      if(req.uri.toStr.endsWith("?"))
+        query += "?"
+      return search(ri, query)
+    }
   }
 
   ** Return ruby index
@@ -46,17 +52,56 @@ const class RubyDocs : PluginDocs
   {
     // TODO: might want to lazyinit / cache ths if it turns out to be slowish
     results := "<h2>Ruby index</h2>"
-    runRi(ri, ["-l"]).eachLine
+    runRi(ri, ["-l","-f","html"]).eachLine
     {
       if( ! it.contains("::"))
-        results += "$it <br/>"
+        results += "<a href='$it'>$it</a> <br/>"
     }
     return results
   }
 
   Str search(File ri, Str query)
   {
-    return "TODO"
+    results := ""
+    lines := runRi(ri, ["-T", "-f", "html", query]).readAllLines
+    if( ! lines.isEmpty && lines[0].startsWith(".$query not found"))
+    {
+      // "Not found" case ... actually gives us plain text, not HTML as requested
+      results += "${lines[0]}<br/>"
+      lines[1..-1].each
+      {
+        link := it.contains("::") ? it[it.index("::")+2 .. -1] : it
+        results += "<a href='$link'>$it</a> <br/>"
+      }
+      return results
+    }
+    // "Result" page (html)
+    lines.each
+    {
+      line := it.trim
+      // Trying to create links for suspected identifiers(methods etc...)
+      if(line.startsWith("<pre>") && line.endsWith("</pre>") && mightBeId(line[5 .. -7]))
+      {
+        id := line[5 .. -7]
+        results += "<a href='$id'><pre>$id</pre></a>"
+      }
+      else
+        results += it
+    }
+    return results
+  }
+
+  ** Check if str looks like it might be a ruby id(class, method, etc...)
+  ** Allowing alphanums and _, ?, !, =
+  ** This is unperfect but decent enough for this purpose (doc links)
+  private Bool mightBeId(Str s)
+  {
+    return s.chars.eachWhile |Int c -> Int?|
+    {
+      if(c.isAlphaNum || c == '_' || c == '?' || c == '!' || c == '=')
+        return null
+      return c
+    } == null
   }
 
   private Buf runRi(File ri, Str[] args)
