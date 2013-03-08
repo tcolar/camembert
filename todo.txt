@@ -20,13 +20,9 @@ axon: view server logs
 
 (2) java documentation
 
-(2) python support
-
 (2) python documentation (pydoc ? -> ugly and super old) .. sphynx ? .. custom ??
 
 (2) ant projects plugin
-
-(2) Ruby projects support
 
 (3) Scala projects support
 

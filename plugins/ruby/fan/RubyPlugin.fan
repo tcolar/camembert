@@ -59,11 +59,11 @@ internal const class RubyCommands : PluginCommands
   new make(RubyPlugin plugin)
   {
     ruby := "{{env_home}}/bin/ruby"
-    run         = BasicPluginCmd(plugin, "RunSingle", [ruby, "{{cur_file}}"],
+    run         = BasicPluginCmd(plugin, "Run", [ruby, "{{cur_file}}"],
                                  ExecCmdInteractive.onetime, rubyFinder)
     runSingle   = BasicPluginCmd(plugin, "RunSingle", [ruby, "{{cur_file}}"],
                                  ExecCmdInteractive.always, rubyFinder)
-    test        = BasicPluginCmd(plugin, "TestSingle", [ruby, "{{cur_file}}"],
+    test        = BasicPluginCmd(plugin, "Test", [ruby, "{{cur_file}}"],
                                  ExecCmdInteractive.onetime, rubyFinder)
     testSingle  = BasicPluginCmd(plugin, "TestSingle", [ruby, "{{cur_file}}"],
                                  ExecCmdInteractive.always, rubyFinder)

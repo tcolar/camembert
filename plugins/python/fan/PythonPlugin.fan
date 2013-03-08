@@ -58,11 +58,11 @@ internal const class PythonCommands : PluginCommands
   new make(PythonPlugin plugin)
   {
     python := "{{env_home}}/bin/python"
-    run         = BasicPluginCmd(plugin, "RunSingle", [python, "{{cur_file}}"],
+    run         = BasicPluginCmd(plugin, "Run", [python, "{{cur_file}}"],
                                  ExecCmdInteractive.onetime, pythonFinder)
     runSingle   = BasicPluginCmd(plugin, "RunSingle", [python, "{{cur_file}}"],
                                  ExecCmdInteractive.always, pythonFinder)
-    test        = BasicPluginCmd(plugin, "TestSingle", [python, "{{cur_file}}"],
+    test        = BasicPluginCmd(plugin, "Test", [python, "{{cur_file}}"],
                                  ExecCmdInteractive.onetime, pythonFinder)
     testSingle  = BasicPluginCmd(plugin, "TestSingle", [python, "{{cur_file}}"],
                                  ExecCmdInteractive.always, pythonFinder)
