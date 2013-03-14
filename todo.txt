@@ -16,6 +16,12 @@ axon: view server logs
 
 [TODO / Ideas]
 
+(2) create custom process/run commands and bind them to a key(F9-12?)
+
+(4) vi keys ?
+
+(4?) "Global" Todo list file or pane ?
+
 (1) Installer / standalone app, especially for winblows where it's a pain to install
 
 (2) java documentation
