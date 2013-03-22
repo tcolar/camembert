@@ -19,7 +19,7 @@ class build : BuildPod
                "util 1.0+",
                "web 1.0+",
                "concurrent 1.0+",
-               "netColarUtils 1.0.5+",
+               "netColarUtils 1.0.6+",
                "camembert 1.1.5+",
                ]
     version = Version("1.1.6")

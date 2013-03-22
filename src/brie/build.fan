@@ -22,7 +22,7 @@ class Build : BuildPod
                "web 1.0",
                "wisp 1.0",
                "petanque 1.0.3+",
-               "netColarUtils 1.0.5+",
+               "netColarUtils 1.0.6+",
                //"rhino 1.7+"
     ]
     version = Version("1.1.6")
