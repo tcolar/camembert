@@ -5,15 +5,25 @@
 using camembert
 using gfx
 using web
+using concurrent
+using util
 
 **
 ** PythonDocs : Provides help pane documentation for Python
-** Uses Pydoc .... whih is VERY dates (like 90's)
-** Might want to try to use Sphynx instead but that is a bit "heavy"
 **
-const class PyhtonDocs : PluginDocs
+const class PythonDocs : PluginDocs
 {
   override const Image? icon := Image(`fan://camPythonPlugin/res/python.png`, false)
+
+  const AtomicRef _docs := AtomicRef()
+
+  new make() : super()
+  {
+    // Force "reindexing" docs at each start (for now)
+    clearIndex
+
+    reindex
+  }
 
   ** name of the plugin responsible
   override Str pluginName() {this.typeof.pod.name}
@@ -29,68 +39,15 @@ const class PyhtonDocs : PluginDocs
   ** Note, the query will be prefixed with the plugin name for example /fantom/fwt::Button
   override Str html(WebReq req, Str query, MatchKind matchKind)
   {
-    // For Python we will make use of the "pydoc" utility
-    config := PluginManager.cur.conf(dis) as BasicConfig
-    if(config == null) return "Missing config"
-    env := config.curEnv as RubyEnv
-    if(env == null) return "Missing env"
-    ri := env.riPath.toFile
-    if( ! ri.exists) return "riPath is not set properly in the ruby env !"
-
-    // ok, ri looks good, make use of it
-    if(query.isEmpty)
-      return index(ri)
-    else
-    {
-      // with ruby a trailing '?' can be meaningful (part of id)
-      if(req.uri.toStr.endsWith("?"))
-        query += "?"
-      return search(ri, query)
-    }
+    // TODO
+    return ""
   }
 
   ** Return ruby index
   Str index(File ri)
   {
-    // TODO: might want to lazyinit / cache ths if it turns out to be slowish
-    results := "<h2>Ruby index</h2>"
-    runRi(ri, ["-l","-f","html"]).eachLine
-    {
-      if( ! it.contains("::"))
-        results += "<a href='$it'>$it</a> <br/>"
-    }
-    return results
-  }
-
-  Str search(File ri, Str query)
-  {
-    results := ""
-    lines := runRi(ri, ["-T", "-f", "html", query]).readAllLines
-    if( ! lines.isEmpty && lines[0].startsWith(".$query not found"))
-    {
-      // "Not found" case ... actually gives us plain text, not HTML as requested
-      results += "${lines[0]}<br/>"
-      lines[1..-1].each
-      {
-        link := it.contains("::") ? it[it.index("::")+2 .. -1] : it
-        results += "<a href='$link'>$it</a> <br/>"
-      }
-      return results
-    }
-    // "Result" page (html)
-    lines.each
-    {
-      line := it.trim
-      // Trying to create links for suspected identifiers(methods etc...)
-      if(line.startsWith("<pre>") && line.endsWith("</pre>") && mightBeId(line[5 .. -7]))
-      {
-        id := line[5 .. -7]
-        results += "<a href='$id'><pre>$id</pre></a>"
-      }
-      else
-        results += it
-    }
-    return results
+    // TODO
+    return ""
   }
 
   ** Check if str looks like it might be a ruby id(class, method, etc...)
@@ -104,14 +61,114 @@ const class PyhtonDocs : PluginDocs
         return null
       return c
     } == null
+  }*/
+
+
+  Void clearIndex()
+  {
+    (Sys.cur.optionsFile + `../state/`).listFiles.each
+    {
+      if(it.name.startsWith("python_info_"))
+        it.delete
+    }
   }
 
-  private Buf runRi(File ri, Str[] args)
+  ** Index the docs for the current python env
+  ** only reindex if we don't have it generated yet for the current env
+  ** use clearIndex first to force reindexing
+  Void reindex()
   {
-    p := Process([ri.osPath].addAll(args))
+    Actor(ActorPool(), |Obj? obj -> Obj?|
+    {
+      try
+      {
+        config := PluginManager.cur.conf(dis) as BasicConfig
+        if(config == null) return "Missing config"
+        env := config.curEnv as BasicEnv
+        if(env == null) return "Missing env"
+        python := env.envHome.toFile + `bin/python`
+        if( ! python.exists) return "pythonPath is not set properly in the python env !"
+
+        version := runPython(python, ["--version"]).readAllStr[7 .. -1]
+
+        info := Sys.cur.optionsFile + `../state/python_info_${version}.json`
+
+        if(! info.exists)
+          runPython(python, ["", info.osPath])
+        Obj? theDocs := JsonInStream(info.in).readJson
+
+        _docs.val = scan(theDocs)
+      }
+      catch(Err e)
+      {
+        Sys.log.err("Failed loading Node.js docs !", e)
+      }
+      return null
+    }).send("run")
+  }
+
+  ** Read json genarted from python and create in memory doc map from it.
+  Str:PythonDoc scan(Obj? obj)
+  {
+    Str:PythonDoc docs := [:]
+    if(obj == null || ! (obj is List)) return docs
+    (obj as List).each
+    {
+      map := (it as Str:Str?)
+      doc := PythonDoc(map)
+      docs[doc.sig] = doc
+    }
+    return docs.toImmutable
+  }
+
+  private Buf runPython(File python, Str[] args)
+  {
+    p := Process([python.osPath].addAll(args))
     b := Buf()
     p.out = b.out
     p.run.join
     return b.flip
   }
 }
+
+** Python documentation nodes
+@Serializable
+const class PythonDoc
+{
+  const Str type := ""
+  const Str name := ""
+  const Str module := ""
+  const Str clazz := ""
+  const Str file := ""
+  const Str line := ""
+  const Str doc := ""
+  const Str sig := ""
+
+  new make(Str:Obj? map)
+  {
+    type = map["type"]?.toStr ?: ""
+    name = map["name"]?.toStr ?: ""
+    module = map["module"]?.toStr ?: ""
+    clazz = map["class"]?.toStr ?: ""
+    file = map["file"]?.toStr ?: ""
+    line = map["line"]?.toStr ?: ""
+    doc = map["doc"]?.toStr ?: ""
+    sig = toSig
+  }
+
+  private Str toSig()
+  {
+    if(type == "module")
+      return "$name"
+    else if(type == "class")
+      return "$module::$name"
+    else
+    {
+      if( ! clazz.isEmpty)
+        return "$module::${clazz}.$name"
+      else
+        return "${module}.$name"
+    }
+  }
+}
+
