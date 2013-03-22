@@ -24,7 +24,7 @@ class build : BuildPod
                ]
     version = Version("1.1.6")
     srcDirs = [`fan/`]
-    resDirs = [`res/`]
+    resDirs = [`res/`, `python/`]
     meta    = ["license.name" : "MIT",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert",
                 "camembert.plugin" : "PythonPlugin"]

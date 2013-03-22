@@ -14,10 +14,14 @@
   For all other modules we use custom AST parsing because inspect can have side
   effects or even cause crashes
 
-  Note: Would have use pyclbr but unfortunately it does not provide easy access
-  to docstrings
+  Should be compatible with both Python 2 & 3
 
-  Compatible with both Python 2 & 3
+  Notes:
+  Would have use pyclbr but unfortunately it does not provide easy access
+  to docstrings.
+
+  Also considered the pydoc utility but that generates some hardcoded 90's style
+  HTML pages that we could not do much with.
 """
 
 import ast

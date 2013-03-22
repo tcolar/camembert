@@ -16,6 +16,8 @@ axon: view server logs
 
 [TODO / Ideas]
 
+(1) !! Nasty bug, when switching spaces, the undo/redo gets mixed up between files !!
+
 (2) create custom process/run commands and bind them to a key(F9-12?)
 
 (4) vi keys ?

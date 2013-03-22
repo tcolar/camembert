@@ -32,6 +32,9 @@ abstract const class BasicPlugin : Plugin
 
   virtual Type envType() {BasicEnv#}
 
+  ** Called upon this plugin env switch
+  virtual Void envSwitched(BasicConfig newConf) {}
+
   virtual File? findProject(File curFile)
   {
     File? f := curFile
@@ -210,6 +213,10 @@ const class BasicSwitchEnvCmd : Cmd
         nm := pluginType.field("_name",false)?.get ?: pluginType.pod.name
         config := (BasicConfig) pluginType.method("config").call(nm)
         config.selectEnv(name)
+
+        // notify plugin of env switch
+        plugin := PluginManager.cur.plugins[pluginType.pod.name] as BasicPlugin
+        plugin.envSwitched(config)
       }
     }
   }

@@ -12,15 +12,18 @@ using netColarUtils
 const class PythonPlugin : BasicPlugin
 {
   static const Str _name := "Python"
-  //const PythonDocs docProv := PythonDocs()
+  const PythonDocs docProv := PythonDocs()
   const PluginCommands cmds
 
   override const Image icon := Image(`fan://camPythonPlugin/res/python.png`)
   override const Str name := _name
   override Uri? defaultEnvHome() {`/usr/`}
   override PluginCommands? commands() {cmds}
+  override PluginDocs? docProvider() {docProv}
+  override Type envType() {PythonEnv#}
 
-  override Type optionsType() {PythonOptions#}
+  ** reindex(if needed) docs upon env swicth
+  override Void envSwitched(BasicConfig newConf) {docProv.reindex}
 
   override Bool isProject(File dir)
   {
