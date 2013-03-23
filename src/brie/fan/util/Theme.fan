@@ -150,21 +150,22 @@ const class Theme
     if (f != null) f(this)
   }
 
-  ** Best programming fonts(IMO) available standard for the current os
+  ** Best programming fonts(IMO) available standard for the current OS
   static Font bestFont(Int? size)
   {
     Font? font
     sz := size == null ? "" : "${size}pt "
     bf := bestFontName
     // fallback to whatever java/SWT uses as the default
-    return Font("$sz bf", false) ?: Desktop.sysFont.toSize(size)
+    return Font("$sz $bf", false) ?: Desktop.sysFont.toSize(size)
   }
 
   static Str bestFontName()
   {
     Font? font
     if(Env.cur.os == "win32")
-      return "Arial" // "Consolas" -> apparently consolas is not there by deafult
+      // "Consolas" is better but apparently consolas is not there by default on all winblows versions
+      return "Courier New"
     else if(Env.cur.os == "macosx")
       return "Menlo"
     else if(Env.cur.os == "linux")
