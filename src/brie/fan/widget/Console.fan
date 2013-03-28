@@ -163,14 +163,18 @@ class Console : InsetPane
     }
   }
 
-  Void exec(ConsoleCmd cmd)
+  Void exec(ConsoleCmd cmd, Bool killExisting := true)
   {
-    // kill any existing process, don't want multiples for now
-    if( ! killAndWait)
+    if(killExisting)
     {
-      return
+      // kill any existing process, don't want multiples for now
+      if( ! killAndWait)
+      {
+        return
+      }
+      clear
+      list.clear
     }
-    clear
 
     lastCmd = cmd
 
@@ -180,7 +184,6 @@ class Console : InsetPane
     this.inKill = false
     this.proc = ConsoleProcess(this, cmd.itemFinder)
     this.onDone = cmd.onDone
-    list.clear
     log("Running: $cmd.args in $cmd.dir.osPath")
     proc.spawn(cmd.args, cmd.dir)
   }

@@ -31,6 +31,8 @@ abstract const class ExecCmd : Cmd
 
   abstract |Str -> Item?|? itemFinder()
 
+  virtual Bool killExisting() {true}
+
   override Void invoke(Event event)
   {
     frame.save
@@ -57,7 +59,7 @@ abstract const class ExecCmd : Cmd
       frame.process.setCmd(cmdKey, cmd, persist)
     }
 
-    cmd.execute(frame.console, variables, callback, itemFinder)
+    cmd.execute(frame.console, variables, killExisting, callback, itemFinder)
   }
 
   private CmdArgs? confirmCmd(CmdArgs cmd)
@@ -134,8 +136,8 @@ const class CmdArgs
     this.runDir = runDir.trim
   }
 
-  Void execute(Console console, Str:Str variables, |Console|? callback := null,
-              |Str -> Item?|? itemFinder := null)
+  Void execute(Console console, Str:Str variables, Bool killExisting := true,
+              |Console|? callback := null, |Str -> Item?|? itemFinder := null)
   {
     if(args.isEmpty)
       return
@@ -156,7 +158,7 @@ const class CmdArgs
     }
     cmd := ConsoleCmd{it.args = params; it.dir = File.os(dir);
                       it.onDone = callback; it.itemFinder = itemFinder}
-    console.exec(cmd)
+    console.exec(cmd, killExisting)
   }
 
   Str? arg(Int index)

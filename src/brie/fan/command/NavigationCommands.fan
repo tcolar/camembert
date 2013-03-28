@@ -313,7 +313,7 @@ const class FindCmd : Cmd
       return
     }
 
-    if ( ! FileUtils.isTextFile(f, 1000000)) return
+    if ( ! FileUtils.isTextFile(f, 10000000)) return
 
     try
     {
