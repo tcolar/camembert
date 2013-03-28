@@ -17,14 +17,6 @@ const class PythonDocs : PluginDocs
 
   const AtomicRef _docs := AtomicRef()
 
-  new make() : super()
-  {
-    // Force "reindexing" docs at each start (for now)
-    clearIndex
-
-    reindex
-  }
-
   ** name of the plugin responsible
   override Str pluginName() {this.typeof.pod.name}
 
@@ -39,34 +31,66 @@ const class PythonDocs : PluginDocs
   ** Note, the query will be prefixed with the plugin name for example /fantom/fwt::Button
   override Str html(WebReq req, Str query, MatchKind matchKind)
   {
-    // TODO
-    return ""
-  }
+    query = query.trim
 
-  ** Return ruby index
-  Str index(File ri)
-  {
-    // TODO
-    return ""
-  }
+    docs := _docs.val as Str:PythonDoc
+    if(docs == null)
+      return "Index not ready yet."
 
-  ** Check if str looks like it might be a ruby id(class, method, etc...)
-  ** Allowing alphanums and _, ?, !, =
-  ** This is unperfect but decent enough for this purpose (doc links)
-  private Bool mightBeId(Str s)
-  {
-    return s.chars.eachWhile |Int c -> Int?|
+    if(query.isEmpty)
+      return index(docs)
+
+    // exact match
+    if(docs.containsKey(query))
     {
-      if(c.isAlphaNum || c == '_' || c == '?' || c == '!' || c == '=')
-        return null
-      return c
-    } == null
-  }*/
+      data := docs[query]
+      if(data.type == "module")
+      {
+        result := "<h2>$data.name</h2><hr/>"
+        docs.each
+        {
+          if(it.link.startsWith(query))
+            result+= it.name + ", &nbsp;"
+        }
+        result += "<hr/>" + data.doc.replace("\n","<br/>")+"<hr/>"
+        docs.each
+        {
+          if(it.link.startsWith(query))
+            result+= "<br/><a name='$it.name'></a><div class='bg2'>$it.name</div>"
+              + it.doc.replace("\n","<br/>")
+        }
+        return result
+      }
+    }
 
+    // search
+    result := ""
+    docs.keys.each |key|
+    {
+      if(key.contains(query))
+        result += "<a href='/camPythonPlugin/$key'>$key</a><br/>"
+    }
+    return result
+  }
+
+  ** Return python index (modules)
+  Str index(Str:PythonDoc docs)
+  {
+    result := "<h2>Modules:</h2>"
+    modules := docs.keys.findAll |Str key, Int index -> Bool|
+    {
+      return (! key.contains(".") && ! key.contains("#"))
+    }
+    modules.each |module|
+    {
+      result += "<a href='/camPythonPlugin/$module'>$module</a><br/>"
+    }
+    return result
+  }
 
   Void clearIndex()
   {
-    (Sys.cur.optionsFile + `../state/`).listFiles.each
+    (Sys.cur.optionsFile.parent + `state/`).listFiles.each
     {
       if(it.name.startsWith("python_info_"))
         it.delete
@@ -89,19 +113,24 @@ const class PythonDocs : PluginDocs
         python := env.envHome.toFile + `bin/python`
         if( ! python.exists) return "pythonPath is not set properly in the python env !"
 
-        version := runPython(python, ["--version"]).readAllStr[7 .. -1]
+        version := runPython(python, ["--version"]).readAllStr[7 .. -1].trim
 
-        info := Sys.cur.optionsFile + `../state/python_info_${version}.json`
+        info := Sys.cur.optionsFile.parent + `state/python_info_${version}.json`
 
         if(! info.exists)
-          runPython(python, ["", info.osPath])
+        {
+          script := Sys.cur.optionsFile.parent + `Python/docinfo.py`
+          Pod.of(this).file(`/python/docinfo.py`).copyTo(script, ["overwrite" : true])
+
+          runPython(python, [script.osPath, info.osPath])
+        }
         Obj? theDocs := JsonInStream(info.in).readJson
 
         _docs.val = scan(theDocs)
       }
       catch(Err e)
       {
-        Sys.log.err("Failed loading Node.js docs !", e)
+        Sys.log.err("Failed loading Python docs !", e)
       }
       return null
     }).send("run")
@@ -116,19 +145,25 @@ const class PythonDocs : PluginDocs
     {
       map := (it as Str:Str?)
       doc := PythonDoc(map)
-      docs[doc.sig] = doc
+      docs[doc.link] = doc
     }
-    return docs.toImmutable
+    Str:PythonDoc sorted := [:] {ordered = true}
+
+    docs.keys.sort.each {sorted[it] = docs[it]}
+
+    return sorted.toImmutable
   }
 
   private Buf runPython(File python, Str[] args)
   {
+    //echo("$python $args")
     p := Process([python.osPath].addAll(args))
     b := Buf()
     p.out = b.out
     p.run.join
     return b.flip
   }
+
 }
 
 ** Python documentation nodes
@@ -142,7 +177,7 @@ const class PythonDoc
   const Str file := ""
   const Str line := ""
   const Str doc := ""
-  const Str sig := ""
+  const Str link := ""
 
   new make(Str:Obj? map)
   {
@@ -153,21 +188,21 @@ const class PythonDoc
     file = map["file"]?.toStr ?: ""
     line = map["line"]?.toStr ?: ""
     doc = map["doc"]?.toStr ?: ""
-    sig = toSig
+    link = toLink
   }
 
-  private Str toSig()
+  private Str toLink()
   {
     if(type == "module")
       return "$name"
     else if(type == "class")
-      return "$module::$name"
+      return "${module}.{$name}"
     else
     {
       if( ! clazz.isEmpty)
-        return "$module::${clazz}.$name"
+        return "${module}.${clazz}#$name"
       else
-        return "${module}.$name"
+        return "${module}#$name"
     }
   }
 }

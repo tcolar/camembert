@@ -49,6 +49,10 @@ class Visitor(ast.NodeVisitor):
     self.clazz = None
     self.file = file
 
+  # TODO : follow imports ??
+  #def visit_ImportFrom(delf, node):
+  #  print ast.dump(node)
+
   def generic_visit(self, node):
     ast.NodeVisitor.generic_visit(self, node)
 
@@ -85,7 +89,7 @@ def find_items():
   items = []
 
   # First we do the builtin modules, we use inspect for those as we don't have
-  # the sources since it's in C. Those are already load and safe to inspect anyway
+  # the sources since it's in C. Those are already loaded and safe to inspect anyway
 
   for module in sys.builtin_module_names:
     # Note: No need to import the module since it's a builtin
@@ -100,7 +104,7 @@ def find_items():
       # Doesn't seem there is such thing as classes in builtin modules
 
   # Now we do all other modules, for those we use AST parsing because inspect
-  # would require loading them whihc can cause side effects and crashes
+  # would require loading them which can cause side effects and crashes
 
   for importer, name, ispkg in pkgutil.iter_modules():
     loader = importer.find_module(name)
@@ -132,6 +136,7 @@ def find_items():
 # Script Main -----------------------------------
 
 if __name__ == "__main__":
+
   if len(sys.argv) < 2:
     print("Error, Expecting destination file path as an argument !")
     sys.exit(-1)

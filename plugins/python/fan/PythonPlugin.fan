@@ -49,6 +49,14 @@ const class PythonPlugin : BasicPlugin
         it.extensions=["py"]
         it.text="\n# History: {date} {user} Creation\n\n"})
   }
+
+   override Void onFrameReady(Frame frame, Bool initial := true)
+  {
+    // Force "reindexing" docs at each start (for now)
+    docProv.clearIndex
+    docProv.reindex
+  }
+
 }
 
 internal const class PythonCommands : PluginCommands
