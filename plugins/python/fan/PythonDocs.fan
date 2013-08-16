@@ -16,6 +16,7 @@ const class PythonDocs : PluginDocs
   override const Image? icon := Image(`fan://camPythonPlugin/res/python.png`, false)
 
   const AtomicRef _docs := AtomicRef()
+  const AtomicRef isIndexing := AtomicRef(false)
 
   ** name of the plugin responsible
   override Str pluginName() {this.typeof.pod.name}
@@ -26,6 +27,7 @@ const class PythonDocs : PluginDocs
   ** Return a FileItem for the document matching the current source file (if known)
   ** Query wil be what's in the helPane serach box, ie "fwt::Combo#make" (not prefixed by plugin name)
   override FileItem? findSrc(Str query) {null}
+
 
   ** Return html for a given path
   ** Note, the query will be prefixed with the plugin name for example /fantom/fwt::Button
@@ -102,20 +104,25 @@ const class PythonDocs : PluginDocs
   ** use clearIndex first to force reindexing
   Void reindex()
   {
-    Actor(ActorPool(), |Obj? obj -> Obj?|
+    if(isIndexing.val)
+      return // already indexing
+    result := Actor(ActorPool(), |Obj? obj -> Obj?|
     {
+      isIndexing.val = true
       try
       {
         config := PluginManager.cur.conf(dis) as BasicConfig
-        if(config == null) return "Missing config"
-        env := config.curEnv as BasicEnv
-        if(env == null) return "Missing env"
-        python := env.envHome.toFile + `bin/python`
-        if( ! python.exists) return "pythonPath is not set properly in the python env !"
+        if(config == null) {echo("Python indexing error: Missing config"); return null}
+        env := config.curEnv as PythonEnv
+        if(env == null)  {echo("Python indexing error: Missing env"); return null}
+        python := env.python3Path.toFile
+        if( ! python.exists)  {echo("Python indexing error: python3Path is not set properly in the python env !"); return null}
 
         version := runPython(python, ["--version"]).readAllStr[7 .. -1].trim
 
         info := Sys.cur.optionsFile.parent + `state/python_info_${version}.json`
+
+        echo("Info: $info.osPath")
 
         if(! info.exists)
         {
@@ -131,9 +138,15 @@ const class PythonDocs : PluginDocs
       catch(Err e)
       {
         Sys.log.err("Failed loading Python docs !", e)
+        e.trace
+      }
+      finally
+      {
+        isIndexing.val = false
       }
       return null
     }).send("run")
+
   }
 
   ** Read json genarted from python and create in memory doc map from it.
@@ -156,9 +169,9 @@ const class PythonDocs : PluginDocs
 
   private Buf runPython(File python, Str[] args)
   {
-    //echo("$python $args")
     p := Process([python.osPath].addAll(args))
     b := Buf()
+    p.err = b.out
     p.out = b.out
     p.run.join
     return b.flip

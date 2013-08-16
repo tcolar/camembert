@@ -30,6 +30,8 @@ class Build : BuildGroup
       `plugins/node/build.fan`,
       `plugins/python/build.fan`,
       `plugins/ruby/build.fan`,
+      `plugins/gradle/build.fan`,
+      `plugins/go/build.fan`,
       `src/camembertIde/build.fan`,
     ]
   }

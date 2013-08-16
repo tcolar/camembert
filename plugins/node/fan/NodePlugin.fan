@@ -30,6 +30,7 @@ const class NodePlugin : BasicPlugin
   {
     if(dir.path.contains("node_modules"))
       return false
+    if(isCustomPrj(dir, "Node")) return true
     return dir.isDir && (dir + `package.json`).exists
   }
 

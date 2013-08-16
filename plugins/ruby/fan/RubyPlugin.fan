@@ -24,6 +24,7 @@ const class RubyPlugin : BasicPlugin
 
   override Bool isProject(File dir)
   {
+    if(isCustomPrj(dir, "Ruby")) return true
     return dir.isDir && (dir + `Rakefile`).exists
   }
 

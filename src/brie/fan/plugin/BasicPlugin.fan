@@ -22,7 +22,7 @@ abstract const class BasicPlugin : Plugin
   ** set to null if plugin does not support envs
   abstract Uri? defaultEnvHome()
 
-  ** Method that decides wether a given dir is a project or not
+  ** Method that decides whether a given dir is a project or not
   abstract Bool isProject(File dir)
 
   ** Returns a name for the project

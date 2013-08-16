@@ -4,6 +4,7 @@
 
 using camembert
 using gfx
+using fwt
 using netColarUtils
 
 **
@@ -21,12 +22,14 @@ const class PythonPlugin : BasicPlugin
   override PluginCommands? commands() {cmds}
   override PluginDocs? docProvider() {docProv}
   override Type envType() {PythonEnv#}
+  override Bool isIndexing() {docProv.isIndexing.val}
 
   ** reindex(if needed) docs upon env swicth
   override Void envSwitched(BasicConfig newConf) {docProv.reindex}
 
   override Bool isProject(File dir)
   {
+    if(isCustomPrj(dir, "Python")) return true
     return dir.isDir && (dir + `__init__.py`).exists
   }
 
@@ -50,13 +53,34 @@ const class PythonPlugin : BasicPlugin
         it.text="\n# History: {date} {user} Creation\n\n"})
   }
 
-   override Void onFrameReady(Frame frame, Bool initial := true)
+  override Void onFrameReady(Frame frame, Bool initial := true)
   {
-    // Force "reindexing" docs at each start (for now)
-    docProv.clearIndex
-    docProv.reindex
+    super.onFrameReady(frame, initial)
+    if(initial)
+    {
+      plugins := (frame.menuBar as MenuBar).plugins
+      menu := plugins.children.find{it->text == _name}
+      menu.add(MenuItem{ it.command = PythonIndexCmd(this).asCommand })
+      docProv.reindex
+    }
+  }
+}
+
+const class PythonIndexCmd : Cmd
+{
+  override const Str name := "Re-Index docs"
+  const PythonPlugin plugin
+
+  new make(PythonPlugin plugin)
+  {
+    this.plugin = plugin
   }
 
+  override Void invoke(Event event)
+  {
+    plugin.docProv.clearIndex
+    plugin.docProv.reindex
+  }
 }
 
 internal const class PythonCommands : PluginCommands

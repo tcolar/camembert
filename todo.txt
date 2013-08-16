@@ -17,6 +17,7 @@ axon: view server logs
 [TODO / Ideas]
 
 (1) !! Nasty bug, when switching spaces, the undo/redo gets mixed up between files !!
+  -> Allow redo "forever" on any doc ??
 
 (2) create custom process/run commands and bind them to a key(F9-12?)
 
@@ -27,8 +28,6 @@ axon: view server logs
 (1) Installer / standalone app, especially for winblows where it's a pain to install
 
 (2) java documentation
-
-(2) python documentation (pydoc ? -> ugly and super old) .. sphynx ? .. custom ??
 
 (2) ant projects plugin
 

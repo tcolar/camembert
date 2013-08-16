@@ -21,6 +21,7 @@ const class MavenPlugin : BasicPlugin
 
   override Bool isProject(File dir)
   {
+    if(isCustomPrj(dir, "Maven")) return true
     return dir.isDir && (dir + `pom.xml`).exists
   }
 

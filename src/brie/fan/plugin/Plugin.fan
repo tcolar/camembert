@@ -2,9 +2,10 @@
 //   11 8 12 Creation
 
 using gfx
+using syntax
 
 **
-** Camemebert Plugin mixin
+** Camembert Plugin mixin
 **
 mixin Plugin
 {
@@ -14,7 +15,7 @@ mixin Plugin
 
   ** Called once Camembert is ready to use (frame built)
   ** Good place to add menu items if any
-  ** It canbe called again (with initail=false) after a complete "Reload config" event
+  ** It can be called again (with initail=false) after a complete "Reload config" event
   virtual Void onFrameReady(Frame f, Bool initial:=true) {}
 
   ** Called whenever new/updated projects are found (to be reindexed)
@@ -56,6 +57,44 @@ mixin Plugin
 
   ** Returns true if the project supports indexing and is currently indexing.
   virtual Bool isIndexing() {false}
+
+  ** Check if the given folder is a "forced" project of a given type
+  virtual Bool isCustomPrj(File dir, Str type)
+  {
+    props := prjProps(dir)
+    if(props == null) return false
+    return props["prj.type"]?.lower ==  type.lower
+  }
+
+  virtual [Str:Str]? prjProps(File dir)
+  {
+    if( ! dir.isDir) return null
+    if((dir + `cam.props`).exists)
+    {
+       try
+         return (dir + `cam.props`).readProps
+       catch(Err e) {e.trace}
+    }
+    return null
+  }
+
+    ** Add an extra synatx support (fogFile) for given extensions
+  ** Will only do anyhting if the fogFile doesn't exist yet in
+  **  etc/syntax/syntax-${ruleName}.fog
+  Void addSyntaxRule(Str name, File fogFile, Str[] exts)
+  {
+    file := Env.cur.findFile(`etc/syntax/syntax-${name}.fog`, false)
+    if (file != null) return
+
+    // Update ext.props with new extensions
+    propFile := Env.cur.findFile(`etc/syntax/ext.props`, false)
+    props := propFile.readProps
+    exts.each{props[it]=name}
+    propFile.writeProps(props)
+
+    // create the new syntax file
+    fogFile.copyTo(Env.cur.workDir + `etc/syntax/syntax-${name}.fog`)
+  }
 }
 
 **

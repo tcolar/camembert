@@ -20,3 +20,5 @@ syntax: regexp
 ^temp/
 
 
+syntax: glob
+*.pyc

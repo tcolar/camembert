@@ -23,9 +23,9 @@ class build : BuildPod
                "web 1.0",
                "wisp 1.0",
                "netColarUtils 1.0.5+",
-               "camembert 1.1.4+",
+               "camembert 1.1.8+",
                ]
-    version = Version("1.1.4")
+    version = Version("1.1.8")
     srcDirs = [`fan/`]
     resDirs = [,]
     meta    = ["license.name" : "MIT",

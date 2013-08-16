@@ -1,80 +1,26 @@
 # History: Mar 20 13 Thibaut Colar Creation
 
 """
-  Get members and documentation info about all known python modules without
-  loading them.
+  Get members and documentation info about all known python modules.
 
   If called as a script the data is written in JSON format to the given file
   so it's usable externally.
 
   We get info and docs for modules, classes, functions.
 
-  Fot the builtin modules we use inspect as it's safe in that case (+ no sources)
+  We rely on the inspect module (loads the modules to get info !)
 
-  For all other modules we use custom AST parsing because inspect can have side
-  effects or even cause crashes
-
-  Should be compatible with both Python 2 & 3
-
-  Notes:
-  Would have use pyclbr but unfortunately it does not provide easy access
-  to docstrings.
-
-  Also considered the pydoc utility but that generates some hardcoded 90's style
-  HTML pages that we could not do much with.
 """
 
-import ast
-import os
 import json
 import sys
-import imp
 import inspect
 import pkgutil
 import io
+import subprocess
 
-class Visitor(ast.NodeVisitor):
-  '''Modules AST visitor. Builds a list of items (modules, classes, functions)'''
-
-  # all items found across all modules
-  items = []
-
-  # current file, node, class
-  module = None
-  file = None
-  clazz = None
-
-  def set_module(self, name, file):
-    self.module = name
-    self.clazz = None
-    self.file = file
-
-  # TODO : follow imports ??
-  #def visit_ImportFrom(delf, node):
-  #  print ast.dump(node)
-
-  def generic_visit(self, node):
-    ast.NodeVisitor.generic_visit(self, node)
-
-  def visit_Module(self, node):
-    self.items.append({"type":"module", "name" : self.module,
-                "doc" : ast.get_docstring(node), "file": self.file, "line" : 1})
-
-    ast.NodeVisitor.generic_visit(self, node)
-
-  def visit_ClassDef(self, node):
-    self.items.append({"type":"class", "name" : node.name, "module" : self.module,
-                 "doc" : ast.get_docstring(node), "file": self.file, "line" : node.lineno})
-
-    self.clazz = node.name
-    ast.NodeVisitor.generic_visit(self, node)
-    self.clazz = ""
-
-  def visit_FunctionDef(self, node):
-    self.items.append({"type":"function", "name" : node.name, "class" : self.clazz,
-                "module" : self.module, "doc" : ast.get_docstring(node),
-                "file": self.file, "line" : node.lineno})
-
+# Easter egg modules we don't want to load .. only funny a couple times ;)
+easter_modules = ["this", "antigravity"]
 
 def find_items():
   '''
@@ -85,50 +31,73 @@ def find_items():
   Function/Method item keys: type, name, doc, file, line, class, module
   '''
 
-  visitor = Visitor()
   items = []
 
-  # First we do the builtin modules, we use inspect for those as we don't have
-  # the sources since it's in C. Those are already loaded and safe to inspect anyway
+  modules = []
 
-  for module in sys.builtin_module_names:
-    # Note: No need to import the module since it's a builtin
+  for (module_loader, name, ispkg) in pkgutil.iter_modules():
+
+    if name in easter_modules:
+      continue
+
+    try:
+      found = module_loader.find_module(name)
+
+      # we try first to import it in a subprocess, this is much slower
+      # but saves us if loading the module segfaults, which can happen
+
+      # Unfortunately does not always work because sometimes module combination causes the crash
+      # python 2.7 on ubuntu = fail !
+      # ie : https://bugs.launchpad.net/ubuntu/+bug/1028625
+      subprocess.check_call(["python","-c","import imp;imp.load_module('"+name+"', * imp.find_module('"+name+"'))"])
+
+      # Ok, it didn't completely fail, then load it "in process"
+      module = found.load_module(name)
+
+      # Ok, loaded ok, add it to "good" modules list
+      modules.append(module)
+
+    except ImportError:
+      print("Failed finding : " + name)
+    except TypeError:
+      print("Failed loading : " + name)
+    except subprocess.CalledProcessError:
+      print("Could not load module " + name)
+
+  # add builtins
+  modules.extend(sys.builtin_module_names)
+
+  # Ok, no inspect the good modules and build our items list (members info)
+  for module in modules:
+
     for name, member in inspect.getmembers(module):
+      # Note: calling getfile on builtin module raise an error on 3.x even thugh doc says it should not
+      modname = None
+      file = None
+      try:
+        file = inspect.getfile(member)
+        modname = module.__name__
+      except TypeError:
+        pass
       if inspect.ismodule(member):
-        items.append({"type":"module", "name" : module,
-              "doc" : inspect.getdoc(member), "file": None, "line" : 0})
+        items.append({"type": "module", "name" : name,
+              "doc" : inspect.getdoc(member), "file": file, "line" : 0})
+      elif inspect.isclass(member):
+        items.append({"type":"class", "name" : name,
+              "module" : modname, "class" : None,
+              "doc" : inspect.getdoc(member), "file":  file, "line" : 0})
+      elif inspect.isfunction(member):
+        items.append({"type":"function", "name" : name,
+              "module" : modname, "class" : None,
+              "doc" : inspect.getdoc(member), "file":  file, "line" : 0})
       elif inspect.isbuiltin(member):
         items.append({"type":"function", "name" : name,
-              "module" : module, "class" : None,
-              "doc" : inspect.getdoc(member), "file": None, "line" : 0})
-      # Doesn't seem there is such thing as classes in builtin modules
-
-  # Now we do all other modules, for those we use AST parsing because inspect
-  # would require loading them which can cause side effects and crashes
-
-  for importer, name, ispkg in pkgutil.iter_modules():
-    loader = importer.find_module(name)
-
-    src = None
-    if hasattr(loader,'get_filename'):
-      file = os.path.abspath(loader.get_filename())
-
-    if hasattr(loader,'get_source'):
-       src = loader.get_source(name)
-    elif file != None:
-       if file.endswith(".py"):
-         with open(loader.get_filename(name), "r") as f:
-           src = f.read()
-
-    if src != None :
-      try:
-        root = ast.parse(src)
-        visitor.set_module(name, file)
-        visitor.visit(root)
-      except TypeError:
-        print("failed parsing module " + name)
-
-  items.extend(visitor.items)
+              "module" : modname, "class" : None,
+              "doc" : inspect.getdoc(member), "file":  None, "line" : 0})
+      elif inspect.ismethod(member):
+        items.append({"type":"function", "name" : name,
+              "module" : modname, "class" : None, #member.im_class,
+              "doc" : inspect.getdoc(member), "file":  file, "line" : 0})
 
   return items
 
@@ -136,6 +105,7 @@ def find_items():
 # Script Main -----------------------------------
 
 if __name__ == "__main__":
+  print(sys.executable)
 
   if len(sys.argv) < 2:
     print("Error, Expecting destination file path as an argument !")
