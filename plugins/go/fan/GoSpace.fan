@@ -70,10 +70,12 @@ class GoSpace : FileSpaceBase
       {
         if(inStruct || inFunc)
         {
-          if(line.startsWith("{"))
-            brackets++
-          if(line.startsWith("}"))
-            brackets--
+          line.each{
+            if(it == '{')
+              brackets++
+            else if(it == '}')
+              brackets--
+          }
           if(brackets == 0)
           {
             inStruct = false
