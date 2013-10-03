@@ -22,9 +22,9 @@ class build : BuildPod
                "web 1.0+",
                "concurrent 1.0+",
                "netColarUtils 1.0.5+",
-               "camembert 1.1.9+",
+               "camembert 1.1.10+",
                ]
-    version = Version("1.1.10")
+    version = Version("1.2.0")
     srcDirs = [`fan/`]
     resDirs = [`res/`]
     meta    = ["license.name" : "MIT",
