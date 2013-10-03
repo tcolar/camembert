@@ -16,6 +16,7 @@ class GoSpace : FileSpaceBase
   new make(Frame frame, File dir, Str plugin, Uri iconUri)
     : super(frame, dir, 220, Image(iconUri))
   {
+    this.plugin = plugin
     slots := makeSlotNav()
     slotsParent.content = slots
   }
