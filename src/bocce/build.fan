@@ -27,7 +27,7 @@ class Build : BuildPod
     srcDirs = [`fan/`]
     version = Version("1.0.3")
     meta    =  ["license.name"   : "Academic License",
-                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
+                "vcs.uri"   : "https://github.com/tcolar/camembert"]
     docSrc  = true
   }
 }

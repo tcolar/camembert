@@ -190,7 +190,7 @@ class Console : InsetPane
 
   internal Void procDone(Int result)
   {
-    // ** WARNING: using **Any** fwt/console access methods here can casue lockups
+    // ** WARNING: using **Any** fwt/console access methods here can cause lockups
     // Even if using Deskop.callAsync
     lastResult = result
     proc = null

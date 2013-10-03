@@ -25,7 +25,7 @@ class Build : BuildPod
                "netColarUtils 1.0.6+",
                //"rhino 1.7+"
     ]
-    version = Version("1.1.8")
+    version = Version("1.1.9")
     srcDirs = [`fan/`,
                `fan/space/`,
                `fan/view/`,
@@ -39,7 +39,7 @@ class Build : BuildPod
                `fan/project/`]
     resDirs = [`res/`, `res/themes/`]
     meta    =  ["license.name"   : "Academic License",
-                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
+                "vcs.uri"   : "https://github.com/tcolar/camembert"]
     docSrc  = true
   }
 }

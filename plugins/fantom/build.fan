@@ -23,13 +23,13 @@ class build : BuildPod
                "web 1.0",
                "wisp 1.0",
                "netColarUtils 1.0.5+",
-               "camembert 1.1.8+",
+               "camembert 1.1.9+",
                ]
-    version = Version("1.1.8")
+    version = Version("1.1.9")
     srcDirs = [`fan/`]
     resDirs = [,]
     meta    = ["license.name" : "MIT",
-                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert",
+                "vcs.uri"   : "https://github.com/tcolar/camembert",
                 "camembert.plugin" : "FantomPlugin"]
     docSrc  = true
   }

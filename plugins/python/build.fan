@@ -20,13 +20,13 @@ class build : BuildPod
                "web 1.0+",
                "concurrent 1.0+",
                "netColarUtils 1.0.6+",
-               "camembert 1.1.8+",
+               "camembert 1.1.9+",
                ]
-    version = Version("1.1.8")
+    version = Version("1.1.9")
     srcDirs = [`fan/`]
     resDirs = [`res/`, `python/`]
     meta    = ["license.name" : "MIT",
-                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert",
+                "vcs.uri"   : "https://github.com/tcolar/camembert",
                 "camembert.plugin" : "PythonPlugin"]
     docSrc  = true
   }

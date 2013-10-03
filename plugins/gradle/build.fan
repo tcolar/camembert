@@ -17,14 +17,14 @@ class build : BuildPod
                "gfx 1.0",
                "fwt 1.0",
                "xml 1.0",
-               "camembert 1.1.8+",
+               "camembert 1.1.9+",
                "netColarUtils 1.0.5+",
                ]
-    version = Version("1.1.8")
+    version = Version("1.1.9")
     srcDirs = [`fan/`]
     resDirs = [`res/`]
     meta    = ["license.name" : "MIT",
-                "vcs.uri"   : "https://bitbucket.org/tcolar/camembert",
+                "vcs.uri"   : "https://github.com/tcolar/camembert",
                 "camembert.plugin" : "GradlePlugin"]
     docSrc  = true
   }
