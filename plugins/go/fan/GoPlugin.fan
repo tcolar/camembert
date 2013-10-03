@@ -18,11 +18,12 @@ const class GoPlugin : BasicPlugin
   const GoCommands cmds
 
   override const Image icon := Image(`fan://camGoPlugin/res/go.png`)
-  override Uri? defaultEnvHome() {`/usr/`}
+  override Uri? defaultEnvHome() {`/usr/go/`}
   override const Str name := _name
   override PluginCommands? commands() { cmds}
   override PluginDocs? docProvider() {docProv}
   override Bool isIndexing() {docProv.isIndexing.val}
+  override Type envType() {GoEnv#}
 
   new make()
   {
@@ -50,6 +51,11 @@ const class GoPlugin : BasicPlugin
       menu := plugins.children.find{it->text == _name}
       menu.add(MenuItem{ it.command = GoIndexCmd(this).asCommand })
     }
+  }
+
+  override Space createSpace(Project prj)
+  {
+    return GoSpace(Sys.cur.frame, prj.dir.toFile, this.typeof.pod.name, icon.file.uri)
   }
 }
 
@@ -95,17 +101,41 @@ const class GoCommands : PluginCommands
     buildAndRun = BasicBuildAndRunCmd(plugin)
   }
 
-  // TODO: deal with relative path
+  static File? goPath()
+  {
+    config := PluginManager.cur.conf("Go") as BasicConfig
+    if(config == null) return null
+    env := config.curEnv as GoEnv
+    if(env == null) return null
+    goPath := env.goPath.toFile
+    if( ! goPath.exists) return null
+    return goPath
+  }
+
+  static File? prj()
+  {
+    plugin := (GoPlugin) PluginManager.cur.plugins["camGoPlugin"]
+    return plugin.findProject(Sys.cur.frame.curFile)
+  }
+
   // ./hello.go:7: undefined: arghhh
+  // Relative path, kinda annoying
   static const |Str -> Item?| goFinder := |Str str -> Item?|
   {
+    echo(str)
     if(str.size < 4) return null
-    p1 := str.index(":", 4); if (p1 == null) return null
+    p1 := str.index(":"); if (p1 == null) return null
     c  := str.index(":", p1 + 1); if (c == null) return null
-    p2 := str.index(":", c + 1); if (p2 == null) return null
-    file := File.os(str[0 ..< p1].trim)
-    if(! file.exists) return null
-    pos := str[c+1 ..< p2]
+    // Try relative to goPath
+    file := goPath + Uri(str[0 ..< p1].trim)
+    if(! file.exists){
+      // r relative to project
+      file = prj + Uri(str[0 ..< p1].trim)
+    }
+    echo(file)
+    if(! file.exists)
+      return null
+    pos := str[p1 + 1 ..< c]
     line := pos.toInt(10, false) ?: 1
     text := str
     return FileItem.makeFile(file).setDis(text).setLoc(
