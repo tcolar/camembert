@@ -39,6 +39,15 @@ internal const class BuildGroupCmd : PluginCmd
   }
 }
 
+internal const class RerunLastCmd : PluginCmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "ReRun last command"
+  override Void invoke(Event event)
+  {
+    frame.console.redo
+  }
+}
 
 **
 ** Command to run a pod

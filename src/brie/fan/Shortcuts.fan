@@ -27,6 +27,8 @@ const class Shortcuts
   const Str test                  := "F7"
   @Setting
   const Str testSingle            := "Shift+F7"
+  @Setting
+  const Str reRun                 := "F9"
 
   @Setting{help = ["Escape (close console / panel)"]}
   const Str consoleToggle         := "Alt+C"
