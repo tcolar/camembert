@@ -18,6 +18,9 @@ mixin Plugin
   ** It can be called again (with initail=false) after a complete "Reload config" event
   virtual Void onFrameReady(Frame f, Bool initial:=true) {}
 
+  ** Called when a file is saved
+  virtual Void onFileSaved(File f) {}
+
   ** Called whenever new/updated projects are found (to be reindexed)
   ** ClearAll can be set to tel the plugin to clear the index fully first
   virtual Void onChangedProjects(Project[] projects, Bool clearall := false) {}
@@ -78,7 +81,7 @@ mixin Plugin
     return null
   }
 
-    ** Add an extra synatx support (fogFile) for given extensions
+  ** Add an extra synatx support (fogFile) for given extensions
   ** Will only do anyhting if the fogFile doesn't exist yet in
   **  etc/syntax/syntax-${ruleName}.fog
   Void addSyntaxRule(Str name, File fogFile, Str[] exts)

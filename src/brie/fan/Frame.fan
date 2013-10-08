@@ -377,8 +377,10 @@ class Frame : Window
   Void save()
   {
     if (curView == null) return
-      /*if (curView.dirty)*/ curView.onSave
-      curView.dirty = false
+    curView.onSave
+    if(curFile != null)
+      PluginManager.cur.onFileSaved(curFile)
+    curView.dirty = false
     updateStatus
   }
 

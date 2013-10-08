@@ -80,6 +80,11 @@ const class PluginManager : Service
     }
   }
 
+  internal Void onFileSaved(File f)
+  {
+    plugins.vals.each |plugin| {plugin.onFileSaved(f)}
+  }
+
   internal Void onFrameReady(Frame f, Bool initial:= true)
   {
     plugins.vals.sort|a, b|{a.name <=> b.name}.each |plugin| {plugin.onFrameReady(f, initial)}

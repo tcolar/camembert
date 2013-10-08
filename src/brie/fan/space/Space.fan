@@ -66,5 +66,13 @@ mixin Space
   ** If null, refresh current item
   abstract Void goto(FileItem? item)
 
+  virtual FileItem? curFileItem()
+  {
+    if(view == null)
+      return null
+    fi := FileItem.makeFile(view.file)
+    fi.setLoc(ItemLoc{col = view.curPos.col; line = view.curPos.line})
+    return fi
+  }
 }
 
