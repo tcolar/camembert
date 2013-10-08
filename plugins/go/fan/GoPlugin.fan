@@ -161,7 +161,7 @@ const class GoCommands : PluginCommands
                                  ExecCmdInteractive.onetime, goFinder)
     runSingle   = BasicPluginCmd(plugin, "RunSingle", [go, "run", "{{cur_file}}"],
                                  ExecCmdInteractive.always, goFinder)
-    test        = BasicPluginCmd(plugin, "Test", ["go", "test"],
+    test        = BasicPluginCmd(plugin, "Test", ["go", "test", "-i"],
                                  ExecCmdInteractive.onetime, goFinder)
     testSingle  = BasicPluginCmd(plugin, "TestSingle", [go, "test", "{{cur_file}}"],
                                  ExecCmdInteractive.always, goFinder)
