@@ -24,12 +24,14 @@ const class GoPlugin : BasicPlugin
   override PluginDocs? docProvider() {docProv}
   override Bool isIndexing() {docProv.isIndexing.val}
   override Type envType() {GoEnv#}
+  const GoFmtCmd fmtCmd
 
   new make()
   {
     cmds = GoCommands(this)
     syntax := Pod.of(this).file(`/res/syntax-go.fog`)
     addSyntaxRule("go", syntax, ["go"])
+    fmtCmd = GoFmtCmd(this)
   }
 
   override Bool isProject(File dir)
@@ -56,6 +58,63 @@ const class GoPlugin : BasicPlugin
   override Space createSpace(Project prj)
   {
     return GoSpace(Sys.cur.frame, prj.dir.toFile, this.typeof.pod.name, icon.file.uri)
+  }
+
+  override Void onFileSaved(File f) {
+    e := Event()
+    e.data = f
+    fmtCmd.invoke(e)
+  }
+}
+
+// Go frmat command
+const class GoFmtCmd : Cmd
+{
+  const GoPlugin plugin
+
+  new make(GoPlugin plugin)
+  {
+    this.plugin = plugin
+  }
+
+  override const Str name := "GoFmt"
+  override Void invoke(Event event)
+  {
+    f := event.data as File
+    if(!f.exists || f.ext != "go")
+      return
+    config := PluginManager.cur.conf(GoPlugin._name) as BasicConfig
+    if(config == null)
+      return
+    env := config.curEnv as GoEnv
+    if(env == null || ! env.goFmtOnSave)
+      return
+    distro := env.envHome.toFile
+    if( ! distro.exists)
+      return
+    goFmt := distro + `./bin/gofmt`
+    if( ! goFmt.exists)
+      return
+
+    opts := env.goFmtOpts
+    if(opts.isEmpty)
+      opts = [goFmt.osPath, "-w", "{{file}}"] // default
+    options := Str[goFmt.osPath]
+    opts.each
+    {
+      options.add(it.replace("{{file}}", f.name))
+    }
+
+    // Remember the current location in file
+    // Note that it might become "invalid" depending what gofmt does
+    item := frame.curSpace.curFileItem
+
+    frame.console.log("Running " + options)
+    p := Process(options, f.parent)
+    p.run().join()
+
+    frame.curSpace.refresh
+    frame.curView.onGoto(item)
   }
 }
 
