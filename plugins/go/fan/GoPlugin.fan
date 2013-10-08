@@ -52,6 +52,7 @@ const class GoPlugin : BasicPlugin
       plugins := (frame.menuBar as MenuBar).plugins
       menu := plugins.children.find{it->text == _name}
       menu.add(MenuItem{ it.command = GoIndexCmd(this).asCommand })
+      menu.add(MenuItem{ it.command = GoFmtCmd(this).asCommand })
     }
   }
 
@@ -67,7 +68,7 @@ const class GoPlugin : BasicPlugin
   }
 }
 
-// Go frmat command
+// Go format command
 const class GoFmtCmd : Cmd
 {
   const GoPlugin plugin
@@ -77,10 +78,17 @@ const class GoFmtCmd : Cmd
     this.plugin = plugin
   }
 
-  override const Str name := "GoFmt"
+  override const Str name := "GoFmt on current file."
   override Void invoke(Event event)
   {
     f := event.data as File
+    if(f == null)
+    {
+      // this is when called manually from the menu rater than automatically on save
+      f = frame.curFile
+      // Save the file first before calling goFmt
+      frame.save()
+    }
     if(!f.exists || f.ext != "go")
       return
     config := PluginManager.cur.conf(GoPlugin._name) as BasicConfig
