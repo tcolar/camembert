@@ -185,29 +185,43 @@ const class GoCommands : PluginCommands
     return plugin.findProject(Sys.cur.frame.curFile)
   }
 
-  // ./hello.go:7: undefined: arghhh
-  // Relative path, kinda annoying
+  ** Error:
+  **    ./hello.go:7: undefined: dsfdfgd
+  ** Log:
+  **    2013/10/09 14:50:17 drupsway_test.go:75: a:1:{s:9:"cc_number";b:0;}
+  ** Relative path sometimes, absolute paths other times
   static const |Str -> Item?| goFinder := |Str str -> Item?|
   {
-    echo(str)
+    startAt := 0
+    error := true
     if(str.size < 4) return null
-    p1 := str.index(":"); if (p1 == null) return null
-    c  := str.index(":", p1 + 1); if (c == null) return null
-    // Try relative to goPath
-    file := goPath + Uri(str[0 ..< p1].trim)
-    if(! file.exists){
-      // r relative to project
-      file = prj + Uri(str[0 ..< p1].trim)
+    if(str.size > 20 && str[4]=='/' && str[7] == '/' && str[13]==':' && str[16]==':')
+    {
+      startAt = 20
+      error = false
     }
-    echo(file)
+    p1 := str.index(":", startAt); if (p1 == null) return null
+    c  := str.index(":", p1 + 1); if (c == null) return null
+    // Try absolute path
+    path := Uri(str[startAt ..< p1].trim)
+    file := path.toFile
+    if(! file.exists){
+    // Try relative to goPath
+      file = goPath + path
+    }
+    if(! file.exists){
+      // Try relative to project
+      file = prj + path
+    }
     if(! file.exists)
       return null
     pos := str[p1 + 1 ..< c]
     line := pos.toInt(10, false) ?: 1
     text := str
+    icon := error ? Sys.cur.theme.iconErr: Sys.cur.theme.iconMark
     return FileItem.makeFile(file).setDis(text).setLoc(
           ItemLoc{it.line = line-1; it.col  = col-1}).setIcon(
-          Sys.cur.theme.iconErr)
+          icon)
   }
 }
 
