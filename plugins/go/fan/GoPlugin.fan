@@ -71,9 +71,9 @@ const class GoPlugin : BasicPlugin
   override Void onInit(File configDir)
   {
     // create go template if not there yet
-    python := configDir + `templates/go_file.json`
-    if( ! python.exists)
-      JsonUtils.save(python.out, Template{it.name="Go file"
+    go := configDir + `templates/go_file.json`
+    if( ! go.exists)
+      JsonUtils.save(go.out, Template{it.name="Go file"
         it.extensions=["go"]
         it.text="\n# History: {date} {user} Creation\n\npackage {folder}\n\nimport ()\n\n"})
   }
