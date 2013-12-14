@@ -114,6 +114,7 @@ const class NewFileCmd : Cmd
         .replace("{date}", DateTime.now.toLocale("MMM DD YY"))
         .replace("{name}", f.basename)
         .replace("{user}", Env.cur.user)
+        .replace("{folder}", dir?.name ?: "")
 
     f.out.print(text).close
 

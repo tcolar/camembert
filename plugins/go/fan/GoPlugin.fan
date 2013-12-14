@@ -7,6 +7,7 @@ using gfx
 using fwt
 using util
 using syntax
+using netColarUtils
 
 **
 ** NodePlugin
@@ -20,7 +21,7 @@ const class GoPlugin : BasicPlugin
   override const Image icon := Image(`fan://camGoPlugin/res/go.png`)
   override Uri? defaultEnvHome() {`/usr/go/`}
   override const Str name := _name
-  override PluginCommands? commands() { cmds}
+  override PluginCommands? commands() {cmds}
   override PluginDocs? docProvider() {docProv}
   override Bool isIndexing() {docProv.isIndexing.val}
   override Type envType() {GoEnv#}
@@ -65,6 +66,16 @@ const class GoPlugin : BasicPlugin
     e := Event()
     e.data = f
     fmtCmd.invoke(e)
+  }
+
+  override Void onInit(File configDir)
+  {
+    // create go template if not there yet
+    python := configDir + `templates/go_file.json`
+    if( ! python.exists)
+      JsonUtils.save(python.out, Template{it.name="Go file"
+        it.extensions=["go"]
+        it.text="\n# History: {date} {user} Creation\n\npackage {folder}\n\nimport ()\n\n"})
   }
 }
 
