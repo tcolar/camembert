@@ -39,6 +39,11 @@ const class PhpPlugin : BasicPlugin
     return prjDir.name
   }
 
+  override Space createSpace(Project prj)
+  {
+    return PhpSpace(Sys.cur.frame, prj.dir.toFile, this.typeof.pod.name, icon.file.uri)
+  }
+
   override Void onInit(File configDir)
   {
     // create Php template if not there yet
