@@ -196,6 +196,13 @@ class ItemList : Panel, Themable
           it.onAction.add |e| {collapse(item);expand(item, true)} })
         menu.add(MenuItem{it.text="Collapse"
           it.onAction.add |e| {collapse(item)} })
+
+        menu.addSep
+        menu.add(MenuItem{it.text="Mark As Project"
+          it.onAction.add |e| {
+            (Sys.cur.commands.markAsProject as MarkAsProjectCmd).markAsProject(item.file, frame)
+          }
+        })
       }
       if (menu != null)
       {

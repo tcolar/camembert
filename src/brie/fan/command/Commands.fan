@@ -42,6 +42,7 @@ const class Commands
     reRun       = RerunLastCmd{key = Key(sys.shortcuts.reRun)}
     searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
     newFile     = NewFileCmd{key = Key(sys.shortcuts.newFile)}
+    markAsProject= MarkAsProjectCmd{}
 
     list := Cmd[,]
     typeof.fields.each |field|
@@ -81,6 +82,7 @@ const class Commands
   const Cmd mostRecent
   const Cmd newFile
   const Cmd openFolder
+  const Cmd markAsProject
   const Cmd prefs
   const Cmd recent := RecentCmd {}
   const Cmd delete := DeleteFileCmd {}

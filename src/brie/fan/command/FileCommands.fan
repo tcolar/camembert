@@ -246,3 +246,44 @@ internal const class OpenFolderCmd : Cmd
   new make(|This| f) {f(this)}
 }
 
+const class MarkAsProjectCmd : Cmd
+{
+  override const Str name := "Mark folder as project"
+  override Void invoke(Event event)
+  {
+    // only used contextually. for now anyway
+  }
+
+  Void markAsProject(File file, Frame frame)
+  {
+    items := [,]
+    PluginManager.cur.plugins.vals.sort|a, b|{a.name.lower <=> b.name.lower}.each |p| {
+      items.add(p.name)
+    }
+    plugins := Combo{ it.items = items}
+    dialog := Dialog(frame)
+    {
+      title = "Mark as project"
+      commands = [ok, cancel]
+      body = GridPane
+      {
+        Label{ text = "Project Type:" },
+        plugins,
+      }
+    }
+
+    if (dialog.open != Dialog.ok) return
+
+    camFile := file + `cam.props`
+    buf := camFile.open
+    buf.printLine("prj.type = ${plugins.selected}")
+    buf.close
+
+    // Register the new proect and open it asap.
+    ProjectRegistry.register(camFile.uri)
+    ProjectRegistry.scan
+    frame.goto(FileItem.makeProject(camFile))
+  }
+
+  new make(|This| f) {f(this)}
+}
