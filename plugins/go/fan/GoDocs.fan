@@ -50,7 +50,7 @@ const class GoDocs : PluginDocs
     {
       // "Override" the stylesheet with some custom styles to make it
       // render better and according to the theme in the help pane.
-      if(query == "doc/style.css")
+      if(query == "doc/style.css" || query == "lib/godoc/style.css")
         html = WebClient(`http://localhost:${port}/$query`).getStr + customCss
       else if(query == "pkg")
         html = WebClient(`http://localhost:${port}/pkg/`).getStr
