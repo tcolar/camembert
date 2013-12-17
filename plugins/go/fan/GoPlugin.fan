@@ -10,7 +10,7 @@ using syntax
 using netColarUtils
 
 **
-** NodePlugin
+** GoPlugin
 **
 const class GoPlugin : BasicPlugin
 {
