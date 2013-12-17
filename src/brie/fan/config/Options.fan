@@ -31,7 +31,7 @@ const class Options
   const Uri[] srcDirs := [Sys.confDir.uri]
 
   @Setting{ help = ["Name of theme to use (saved in config/tehmes/name.props)"] }
-  const Str theme := "default"
+  const Str theme := "subliminal"
 
   @Setting{ help = ["Patterns of file/directories to hide from pod navigation. Uses Pattern.match() on File full uri's to match",
                     "Examples: '.*\\.hg/.*' or '.*~'   - REQUIRES FULL RESTART to take effect"] }

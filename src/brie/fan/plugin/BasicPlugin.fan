@@ -156,7 +156,7 @@ const class BasicEnv
   const Str name := "default"
 
   @Setting{ help = ["Env home"] }
-  const Uri envHome := `/usr/share/maven/`
+  const Uri envHome := `/usr/`
 
   @Setting{ help = ["Sort ordering of this env. Lower shows first."]}
   const Int order := 10

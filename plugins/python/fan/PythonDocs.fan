@@ -118,7 +118,9 @@ const class PythonDocs : PluginDocs
         python := env.python3Path.toFile
         if( ! python.exists)  {echo("Python indexing error: python3Path is not set properly in the python env !"); return null}
 
-        version := runPython(python, ["--version"]).readAllStr[7 .. -1].trim
+        version := runPython(python, ["--version"]).readAllStr
+        if(version.size < 7) {return null}
+        version = version[7 .. -1].trim
 
         info := Sys.cur.optionsFile.parent + `state/python_info_${version}.json`
 
