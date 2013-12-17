@@ -32,6 +32,7 @@ const class Commands
     build       = BuildCmd{key = Key(sys.shortcuts.build)}
     buildGroup  = BuildGroupCmd{key = Key(sys.shortcuts.buildGroup)}
     editConfig  = EditConfigCmd{}
+    prefs       = Prefs{}
     reloadConfig= ReloadConfigCmd{}
     run         = RunCmd{key = Key(sys.shortcuts.run)}
     runSingle   = RunSingleCmd{key = Key(sys.shortcuts.runSingle)}
@@ -80,6 +81,7 @@ const class Commands
   const Cmd mostRecent
   const Cmd newFile
   const Cmd openFolder
+  const Cmd prefs
   const Cmd recent := RecentCmd {}
   const Cmd delete := DeleteFileCmd {}
   const Cmd move := MoveFileCmd {}
@@ -111,6 +113,16 @@ const abstract class Cmd
   }
 }
 
+internal const class Prefs : Cmd
+{
+  override const Str name := "Preferences"
+  override Void invoke(Event event)
+  {
+    PluginPrefs().open()
+  }
+  new make(|This| f) {f(this)}
+}
+
 internal const class EditConfigCmd : Cmd
 {
   override const Str name := "Edit config"
@@ -120,7 +132,6 @@ internal const class EditConfigCmd : Cmd
   }
   new make(|This| f) {f(this)}
 }
-
 internal const class ReloadConfigCmd : Cmd
 {
   override const Str name := "Reload Config"
