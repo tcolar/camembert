@@ -3,6 +3,7 @@
 //
 
 using build
+using netColarJar
 
 **
 ** build
@@ -24,6 +25,8 @@ class build : BuildPod
                "camGradlePlugin 1.1.9+",
                "camGoPlugin 1.2.1+",
 
+               "camAxonPlugin 1.1.8+",
+
                "sys 1.0.64+"
                ]
     version = Version("1.1.11")
@@ -32,18 +35,20 @@ class build : BuildPod
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
   }
 
-  /*@Target { help = "" }
-  Void distJars()
+  @Target { help = "Build platform specific jars." }
+  Void jars()
   {
-    dist := JarDist(this)
-    dist.outFile = `../../dist/camembert-${version}.jar`.toFile.normalize
-    dist.podNames = Str["inet", "web", "concurrent", "util", "compiler", "compilerDoc",
-      "fandoc", "fanr", "syntax", "gfx", "fwt", "wisp", "xml",
-      "netColarUtils",
-      "petanque",
-      "camembert", "camembertIde", "camFantomPlugin","camNodePlugin","camMavenPlugin",
-      "camPythonPlugin", "camRubyPlugin", "camGradlePlugin", "camGoPlugin"]
-    dist.mainMethod = "camembertIde::Main.main"
-    dist.run
-  }*/
+    File(`./swt/`).normalize.listDirs.each |dir| {
+      platform := dir.name
+      BuildJar(this){
+        destFile = `../../dist/camembert-${version}-${platform}.jar`.toFile.normalize
+        this.log.info(destFile.osPath)
+        appMain = "camembertIde::Main"
+        pods = ["camembertIde", "icons"]
+        extraFiles = [dir.uri + `swt.jar` : `lib/java/ext/${dir.name}/swt.jar`]
+      }.run
+    }
+  }
 }
+
+
