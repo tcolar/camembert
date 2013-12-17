@@ -32,6 +32,7 @@ class Build : BuildGroup
       `plugins/ruby/build.fan`,
       `plugins/gradle/build.fan`,
       `plugins/go/build.fan`,
+      `plugins/php/build.fan`,
       `src/camembertIde/build.fan`,
     ]
   }

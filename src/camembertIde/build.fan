@@ -24,6 +24,7 @@ class build : BuildPod
                "camRubyPlugin 1.1.9+",
                "camGradlePlugin 1.1.9+",
                "camGoPlugin 1.2.1+",
+               "camPhpPlugin 1.1.12+",
 
                "camAxonPlugin 1.1.8+",
 

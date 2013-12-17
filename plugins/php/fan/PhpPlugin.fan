@@ -26,7 +26,7 @@ const class PhpPlugin : BasicPlugin
   {
     cmds = PhpCommands()
     syntax := Pod.of(this).file(`/res/syntax-php.fog`)
-    addSyntaxRule("php", syntax, ["php"])
+    addSyntaxRule("php", syntax, ["php", "module"])
   }
 
   override Bool isProject(File dir)
