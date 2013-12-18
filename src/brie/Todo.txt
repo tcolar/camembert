@@ -1,12 +1,12 @@
 + Basic Php support
 + "Mark as project" action on folders
+- Preferences / Config UI
+- Kill processes / process window ?
+- Goimports support
+- Gocode support
+- Quick find files
+- Standalone jars per platform (easy install)
 - support multiple edit panes
 - support multiple open files
 - support undo/redo in multiple buffers
-- Quick find files
-- Preferences / Config UI
-- Goimports support
-- Gocode support
-- Kill processes / process window ?
-- Standalone jars per platform (easy install)
 
