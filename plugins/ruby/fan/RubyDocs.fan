@@ -109,7 +109,11 @@ const class RubyDocs : PluginDocs
     p := Process([ri.osPath].addAll(args))
     b := Buf()
     p.out = b.out
-    p.run.join
+    id := Sys.cur.processManager.register(p, "GoFmt")
+    try
+      p.run().join()
+    finally
+      Sys.cur.processManager.unregister(id)
     return b.flip
   }
 }

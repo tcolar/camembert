@@ -1,7 +1,7 @@
 + Basic Php support
 + "Mark as project" action on folders
++ Kill processes / process window ?
 - Preferences / Config UI
-- Kill processes / process window ?
 - Goimports support
 - Gocode support
 - Quick find files

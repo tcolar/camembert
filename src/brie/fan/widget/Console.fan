@@ -47,7 +47,7 @@ class Console : InsetPane
         Button
         {
           it.image = Image(`fan://icons/x16/close.png`)
-          it.onAction.add {kill}
+          it.onAction.add |evt| {Sys.cur.commands.processWindow.invoke(evt)}
         },
         Button
         {
@@ -122,7 +122,7 @@ class Console : InsetPane
     Desktop.clipboard.setText(text)
   }
 
-  ** kill and wait for kill to be complete
+  /*** kill and wait for kill to be complete
   ** Return wether kill succeeded
   Bool killAndWait()
   {
@@ -153,7 +153,7 @@ class Console : InsetPane
     this.inKill = true
     log("Stopping.")
     proc.kill
-  }
+  }*/
 
   Void redo()
   {
@@ -163,19 +163,8 @@ class Console : InsetPane
     }
   }
 
-  Void exec(ConsoleCmd cmd, Bool killExisting := true)
+  Void exec(ConsoleCmd cmd)
   {
-    if(killExisting)
-    {
-      // kill any existing process, don't want multiples for now
-      if( ! killAndWait)
-      {
-        return
-      }
-      clear
-      list.clear
-    }
-
     lastCmd = cmd
 
     open
@@ -202,7 +191,7 @@ class Console : InsetPane
     }
     inKill = false
     onDone = null
-    Sys.log.info("Process killed")
+    Sys.log.info("Process completed")
   }
 
   Frame frame { private set }
@@ -297,7 +286,12 @@ internal const class ConsoleProcess
       proc := Process(cmd, dir)
       procRef.val = Unsafe(proc)
       proc.out = ConsoleOutStream(this)
-      result = proc.run.join
+      cons := c.val as Console
+      id := Sys.cur.processManager.register(proc)
+      try
+        result = proc.run.join
+      finally
+        Sys.cur.processManager.unregister(id)
     }
     catch (Err e)
     {

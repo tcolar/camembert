@@ -112,5 +112,14 @@ internal const class TestSingleCmd : PluginCmd
   }
 }
 
+const class ProcessWindowCmd : Cmd
+{
+  override const Str name := "Process Window"
+  override Void invoke(Event event)
+  {
+    Sys.cur.processManager.show
+  }
+  new make(|This| f) {f(this)}
+}
 
 

@@ -130,8 +130,11 @@ const class GoFmtCmd : Cmd
 
     frame.console.log("Running " + options)
     p := Process(options, f.parent)
-    p.run().join()
-
+    id := Sys.cur.processManager.register(p, "GoFmt")
+    try
+      p.run().join()
+    finally
+      Sys.cur.processManager.unregister(id)
     frame.curSpace.refresh
     frame.curView.onGoto(item)
   }

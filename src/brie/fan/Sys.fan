@@ -42,8 +42,12 @@ const class Sys : Service
 
   const WispService docServer
 
+  const Unsafe pm
+
   ** Top-level frame (only in UI thread)
   Frame frame() { Actor.locals["frame"] ?: throw Err("Not on UI thread") }
+
+  ProcessManager processManager() { (ProcessManager) pm.val }
 
   new make(|This|? f)
   {
@@ -55,6 +59,7 @@ const class Sys : Service
     prjReg = ProjectRegistry(options.srcDirs, optionsFile.parent)
     wPort := NetUtils.findAvailPort(8787)
     docServer = WispService { port = wPort; root = DocWebMod() }.start
+    pm = Unsafe(ProcessManager())
 
     // read the templates
     tpl := Template[,]

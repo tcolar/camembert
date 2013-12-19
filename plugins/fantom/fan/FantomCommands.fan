@@ -120,7 +120,6 @@ internal const class BuildCmd : FantomCmd
   override const Str name := "Build"
   override const ExecCmdInteractive interaction := ExecCmdInteractive.never
   override const Bool persist := false
-  override Bool killExisting() {false}
   override const |Console|? callback := |Console c| {
     Desktop.callAsync |->|{
       f := FantomPlugin.findBuildFile(frame.curFile)
@@ -142,7 +141,6 @@ internal const class BuildGroupCmd : FantomGroupCmd
   override const Str name := "Build Group"
   override const ExecCmdInteractive interaction := ExecCmdInteractive.never
   override const Bool persist := false
-  override Bool killExisting() {false}
   override const |Console|? callback := |Console c| {
     Desktop.callAsync |->|{
       f := FantomPlugin.findBuildGroup(frame.curFile)

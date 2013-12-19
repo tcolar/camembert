@@ -43,6 +43,7 @@ const class Commands
     searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
     newFile     = NewFileCmd{key = Key(sys.shortcuts.newFile)}
     markAsProject= MarkAsProjectCmd{}
+    processWindow= ProcessWindowCmd{}
 
     list := Cmd[,]
     typeof.fields.each |field|
@@ -84,6 +85,7 @@ const class Commands
   const Cmd openFolder
   const Cmd markAsProject
   const Cmd prefs
+  const Cmd processWindow
   const Cmd recent := RecentCmd {}
   const Cmd delete := DeleteFileCmd {}
   const Cmd move := MoveFileCmd {}

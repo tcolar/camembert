@@ -168,12 +168,6 @@ internal class StatusBar : ContentPane
         it.accelerator = Sys.cur.commands.consoleToggle.key
         it.onAction.add |e| { frame.console.close }
       },
-      MenuItem
-      {
-        it.text = "Kill"
-        it.enabled = frame.console.isBusy
-        it.onAction.add |e| { frame.console.kill }
-      },
     }
     menu.open(console, event.pos)
   }

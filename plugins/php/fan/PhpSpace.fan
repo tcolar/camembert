@@ -57,7 +57,6 @@ class PhpSpace : FileSpaceBase
   // Just some very basic pattern matching for the time being
   private Widget? makeSlotNav()
   {
-    Sys.log.err("msn!")
     if (file.ext != "php" && file.ext != "module") return null
     items := Item[,]
     inClass := false

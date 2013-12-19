@@ -175,7 +175,11 @@ const class PythonDocs : PluginDocs
     b := Buf()
     p.err = b.out
     p.out = b.out
-    p.run.join
+    id := Sys.cur.processManager.register(p, "Python")
+    try
+      p.run().join()
+    finally
+      Sys.cur.processManager.unregister(id)
     return b.flip
   }
 

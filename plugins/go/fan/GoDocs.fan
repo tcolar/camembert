@@ -97,6 +97,7 @@ const class GoDocs : PluginDocs
     echo(goArgs)
 
     p := Process(goArgs)
+    id := Sys.cur.processManager.register(p, "GoDoc")
     try
       p.run
     catch(Err e) {e.trace}
@@ -129,8 +130,11 @@ const class GoDocs : PluginDocs
         echo(goArgs)
 
         p := Process(goArgs)
-        p.run
-        p.join
+        id := Sys.cur.processManager.register(p, "GoDoc Indexing")
+        try
+          p.run().join()
+        finally
+          Sys.cur.processManager.unregister(id)
       } catch(Err e) {e.trace}
       finally{
         isIndexing.val = false
