@@ -2,11 +2,22 @@
 + "Mark as project" action on folders
 + Kill processes / process window ?
 - Preferences / Config UI
+- Project registry : Allow to ignore (sub)folder
+- Quick search (Ctrl G or Ctrl shift P) make it lighter "dropdown panel" ?
+- Also make search such a panel ?
 - Goimports support
 - Gocode support
 - Quick find files
 - Standalone jars per platform (easy install)
-- support multiple edit panes
-- support multiple open files
+- support multiple unsaved files + save all feature
 - support undo/redo in multiple buffers
+- support multiple edit panes
+- Git support ?
+- Multi-edit ? overhyped
+- Snippets / templates
+
+File:
+- copy path
+- duplicate
+
 

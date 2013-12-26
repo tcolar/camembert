@@ -122,7 +122,7 @@ internal const class Prefs : Cmd
   override const Str name := "Preferences"
   override Void invoke(Event event)
   {
-    PluginPrefs().open()
+    PrefWindow().open()
   }
   new make(|This| f) {f(this)}
 }
@@ -148,7 +148,7 @@ internal const class ReloadConfigCmd : Cmd
 
 internal const class HelpCmd : Cmd
 {
-  override const Str name := "Quick search on selection"
+  override const Str name := "Doc search on selection"
   override Void invoke(Event event)
   {
     selection := frame.curView?.curSelection ?: ""

@@ -7,10 +7,10 @@ using gfx
 using netColarUtils
 
 **
-** PluginPrefs
+** PrefWindow
 ** Preference panel for camembert + plugins
 **
-class PluginPrefs
+class PrefWindow
 {
   Void open()
   {
