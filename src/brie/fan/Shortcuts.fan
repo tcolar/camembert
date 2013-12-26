@@ -56,6 +56,9 @@ const class Shortcuts
   @Setting{help = ["Toggle recent files panel"]}
   const Str recentToggle          := "Alt+R"
 
+  @Setting{help = ["Toggle text only mode"]}
+  const Str textToggle             := "Alt+T"
+
   @Setting{help = ["Back to most recent file (Equivalent to Ctrl+1)"]}
   const Str mostRecent            := "Ctrl+Tab"
 

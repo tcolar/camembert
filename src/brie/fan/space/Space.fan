@@ -74,5 +74,8 @@ mixin Space
     fi.setLoc(ItemLoc{col = view.curPos.col; line = view.curPos.line})
     return fi
   }
+
+  // show or hide nav
+  virtual Void showNav(Bool b){}
 }
 

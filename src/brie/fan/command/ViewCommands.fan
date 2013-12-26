@@ -30,6 +30,16 @@ internal const class ToggleConsoleCmd : Cmd
   }
 }
 
+internal const class ToggleTextOnlyCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "Toggle All Panes"
+  override Void invoke(Event event)
+  {
+    frame.toggleTextOnly
+  }
+}
+
 internal const class SwitchTheme : Cmd
 {
   const File file

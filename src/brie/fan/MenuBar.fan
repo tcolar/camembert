@@ -59,6 +59,7 @@ class MenuBar : Menu
       MenuItem{ it.command = Sys.cur.commands.consoleToggle.asCommand},
       MenuItem{ it.command = Sys.cur.commands.docsToggle.asCommand},
       MenuItem{ it.command = Sys.cur.commands.recentToggle.asCommand},
+      MenuItem{ it.command = Sys.cur.commands.textToggle.asCommand},
       themes,
     }
 

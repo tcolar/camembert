@@ -114,7 +114,7 @@ class HelpPane : ContentPane, Themable
     browser?.refresh
   }
 
-  private Void hide()
+  Void hide()
   {
     this.visible = false
     parent.relayout
@@ -152,7 +152,7 @@ class HelpPane : ContentPane, Themable
     }
   }
 
-  private Void show()
+  Void show()
   {
     this.visible = true
     parent.relayout

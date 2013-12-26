@@ -113,6 +113,8 @@ class Frame : Window
 
   ProcessUtil process := ProcessUtil() { private set }
 
+  PaneState paneState := PaneState{}
+
   Void onFrameReady()
   {
     Desktop.callAsync |->| {
@@ -424,6 +426,36 @@ class Frame : Window
     goto(FileItem.makeFile(file))
   }
 
+  Void toggleTextOnly()
+  {
+    if(paneState.textOnly)
+    {
+      // restore the state
+      if(paneState.helpOn)
+        helpPane.show
+      if(paneState.recentOn)
+        recentPane.show
+      if(paneState.consoleOn)
+        console.open
+      curSpace.showNav(true)
+
+      paneState.textOnly = false
+    }
+    else
+    {
+      // Save the state
+      paneState.textOnly = true
+      paneState.helpOn = helpPane.visible
+      paneState.recentOn = recentPane.visible
+      paneState.consoleOn = console.isOpen
+      // hide panes
+      helpPane.hide
+      recentPane.hide
+      console.close
+      curSpace.showNav(false)
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////
   // Session State
   //////////////////////////////////////////////////////////////////////////
@@ -517,5 +549,16 @@ class Frame : Window
   private StatusBar statusBar
   private File:Pos filePosHis := [:]
   Str? curEnv
+}
+
+class PaneState
+{
+  new make(|This| f){}
+
+  Bool textOnly
+
+  Bool consoleOn
+  Bool helpOn
+  Bool recentOn
 }
 

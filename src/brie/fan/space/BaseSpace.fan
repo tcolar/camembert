@@ -95,4 +95,11 @@ abstract class BaseSpace : Space
     view = newView
     viewParent.relayout
   }
+
+  override Void showNav(Bool b)
+  {
+    slotsParent.parent.visible = b
+    slotsParent.parent.relayout
+    ui.relayout
+  }
 }

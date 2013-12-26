@@ -22,6 +22,7 @@ const class Commands
     openFolder  = OpenFolderCmd{key = Key(sys.shortcuts.openFolder)}
     consoleToggle=ToggleConsoleCmd{key = Key(sys.shortcuts.consoleToggle)}
     recentToggle= ToggleRecentCmd{key = Key(sys.shortcuts.recentToggle)}
+    textToggle   = ToggleTextOnlyCmd{key = Key(sys.shortcuts.textToggle)}
     docsToggle  = ToggleHelpCmd{key = Key(sys.shortcuts.docsToggle)}
     mostRecent  = MostRecentCmd{key = Key(sys.shortcuts.mostRecent)}
     prevMark    = PrevMarkCmd{key = Key(sys.shortcuts.prevMark)}
@@ -63,6 +64,7 @@ const class Commands
   const Cmd save
   const Cmd consoleToggle
   const Cmd recentToggle
+  const Cmd textToggle
   const Cmd docsToggle
   const Cmd prevMark
   const Cmd nextMark
