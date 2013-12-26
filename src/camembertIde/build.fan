@@ -36,7 +36,7 @@ class build : BuildPod
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
   }
 
-  @Target { help = "Build platform specific jars." }
+  @Target { help = "Build platform specific standalone jars." }
   Void jars()
   {
     File(`./swt/`).normalize.listDirs.each |dir| {

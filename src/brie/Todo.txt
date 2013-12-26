@@ -1,21 +1,24 @@
 + Basic Php support
 + "Mark as project" action on folders
 + Kill processes / process window ?
-- Preferences / Config UI
-- Project registry : Allow to ignore (sub)folder
-- Quick search (Ctrl G or Ctrl shift P) make it lighter "dropdown panel" ?
++ Move slot nav to be with file nav ?
+> Preferences / Config UI
+- Quick search (Ctrl G) make it lighter, "dropdown panel" ?
+- Maybe also apply same approach to find / replace
 - Also make search such a panel ?
 - Goimports support
 - Gocode support
-- Quick find files
-- Standalone jars per platform (easy install)
-- support multiple unsaved files + save all feature
-- support undo/redo in multiple buffers
-- support multiple edit panes
-- Git support ?
+- Project registry : Allow to ignore (sub)folder
+> Standalone jars per platform (easy install)
+- undo redo fixes
 - Multi-edit ? overhyped
 - Snippets / templates
-+ Move slot nav to be with file nav ? (or swap with recent items ??)
+- Git support ?
+
+Multi file support
+- support undo/redo in multiple buffers
+- support multiple unsaved files + save all feature
+- support multiple edit panes
 
 File:
 - copy path
