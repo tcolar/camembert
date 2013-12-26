@@ -48,16 +48,14 @@ class GoSpace : FileSpaceBase
     // Update slot nav
     newSlots := makeSlotNav()
     slotsParent.content = newSlots
-    slotsParent.relayout
-    // needs to repaint view parent if slots pane went away or came back
-    viewParent.parent.relayout
+    slotsUpdated(newSlots == null || newSlots.items.isEmpty)
   }
 
   // Figure out slots of given Go file
   // At this point not using Reflexion, but basic parsing
   // Which is not too bad since Go grammar is kept fairly simple
   // The parsing is quite lame an inperfect but good enough for this purpose
-  private Widget? makeSlotNav()
+  private ItemList? makeSlotNav()
   {
     if (file.ext != "go") return null
     items := Item[,]

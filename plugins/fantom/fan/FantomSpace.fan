@@ -111,7 +111,7 @@ class FantomSpace : BaseSpace
     return 1000 + dir.pathStr.size
   }
 
-  private Widget? makeSlotNav()
+  private ItemList? makeSlotNav()
   {
     if (file.ext != "fan") return null
     pod := index.pod(this.podName, false)
@@ -143,9 +143,7 @@ class FantomSpace : BaseSpace
     // Update slot nav ?
     newSlots := makeSlotNav()
     slotsParent.content = newSlots
-    slotsParent.relayout
-    // needs to repaint view parent if slots pane went away or came back
-    viewParent.parent.relayout
+    slotsUpdated(newSlots == null || newSlots.items.isEmpty)
   }
 }
 

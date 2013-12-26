@@ -48,14 +48,12 @@ class PhpSpace : FileSpaceBase
     // Update slot nav
     newSlots := makeSlotNav()
     slotsParent.content = newSlots
-    slotsParent.relayout
-    // needs to repaint view parent if slots pane went away or came back
-    viewParent.parent.relayout
+    slotsUpdated(newSlots == null || newSlots.items.isEmpty)
   }
 
   // Figure out slots of given Python file
   // Just some very basic pattern matching for the time being
-  private Widget? makeSlotNav()
+  private ItemList? makeSlotNav()
   {
     if (file.ext != "php" && file.ext != "module") return null
     items := Item[,]
