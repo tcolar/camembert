@@ -3,6 +3,7 @@
 //
 
 using fwt
+using gfx
 
 **
 ** BaseSpace
@@ -37,18 +38,36 @@ abstract class BaseSpace : Space
     this.dir  = dir.normalize
     file = file ?: dir
     this.file = file
-    slotsParent = InsetPane(0, 3, 0, 0)
-    viewParent = InsetPane(0, 3, 0, 3)
-    navParent = InsetPane(0, 3, 0, 3)
-    ui = BgEdgePane
+    slotsParent = InsetPane(0, 1, 0, 0)
+    viewParent = InsetPane(0, 1, 0, 1)
+    navParent = InsetPane(0, 1, 0, 1)
+
+    ui = SashPane
     {
-      left = BgEdgePane
+      orientation = Orientation.horizontal
+      weights = [20, 80]
+      SashPane
       {
-        left = navParent
-        right = slotsParent
-      }
-      center = viewParent
+        orientation = Orientation.vertical
+        weights = [100, 0]
+        navParent,
+        slotsParent,
+      },
+      viewParent,
     }
+  }
+
+  // To be called by implementation when slot nav is updated
+  Void slotsUpdated(Bool isEmpty)
+  {
+    sash := slotsParent.parent as SashPane
+    // show the slot nav only if any items in it
+    if(sash != null && ! isEmpty)
+      sash.weights = [50,50]
+    else
+      sash.weights = [100,0]
+    slotsParent.relayout
+    viewParent.parent.relayout
   }
 
   ** Go to the given item. (in Editor & Nav)

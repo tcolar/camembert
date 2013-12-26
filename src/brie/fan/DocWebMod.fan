@@ -65,7 +65,7 @@ const class DocWebMod : WebMod
 
   Void index()
   {
-    Str html := "<h3>Documentations:</h3>"
+    Str html := "<h3>Docs:</h3>"
     Sys.cur.plugins.each
     {
       doc := it.docProvider

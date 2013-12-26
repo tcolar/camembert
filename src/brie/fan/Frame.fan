@@ -57,7 +57,7 @@ class Frame : Window
         SashPane
         {
           orientation = Orientation.horizontal
-          weights = [80, 20]
+          weights = [80, 20] // Not shown by default, will be shown if any slots
           spacePane,
           SashPane
           {

@@ -15,6 +15,7 @@
 - Git support ?
 - Multi-edit ? overhyped
 - Snippets / templates
++ Move slot nav to be with file nav ? (or swap with recent items ??)
 
 File:
 - copy path
