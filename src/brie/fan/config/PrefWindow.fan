@@ -26,11 +26,9 @@ class PrefWindow
     win := Window
     {
       it.title = "Camembert config"
-      it.size = Size(1000, 800)
-      //menuBar = makeMenuBar
+      it.size = Size(1000, 600)
       it.content = EdgePane
       {
-        //top = makeToolBar
         center = tabs
         bottom = Button{it.text = "Save"}
       }
@@ -46,7 +44,6 @@ class PluginPref : InsetPane {
   new make(Plugin plugin) : super() {
     this.plugin = plugin
 
-    //add(Label{it.text=plugin.name})
     scrollPane := ScrollPane{}
     pane := GridPane{it.numCols = 3}
     conf := PluginManager.cur.conf(plugin.name)
