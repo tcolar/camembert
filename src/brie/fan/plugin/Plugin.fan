@@ -61,11 +61,15 @@ mixin Plugin
   ** Returns true if the project supports indexing and is currently indexing.
   virtual Bool isIndexing() {false}
 
+  ** Env impl for the plugin
+  abstract Type? envType()
+
   ** Check if the given folder is a "forced" project of a given type
   virtual Bool isCustomPrj(File dir, Str type)
   {
     props := prjProps(dir)
     if(props == null) return false
+    echo(props["prj.type"]?.lower)
     return props["prj.type"]?.lower ==  type.lower
   }
 

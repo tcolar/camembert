@@ -5,6 +5,7 @@
 using camembert
 using gfx
 using xml
+using netColarUtils
 
 **
 ** GradlePlugin
@@ -16,8 +17,8 @@ const class GradlePlugin : BasicPlugin
 
   override const Image icon := Image(`fan://camGradlePlugin/res/gradle.png`)
   override const Str name := _name
-  override Uri? defaultEnvHome() {`/usr/`}
   override PluginCommands? commands() {cmds}
+  override Type? envType() {GraddleEnv#}
 
   override Bool isProject(File dir)
   {
@@ -78,6 +79,20 @@ internal const class GradleCommands : PluginCommands
     return FileItem.makeFile(file).setDis(text).setLoc(
           ItemLoc{it.line = line-1; it.col  = col-1}).setIcon(
           Sys.cur.theme.iconErr)
+  }
+}
+
+@Serializable
+const class GraddleEnv : BasicEnv
+{
+  @Setting{help = ["Graddle Home"]}
+  const Uri graddleHome := `/usr/`
+
+  override Uri? envHome() {return graddleHome}
+
+  new make(|This|? f := null) : super(f)
+  {
+    if (f != null) f(this)
   }
 }
 

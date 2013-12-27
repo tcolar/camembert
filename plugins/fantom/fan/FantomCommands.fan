@@ -19,7 +19,10 @@ const class FantomCommands : PluginCommands
 abstract const class FantomCmd : ExecCmd
 {
   FantomPlugin plugin() {FantomPlugin.cur}
-  FantomEnv env() {FantomPlugin.config.curEnv}
+  FantomEnv env() {
+    config := PluginManager.cur.conf("Fantom") as BasicConfig
+    return config.curEnv
+  }
   override const |Str -> Item?|? itemFinder := |Str str -> Item?|
   {
     return ConsoleFinders.fanFinder(str) ?: ConsoleFinders.javaFinder(str)
@@ -46,7 +49,10 @@ abstract const class FantomCmd : ExecCmd
 internal abstract const class FantomGroupCmd : ExecCmd
 {
   FantomPlugin plugin() {FantomPlugin.cur}
-  FantomEnv env() {FantomPlugin.config.curEnv}
+  FantomEnv env() {
+    config := PluginManager.cur.conf("Fantom") as BasicConfig
+    return config.curEnv
+  }
   override const |Str -> Item?|? itemFinder := |Str str -> Item?|
   {
     return ConsoleFinders.fanFinder(str) ?: ConsoleFinders.javaFinder(str)
@@ -84,7 +90,8 @@ internal const class SwitchConfigCmd : Cmd
       Desktop.callAsync |->|
       {
         frame.curEnv = name
-        FantomPlugin.config.selectEnv(name)
+        config := PluginManager.cur.conf("Fantom") as BasicConfig
+        config.selectEnv(name)
         ReindexAllCmd().invoke(event)
       }
     }
@@ -105,7 +112,9 @@ internal const class ReindexAllCmd : Cmd
     plugin := FantomPlugin.cur
     File[] srcDirs := ProjectRegistry.pluginProjects(FantomPlugin#.pod.name)
                       .vals.map |proj -> File| {proj.dir.toFile}
-    File[] podDirs := FantomPlugin.config.curEnv.podDirs
+    config := PluginManager.cur.conf("Fantom") as BasicConfig
+    env := config.curEnv as FantomEnv
+    File[] podDirs := env.podDirs
                       .map |uri -> File| {uri.plusSlash.toFile}
     plugin.index.reindex(srcDirs, podDirs, true)
   }

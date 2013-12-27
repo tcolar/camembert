@@ -5,6 +5,7 @@
 using camembert
 using gfx
 using xml
+using netColarUtils
 
 **
 ** MavenPlugin
@@ -16,8 +17,8 @@ const class MavenPlugin : BasicPlugin
 
   override const Image icon := Image(`fan://camMavenPlugin/res/maven.png`)
   override const Str name := _name
-  override Uri? defaultEnvHome() {`/usr/share/maven/`}
   override PluginCommands? commands() {cmds}
+  override Type? envType() {MavenEnv#}
 
   override Bool isProject(File dir)
   {
@@ -96,6 +97,20 @@ internal const class MavenCommands : PluginCommands
     return FileItem.makeFile(file).setDis(text).setLoc(
           ItemLoc{it.line = line-1; it.col  = col-1}).setIcon(
           Sys.cur.theme.iconErr)
+  }
+}
+
+@Serializable
+const class MavenEnv : BasicEnv
+{
+  @Setting{help = ["Maven Home"]}
+  const Uri mavenHome := `/usr/share/maven/`
+
+  override Uri? envHome() {return mavenHome}
+
+  new make(|This|? f := null) : super(f)
+  {
+    if (f != null) f(this)
   }
 }
 

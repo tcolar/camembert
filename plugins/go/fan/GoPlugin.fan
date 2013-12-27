@@ -19,12 +19,12 @@ const class GoPlugin : BasicPlugin
   const GoCommands cmds
 
   override const Image icon := Image(`fan://camGoPlugin/res/go.png`)
-  override Uri? defaultEnvHome() {`/usr/go/`}
   override const Str name := _name
   override PluginCommands? commands() {cmds}
   override PluginDocs? docProvider() {docProv}
   override Bool isIndexing() {docProv.isIndexing.val}
-  override Type envType() {GoEnv#}
+  override Type? envType() {GoEnv#}
+
   const GoFmtCmd fmtCmd
 
   new make()

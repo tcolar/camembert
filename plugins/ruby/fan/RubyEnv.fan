@@ -17,6 +17,8 @@ const class RubyEnv : BasicEnv
   @Setting{ help = ["Path to ri command (documentation tool)"] }
   const Uri riPath := `/usr/local/bin/ri`
 
+  override Uri? envHome() {return null}
+
   new make(|This|? f := null) : super(f)
   {
     if (f != null) f(this)

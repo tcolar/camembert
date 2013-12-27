@@ -5,6 +5,7 @@
 using camembert
 using gfx
 using util
+using netColarUtils
 
 **
 ** NodePlugin
@@ -16,10 +17,10 @@ const class NodePlugin : BasicPlugin
   const NodeCommands cmds
 
   override const Image icon := Image(`fan://camNodePlugin/res/node.png`)
-  override Uri? defaultEnvHome() {`/usr/local/`}
   override const Str name := _name
   override PluginCommands? commands() { cmds}
   override PluginDocs? docProvider() {docProv}
+  override Type? envType() {NodeEnv#}
 
   new make()
   {
@@ -90,6 +91,20 @@ const class NodeCommands : PluginCommands
     return FileItem.makeFile(file).setDis(text).setLoc(
           ItemLoc{it.line = line-1; it.col  = col-1}).setIcon(
           Sys.cur.theme.iconErr)
+  }
+}
+
+@Serializable
+const class NodeEnv : BasicEnv
+{
+  @Setting{help = ["Node Home"]}
+  const Uri nodeHome := `/usr/share/node/`
+
+  override Uri? envHome() {return nodeHome}
+
+  new make(|This|? f := null) : super(f)
+  {
+    if (f != null) f(this)
   }
 }
 

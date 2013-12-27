@@ -19,9 +19,13 @@ class PrefWindow
       Tab { text = "General"; InsetPane { Label{it.text="Global"}, }, },
     }
     plugins := PluginManager.cur.plugins.vals.sort|a, b|{a.name.lower<=>b.name.lower}
-    plugins.each |plugin| {
-      tab := Tab { it.text = plugin.name; PluginPref(plugin), }
-      tabs.add(tab)
+    plugins.each |plugin|
+    {
+      if(plugin.envType != null && plugin.envType.fits(BasicEnv#))
+      {
+        tab := Tab { it.text = plugin.name; PluginPref(plugin), }
+        tabs.add(tab)
+      }
     }
     win := Window
     {
@@ -47,10 +51,11 @@ class PluginPref : InsetPane {
     scrollPane := ScrollPane{}
     pane := GridPane{it.numCols = 3}
     conf := PluginManager.cur.conf(plugin.name)
-    if(conf != null && conf is BasicConfig)
+    if(conf != null && conf.typeof.fits(BasicConfig#))
     {
       c := conf as BasicConfig
-      c.envs.each |env| {
+      c.envs.each |env|
+      {
         echo("--- $plugin.name - $env.name")
         env.typeof.fields.each |f|{
           facet := f.facet(Setting#) as Setting

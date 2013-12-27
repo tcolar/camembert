@@ -11,9 +11,10 @@ using camembert
 ** FantomPlugin
 ** Builtin plugin for fantom features
 **
-const class FantomPlugin : Plugin
+const class FantomPlugin : BasicPlugin
 {
   static const Str _name := "Fantom"
+  override const Image icon := Image(`fan://icons/x16/database.png`)
   const FantomDocs docProv
   const FantomCommands cmds := FantomCommands()
 
@@ -23,6 +24,7 @@ const class FantomPlugin : Plugin
   override PluginCommands? commands() {cmds}
   override PluginDocs? docProvider() {docProv}
   override Str name() {return _name}
+  override Type? envType() {return FantomEnv#}
 
   new make()
   {
@@ -30,48 +32,47 @@ const class FantomPlugin : Plugin
     index = FantomIndex()
   }
 
-  override PluginConfig? readConfig(Sys sys)
-  {
-    index.podsIndexed.val = false
-    return FantomConfig(sys)
-  }
-
   override Void onFrameReady(Frame frame, Bool initial := true)
   {
-    // remove if alreday in
-    plugins := (frame.menuBar as MenuBar).plugins
-    plugins.remove(plugins.children.find{it->text == name})
-
-    plugins.add(FantomMenu(frame))
+    super.onFrameReady(frame, initial)
+    if(initial)
+    {
+      createTemplates(Sys.cur.optionsFile.parent)
+      plugins := (frame.menuBar as MenuBar).plugins
+      menu := plugins.children.find{it->text == name}
+      menu.add(MenuItem{
+          it.command = ReindexAllCmd().asCommand
+      })
+    }
   }
 
   override Void onChangedProjects(Project[] projects, Bool clearAll := false)
   {
     File[] srcDirs := (File[])projects.map |proj -> File| {proj.dir.toFile}
-    File[] podDirs := config.curEnv.podDirs.map |uri -> File| {uri.plusSlash.toFile}
+    config := PluginManager.cur.conf("Fantom") as BasicConfig
+    env := config.curEnv as FantomEnv
+    File[] podDirs := env.podDirs.map |uri -> File| {uri.plusSlash.toFile}
 
     index.reindex(srcDirs, podDirs, clearAll)
   }
 
   override Bool isIndexing() {index.isIndexing}
 
-  override const |Uri -> Project?| projectFinder:= |Uri uri -> Project?|
+  override Bool isProject(File dir)
   {
-    f := uri.toFile
-    if( ! f.exists || ! f.isDir) return null
-     // pod group
-     buildFile := FantomUtils.findBuildPod(f, f)
-     if(buildFile != null)
-      return Project{
-        it.dis = FantomUtils.getPodName(f)
-        it.dir = f.uri
-        it.icon = Sys.cur.theme.iconPod
-        it.plugin = this.typeof.pod.name
-      }
+    if(isCustomPrj(dir, "Fantom")) return true
+    buildFile := FantomUtils.findBuildPod(dir, dir)
+    if(buildFile != null) return true
+    buildFile = FantomUtils.findBuildGroup(dir, dir)
+    if(buildFile != null) return true
+    return false
+  }
 
-     // pod
-     buildFile = FantomUtils.findBuildGroup(f, f)
-     if(buildFile != null)
+  override Project projectItem(File f)
+  {
+    buildFile := FantomUtils.findBuildGroup(f, f)
+    if(buildFile != null)
+    {
       return Project{
         it.dis = FantomUtils.getPodName(f)
         it.dir = f.uri
@@ -79,7 +80,13 @@ const class FantomPlugin : Plugin
         it.plugin = this.typeof.pod.name
         it.params = ["isGroup" : "true"]
       }
-     return null
+    }
+    return Project{
+      it.dis = FantomUtils.getPodName(f)
+      it.dir = f.uri
+      it.icon = Sys.cur.theme.iconPod
+      it.plugin = this.typeof.pod.name
+    }
   }
 
   override Space createSpace(Project prj)
@@ -114,10 +121,10 @@ const class FantomPlugin : Plugin
   }
 
   // Utilities
-  static FantomConfig config()
+  /*static FantomConfig config()
   {
     return (FantomConfig) PluginManager.cur.conf(_name)
-  }
+  }*/
 
   static FantomPlugin cur()
   {
@@ -142,5 +149,32 @@ const class FantomPlugin : Plugin
   static Void warnNoBuildGroupFile(Frame frame)
   {
     Dialog.openErr(frame, "No build.fan / buildall.fan BuildGroup file found")
+  }
+
+    ** Create the default templates if missing
+  Void createTemplates(File configDir)
+  {
+    // Create templates if missing
+    fanClass := configDir + `templates/fantom_class.json`
+    if( ! fanClass.exists)
+      JsonUtils.save(fanClass.out, Template{it.name="Fantom class"; it.order = 3
+        it.extensions=["fan","fwt"]
+        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nclass {name}\n{\n}\n"})
+
+    fanMixin := configDir + `templates/fantom_mixin.json`
+    if( ! fanMixin.exists)
+      JsonUtils.save(fanMixin.out, Template{it.name="Fantom mixin"; it.order = 13
+        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nmixin {name}\n{\n}\n"})
+
+    fanEnum := configDir + `templates/fantom_enum.json`
+    if( ! fanEnum.exists)
+      JsonUtils.save(fanEnum.out, Template{it.name="Fantom enum"; it.order = 23
+        it.text="// History:\n//  {date} {user} Creation\n//\n\n**\n** {name}\n**\nenum class {name}\n{\n}\n"})
+
+    licenses := configDir + `licenses/default.json`
+    if( ! licenses.exists)
+      JsonUtils.save(licenses.out, LicenseTpl{it.name="default"
+        it.text="// Copyright 2013 : me - Change this and create new licenses in config/licenses/\n//\n"})
+
   }
 }

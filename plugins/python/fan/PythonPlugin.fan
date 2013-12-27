@@ -18,10 +18,9 @@ const class PythonPlugin : BasicPlugin
 
   override const Image icon := Image(`fan://camPythonPlugin/res/python.png`)
   override const Str name := _name
-  override Uri? defaultEnvHome() {`/usr/`}
   override PluginCommands? commands() {cmds}
   override PluginDocs? docProvider() {docProv}
-  override Type envType() {PythonEnv#}
+  override Type? envType() {PythonEnv#}
   override Bool isIndexing() {docProv.isIndexing.val}
 
   ** reindex(if needed) docs upon env swicth

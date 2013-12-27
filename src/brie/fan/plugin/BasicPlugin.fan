@@ -18,10 +18,6 @@ abstract const class BasicPlugin : Plugin
   ** Icon for this plugin projects
   abstract Image icon()
 
-  ** default env for the plugin : ex: /usr/share/maven/
-  ** set to null if plugin does not support envs
-  abstract Uri? defaultEnvHome()
-
   ** Method that decides whether a given dir is a project or not
   abstract Bool isProject(File dir)
 
@@ -29,8 +25,6 @@ abstract const class BasicPlugin : Plugin
   virtual Str prjName(File prjDir) {prjDir.name}
 
   virtual Type optionsType() {BasicOptions#}
-
-  virtual Type envType() {BasicEnv#}
 
   ** Called upon this plugin env switch
   virtual Void envSwitched(BasicConfig newConf) {}
@@ -45,7 +39,7 @@ abstract const class BasicPlugin : Plugin
 
   override PluginConfig? readConfig(Sys sys)
   {
-    return BasicConfig(sys, name, defaultEnvHome, optionsType, envType)
+    return BasicConfig(sys, name, optionsType, envType)
   }
 
   override Void onFrameReady(Frame frame, Bool initial := true)
@@ -54,8 +48,7 @@ abstract const class BasicPlugin : Plugin
     plugins := (frame.menuBar as MenuBar).plugins
     plugins.remove(plugins.children.find{it->text == name})
 
-    if(defaultEnvHome != null)
-      plugins.add(BasicMenu(frame, name, this.typeof))
+    plugins.add(BasicMenu(frame, name, this.typeof))
   }
 
   override const |Uri -> Project?| projectFinder:= |Uri uri -> Project?|
@@ -65,20 +58,27 @@ abstract const class BasicPlugin : Plugin
     try
     {
       if(isProject(f))
-        return Project{
-          it.dis = prjName(f)
-          it.dir = f.uri
-          it.icon = this.icon
-          it.plugin = this.typeof.pod.name
-      }
+        return projectItem(f)
     }
     catch(Err e){}
     return null
   }
 
+  virtual Project projectItem(File f)
+  {
+    return Project
+    {
+      it.dis = prjName(f)
+      it.dir = f.uri
+      it.icon = this.icon
+      it.plugin = this.typeof.pod.name
+    }
+  }
+
   override Space createSpace(Project prj)
   {
-    return BasicSpace(Sys.cur.frame, prj.dir.toFile, this.typeof.pod.name, icon.file.uri)
+    return BasicSpace(Sys.cur.frame, prj.dir.toFile,
+      this.typeof.pod.name, prj.icon.file.uri)
   }
 
   override Int spacePriority(Project prj)
@@ -102,39 +102,35 @@ const class BasicConfig : PluginConfig
 
   const AtomicInt curEnvIndex := AtomicInt()
 
-  new make(Sys sys, Str name, Uri? defaultEnvHome, Type optionsType, Type envType)
+  new make(Sys sys, Str name, Type optionsType, Type envType)
   {
     // load options
     cfgFolder := sys.optionsFile.parent
     optsFile := cfgFolder + `$name/options.props`
     options = (BasicOptions) JsonSettings.load(optsFile, optionsType)
 
-    if(defaultEnvHome != null)
+    // load envs
+    tmp:= BasicEnv[,]
+    folder := cfgFolder + `$name/`
+    folder.listFiles.each
     {
-      // load envs
-      tmp:= BasicEnv[,]
-      (cfgFolder + `$name/`).listFiles.each
+      if(it.name.startsWith("env_"))
       {
-        if(it.name.startsWith("env_"))
+        try
         {
-          try
-          {
-            env := (BasicEnv) JsonSettings.load(it, envType)
-            tmp.add(env)
-          }
-          catch(Err e) Sys.log.err("Failed to load $it.osPath !", e)
+          env := (BasicEnv) JsonSettings.load(it, envType)
+          tmp.add(env)
         }
+        catch(Err e) Sys.log.err("Failed to load $it.osPath !", e)
       }
-
-      if(tmp.isEmpty)
-      {
-        // create & add default env
-        env := envType == BasicEnv# ? BasicEnv{it.envHome = defaultEnvHome} : envType.make()
-        JsonSettings{}.save(env, (cfgFolder + `$name/env_default.props`).out)
-        tmp.add(env)
-      }
-      envs = tmp.sort |a, b| {a.order <=> b.order}
     }
+    if(tmp.isEmpty)
+    {
+      env := envType.make()
+      JsonSettings{}.save(env, (cfgFolder + `$name/env_default.props`).out)
+      tmp.add(env)
+    }
+    envs = tmp.sort |a, b| {a.order <=> b.order}
   }
 
   BasicEnv? envByName(Str name) {envs.find {it.name == name} }
@@ -149,17 +145,19 @@ const class BasicConfig : PluginConfig
   BasicEnv curEnv() {envs[curEnvIndex.val]}
 }
 
+// Subclasses need to be const, serializable and ususally have a |this| constructor as well
 @Serializable
 const class BasicEnv
 {
-  @Setting{ help = ["Display Name for this env (You may create multiple env_*.props files)"] }
-  const Str name := "default"
+  @Setting{help = ["Env name"]}
+  const Str envName := "default"
 
-  @Setting{ help = ["Env home"] }
-  const Uri envHome := `/usr/`
+  @Setting{help = ["Env order"]}
+  const Int envOrder := 10
 
-  @Setting{ help = ["Sort ordering of this env. Lower shows first."]}
-  const Int order := 10
+  virtual Int order() {envOrder}
+  virtual Str name() {envName}
+  virtual Uri? envHome() {return null}
 
   new make(|This|? f := null)
   {

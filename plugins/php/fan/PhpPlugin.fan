@@ -18,9 +18,9 @@ const class PhpPlugin : BasicPlugin
 
   const PhpCommands cmds
   override const Image icon := Image(`fan://camPhpPlugin/res/php.png`)
-  override Uri? defaultEnvHome() {`/usr/bin/`}
   override const Str name := _name
   override PluginCommands? commands() {cmds}
+  override Type? envType() {PhpEnv#}
 
   new make()
   {
@@ -54,6 +54,18 @@ const class PhpPlugin : BasicPlugin
         it.text="<?php\nHistory: {date} {user} Creation\n\n?>\n"})
   }
 }
+
 const class PhpCommands : PluginCommands
 {
+}
+
+@Serializable
+const class PhpEnv : BasicEnv
+{
+  override Uri? envHome() {return null}
+
+  new make(|This|? f := null) : super(f)
+  {
+    if (f != null) f(this)
+  }
 }

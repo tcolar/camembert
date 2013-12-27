@@ -17,10 +17,9 @@ const class RubyPlugin : BasicPlugin
 
   override const Image icon := Image(`fan://camRubyPlugin/res/ruby.png`)
   override const Str name := _name
-  override Uri? defaultEnvHome() {`/usr/`}
   override PluginCommands? commands() {cmds}
   override PluginDocs? docProvider() {docProv}
-  override Type envType() {RubyEnv#}
+  override Type? envType() {RubyEnv#}
 
   override Bool isProject(File dir)
   {

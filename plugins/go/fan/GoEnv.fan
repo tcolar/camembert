@@ -20,6 +20,8 @@ const class GoEnv : BasicEnv
   @Setting{ help = ["GoFmt options"] }
   const Str[] goFmtOpts := ["-w", "{{file}}"]
 
+  override Uri? envHome() {return goPath}
+
   new make(|This|? f := null) : super(f)
   {
     if (f != null) f(this)

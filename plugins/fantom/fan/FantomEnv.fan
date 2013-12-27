@@ -3,26 +3,23 @@
 //
 
 using netColarUtils
+using camembert
 
 **
 ** FantomEnvs
 **
 @Serializable
-const class FantomEnv
+const class FantomEnv : BasicEnv
 {
-  @Setting{ help = ["Display Name for this env (You may create multiple env_*.props files)"] }
-  const Str name := "default"
-
   @Setting{ help = ["Fantom ditro root directory [fan_home], will be use for fan commands"] }
   const Uri fantomHome := Env.cur.homeDir.uri
 
   @Setting{ help = ["Pod directories to crawl. Typically [fantomHome]/lib/fan/"] }
   const Uri[] podDirs := [Env.cur.homeDir.uri+`lib/fan`]
 
-  @Setting{ help = ["Sort ordering of this env. Lower shows first."]}
-  const Int order := 10
+  override Uri? envHome() {return fantomHome}
 
-  new make(|This|? f := null)
+  new make(|This|? f := null) : super(f)
   {
     if (f != null) f(this)
   }
