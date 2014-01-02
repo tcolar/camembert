@@ -31,7 +31,7 @@ class build : BuildPod
     BuildJar(this){
       // All standrad fantom jars + camembert installer
       pods = ["camJar"].addAll(STANDARD_PODS)
-      destFile = `./dist/camLauncher.jar`.toFile.normalize
+      destFile = `./camLauncher.jar`.toFile.normalize
       appMain = "camJar::Main"
     }.run
   }
