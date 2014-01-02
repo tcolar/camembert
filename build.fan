@@ -25,6 +25,7 @@ class Build : BuildGroup
     [
       `src/bocce/build.fan`,
       `src/brie/build.fan`,
+      `src/camJar/build.fan`,
       `plugins/fantom/build.fan`,
       `plugins/maven/build.fan`,
       `plugins/node/build.fan`,

@@ -39,6 +39,7 @@ abstract const class BasicPlugin : Plugin
 
   override PluginConfig? readConfig(Sys sys)
   {
+    echo("Reading config of $name $envType")
     return BasicConfig(sys, name, optionsType, envType)
   }
 

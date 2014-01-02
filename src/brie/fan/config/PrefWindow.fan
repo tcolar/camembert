@@ -17,7 +17,8 @@ class PrefWindow
     tabs := TabPane
     {
       Tab { text = "General"; InsetPane { Label{it.text="TBD"}, }, },
-      Tab { text = "Shortcuts"; InsetPane { Label{it.text="TBD"}, }, },
+      //Tab { text = "Shortcuts"; InsetPane { Label{it.text="TBD"}, }, },
+      //Tab { text = "Run"; InsetPane { Label{it.text="TBD"}, }, },
     }
     plugins := PluginManager.cur.plugins.vals.sort|a, b|{a.name.lower<=>b.name.lower}
     plugins.each |plugin|

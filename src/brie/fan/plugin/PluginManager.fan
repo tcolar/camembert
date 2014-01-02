@@ -67,7 +67,9 @@ const class PluginManager : Service
     confs := Str:PluginConfig?[:]
     plugins.each |plugin, name|
     {
-      confs[plugin.name] = plugin.readConfig(newSys)
+      try
+        confs[plugin.name] = plugin.readConfig(newSys)
+      catch(Err e){e.trace}
     }
     _pluginConfs.val = confs.toImmutable
   }

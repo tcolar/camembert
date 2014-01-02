@@ -49,7 +49,7 @@ const class RubyPlugin : BasicPlugin
   }
 }
 
-internal const class RubyCommands : PluginCommands
+const class RubyCommands : PluginCommands
 {
   override const Cmd run
   override const Cmd runSingle
