@@ -69,7 +69,7 @@ mixin Plugin
   {
     props := prjProps(dir)
     if(props == null) return false
-    echo(props["prj.type"]?.lower)
+    //echo(props["prj.type"]?.lower)
     return props["prj.type"]?.lower ==  type.lower
   }
 

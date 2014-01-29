@@ -134,7 +134,7 @@ const class BasicConfig : PluginConfig
     envs = tmp.sort |a, b| {a.order <=> b.order}
   }
 
-  BasicEnv? envByName(Str name) {envs.find {it.name == name} }
+  BasicEnv? envByName (Str name) {envs.find {it.name == name} }
 
   Void selectEnv(Str name)
   {
