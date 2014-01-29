@@ -40,6 +40,7 @@ const class Commands
     test        = TestCmd{key = Key(sys.shortcuts.test)}
     testSingle  = TestSingleCmd{key = Key(sys.shortcuts.testSingle)}
     buildAndRun = BuildAndRunCmd{key = Key(sys.shortcuts.buildAndRun)}
+    buildAndRunSingle = BuildAndRunSingleCmd{key = Key(sys.shortcuts.buildAndRunSingle)}
     reRun       = RerunLastCmd{key = Key(sys.shortcuts.reRun)}
     searchDocs  = HelpCmd{key = Key(sys.shortcuts.searchDocs)}
     newFile     = NewFileCmd{key = Key(sys.shortcuts.newFile)}
@@ -80,6 +81,7 @@ const class Commands
   const Cmd reRun
   const Cmd testSingle
   const Cmd buildAndRun
+  const Cmd buildAndRunSingle
   const Cmd buildGroup
   const Cmd searchDocs
   const Cmd mostRecent

@@ -60,6 +60,7 @@ internal const class MavenCommands : PluginCommands
   override const Cmd test
   override const Cmd testSingle
   override const Cmd buildAndRun
+  override const Cmd buildAndRunSingle
 
   new make(MavenPlugin plugin)
   {
@@ -75,6 +76,7 @@ internal const class MavenCommands : PluginCommands
     testSingle  = BasicPluginCmd(plugin, "TestSingle", [mvn, "test"],
                                  ExecCmdInteractive.always, mavenFinder)
     buildAndRun = BasicBuildAndRunCmd(plugin)
+    buildAndRunSingle = BasicBuildAndRunSingleCmd(plugin)
     // TODO: look in projReg for a parent project as defined in the xml and build that ?
     //override const Cmd? buildGroup:= MavenCmd("BuildGroup", "compile", false)
   }

@@ -48,6 +48,7 @@ internal const class GradleCommands : PluginCommands
   override const Cmd test
   //override const Cmd testSingle
   override const Cmd buildAndRun
+  override const Cmd buildAndRunSingle
 
   new make(GradlePlugin plugin)
   {
@@ -59,6 +60,7 @@ internal const class GradleCommands : PluginCommands
     test        = BasicPluginCmd(plugin, "Test", [gradle, "test"],
                                  ExecCmdInteractive.onetime, gradleFinder)
     buildAndRun = BasicBuildAndRunCmd(plugin)
+    buildAndRunSingle = BasicBuildAndRunSingleCmd(plugin)
   }
 
   //maven :  [ERROR] /home/tcolar/DEV/fantom_dev/perso/algo/src/test/java/ArrayTest.java:[38,14] error: '.class' expected

@@ -75,3 +75,23 @@ const class BasicBuildAndRunCmd : Cmd
   }
 }
 
+const class BasicBuildAndRunSingleCmd : Cmd
+{
+  const BasicPlugin plugin
+
+  new make(BasicPlugin plugin)
+  {
+    this.plugin = plugin
+  }
+
+  override const Str name := "BuildAndRunSingle"
+  override Void invoke(Event event)
+  {
+    plugin.commands.build.invoke(event)
+    Desktop.callAsync |->|{
+      frame.process.waitForProcess(console, 3min)
+      if(console.lastResult == 0 )
+        plugin.commands.runSingle.invoke(event)
+    }
+  }
+}

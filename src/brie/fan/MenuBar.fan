@@ -49,9 +49,11 @@ class MenuBar : Menu
       MenuItem{ it.command = Sys.cur.commands.run.asCommand},
       MenuItem{ it.command = Sys.cur.commands.runSingle.asCommand},
       MenuItem{ it.command = Sys.cur.commands.buildAndRun.asCommand},
+      MenuItem{ it.command = Sys.cur.commands.buildAndRunSingle.asCommand},
       MenuItem{ it.command = Sys.cur.commands.test.asCommand},
       MenuItem{ it.command = Sys.cur.commands.testSingle.asCommand},
       MenuItem{ it.command = Sys.cur.commands.processWindow.asCommand},
+      MenuItem{ it.command = Sys.cur.commands.reRun.asCommand},
     }
 
     view = Menu {

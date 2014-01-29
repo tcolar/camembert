@@ -72,6 +72,15 @@ internal const class BuildAndRunCmd : PluginCmd
   }
 }
 
+internal const class BuildAndRunSingleCmd : PluginCmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "BuildAndRunSingle"
+  override Void invoke(Event event)
+  {
+    commands?.buildAndRunSingle?.invoke(event)
+  }
+}
 **
 ** Command to run a single item
 **

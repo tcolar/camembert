@@ -25,6 +25,9 @@ const mixin PluginCommands
   ** Build and run the current project
   virtual Cmd buildAndRun() {NotImplementedCmd{}}
 
+  ** Build and run the current project
+  virtual Cmd buildAndRunSingle() {NotImplementedCmd{}}
+
   ** Test the current project
   virtual Cmd test() {NotImplementedCmd{}}
 

@@ -164,6 +164,7 @@ const class GoCommands : PluginCommands
   override const Cmd testSingle
   override const Cmd build
   override const Cmd buildAndRun
+  override const Cmd buildAndRunSingle
 
   new make(GoPlugin plugin)
   {
@@ -180,6 +181,7 @@ const class GoCommands : PluginCommands
     testSingle  = BasicPluginCmd(plugin, "TestSingle", [go, "test", "{{cur_file}}"],
                                  ExecCmdInteractive.always, goFinder)
     buildAndRun = BasicBuildAndRunCmd(plugin)
+    buildAndRunSingle = BasicBuildAndRunSingleCmd(plugin)
   }
 
   static File? goPath()

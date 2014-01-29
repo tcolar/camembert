@@ -24,6 +24,8 @@ const class Shortcuts
   @Setting
   const Str buildAndRun           := "F6"
   @Setting
+  const Str buildAndRunSingle     := "Shift+F6"
+  @Setting
   const Str test                  := "F7"
   @Setting
   const Str testSingle            := "Shift+F7"

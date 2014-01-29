@@ -14,6 +14,7 @@ const class FantomCommands : PluginCommands
   override const Cmd test       := RunPodCmd(false, true)
   override const Cmd testSingle := RunPodCmd(true, true)
   override const Cmd buildAndRun:= BuildAndRunCmd{}
+  override const Cmd buildAndRunSingle:= BuildAndRunSingleCmd{}
 }
 
 abstract const class FantomCmd : ExecCmd
@@ -216,6 +217,19 @@ internal const class BuildAndRunCmd : Cmd
     }
   }
 }
-
+internal const class BuildAndRunSingleCmd : Cmd
+{
+  new make(|This| f) {f(this)}
+  override const Str name := "BuildAndRunSingle"
+  override Void invoke(Event event)
+  {
+    FantomPlugin.cur.commands.build.invoke(event)
+    Desktop.callAsync |->|{
+      frame.process.waitForProcess(console, 3min)
+      if(console.lastResult == 0 )
+        FantomPlugin.cur.commands.runSingle.invoke(event)
+    }
+  }
+}
 
 
