@@ -47,9 +47,9 @@ const class GoPlugin : BasicPlugin
 
   override Void onFrameReady(Frame frame, Bool initial := true)
   {
-    super.onFrameReady(frame, initial)
     if(initial)
     {
+      super.onFrameReady(frame, initial)
       plugins := (frame.menuBar as MenuBar).plugins
       menu := plugins.children.find{it->text == _name}
       menu.add(MenuItem{ it.command = GoIndexCmd(this).asCommand })
@@ -75,7 +75,7 @@ const class GoPlugin : BasicPlugin
     if( ! go.exists)
       JsonUtils.save(go.out, Template{it.name="Go file"
         it.extensions=["go"]
-        it.text="\n# History: {date} {user} Creation\n\npackage {folder}\n\nimport ()\n\n"})
+        it.text="// History: {date} {user} Creation\n\npackage {folder}\n\nimport ()\n\n"})
   }
 }
 
