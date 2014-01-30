@@ -22,7 +22,7 @@ class build : BuildPod
                "web 1.0+",
                "concurrent 1.0+",
                "netColarUtils 1.0.5+",
-               "camembert 1.1.11+",
+               "camembert 1.1.12+",
                ]
     version = Version("1.1.12")
     srcDirs = [`fan/`]

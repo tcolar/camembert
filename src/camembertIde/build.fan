@@ -15,22 +15,22 @@ class build : BuildPod
     podName = "camembertIde"
     summary = "Metapackage for Camembert and all plugins."
     depends = [
-               "camembert 1.1.11+",
+               "camembert 1.1.12+",
 
-               "camFantomPlugin 1.1.9+",
-               "camNodePlugin 1.1.9+",
-               "camMavenPlugin 1.1.9+",
-               "camPythonPlugin 1.1.9+",
-               "camRubyPlugin 1.1.9+",
-               "camGradlePlugin 1.1.9+",
-               "camGoPlugin 1.2.1+",
+               "camFantomPlugin 1.1.11+",
+               "camNodePlugin 1.1.12+",
+               "camMavenPlugin 1.1.12+",
+               "camPythonPlugin 1.1.12+",
+               "camRubyPlugin 1.1.12+",
+               "camGradlePlugin 1.1.12+",
                "camPhpPlugin 1.1.12+",
 
-               "camAxonPlugin 1.1.8+",
+               "camGoPlugin 1.2.3+",
+               "camAxonPlugin 1.1.9+",
 
                "sys 1.0.64+"
                ]
-    version = Version("1.1.11")
+    version = Version("1.1.12")
     srcDirs = [`fan/`]
     meta    = ["license.name" : "MIT",
                 "vcs.uri"   : "https://bitbucket.org/tcolar/camembert"]
@@ -39,7 +39,7 @@ class build : BuildPod
   @Target { help = "Build platform specific standalone jars." }
   Void jars()
   {
-    File(`./swt/`).normalize.listDirs.each |dir| {
+    File(`../../swt/`).normalize.listDirs.each |dir| {
       platform := dir.name
       BuildJar(this){
         destFile = `../../dist/camembert-${version}-${platform}.jar`.toFile.normalize

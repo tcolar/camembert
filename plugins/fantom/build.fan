@@ -25,7 +25,7 @@ class build : BuildPod
                "netColarUtils 1.0.5+",
                "camembert 1.1.9+",
                ]
-    version = Version("1.1.9")
+    version = Version("1.1.12")
     srcDirs = [`fan/`]
     resDirs = [,]
     meta    = ["license.name" : "MIT",
