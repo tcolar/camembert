@@ -16,7 +16,7 @@ internal const class ExitCmd : Cmd
       return
     frame.saveSession
 
-    r = Dialog.openQuestion(frame, "Check for & Install updates?", null, Dialog.okCancel)
+    r = Dialog.openQuestion(frame, "Check for and Install updates?", null, Dialog.okCancel)
     if (r == Dialog.ok)
     {
       Update().run
