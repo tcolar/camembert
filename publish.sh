@@ -19,6 +19,7 @@ fanr query -r http://repo.status302.com/fanr/ cam*
 # offer to publish pods
 fanr publish -r http://repo.status302.com/fanr/ ${env}netColarUtils.pod
 fanr publish -r http://repo.status302.com/fanr/ ${env}netColarUI.pod
+fanr publish -r http://repo.status302.com/fanr/ ${env}netColarJar.pod
 fanr publish -r http://repo.status302.com/fanr/ ${env}petanque.pod
 fanr publish -r http://repo.status302.com/fanr/ ${env}camembert.pod
 fanr publish -r http://repo.status302.com/fanr/ ${env}camFantomPlugin.pod
