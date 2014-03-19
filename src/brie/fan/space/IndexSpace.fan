@@ -36,12 +36,14 @@ class IndexSpace : Space
     projects := getProjects()
     Sys.cur.srcRoots.each |indexDir|
     {
-      items := Item[,]
+      items := FileItem[,]
       items.add(FileItem.makeProject(indexDir.toFile).setIcon(Sys.cur.theme.iconHome))
-      items.addAll(projects.findAll {FileUtil.contains(indexDir.toFile, it.file)})
+      items.addAll(
+        projects.findAll {
+          FileUtil.contains(indexDir.toFile, it.file)
+      }.sort |a, b| {a.sortStr <=> b.sortStr})
       prjRoots.add(ItemList(frame, items))
     }
-
     grid := GridPane
     {
       numCols = prjRoots.size
@@ -80,14 +82,21 @@ class IndexSpace : Space
     FileItem[] items := [,]
     indent := 0
     Uri[] stack  := [,] // path stack
+    Str[] path := [,]
     ProjectRegistry.projects.vals.sort |a, b|{a.dir.pathStr <=> b.dir.pathStr}.each |prj|
     {
       while(! (stack.isEmpty || contains(stack.peek, prj.dir)))
+      {
         stack.pop
+        path.pop
+      }
+      stack.push(prj.dir)
+      path.push(prj.dir.name)
       item := FileItem.makeProject(prj.dir.toFile, stack.size).setIcon(prj.icon)
       item.dis = prj.dis
+      item.sortStr = path.join("/")
+      echo(item.sortStr)
       items.add(item)
-      stack.push(prj.dir)
     }
     return items
   }
