@@ -111,7 +111,8 @@ const class GoFmtCmd : Cmd
     distro := env.envHome.toFile
     if( ! distro.exists)
       return
-    goFmt := distro + `./bin/gofmt`
+    cmd := env.goFmtCmd
+    goFmt := distro + `./bin/$cmd`
     if( ! goFmt.exists)
       return
 
@@ -130,7 +131,7 @@ const class GoFmtCmd : Cmd
 
     frame.console.log("Running " + options)
     p := Process(options, f.parent)
-    id := Sys.cur.processManager.register(p, "GoFmt")
+    id := Sys.cur.processManager.register(p, cmd)
     try
       p.run().join()
     finally

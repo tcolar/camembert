@@ -95,7 +95,6 @@ class IndexSpace : Space
       item := FileItem.makeProject(prj.dir.toFile, stack.size).setIcon(prj.icon)
       item.dis = prj.dis
       item.sortStr = path.join("/")
-      echo(item.sortStr)
       items.add(item)
     }
     return items
