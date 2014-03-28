@@ -19,7 +19,7 @@ The easyest way is to use the standalone installer, you do need a JVM(java) 6+ t
 
 Download the Camembert jar for your plaform here:
 
-    [http://www.colar.net/camembert/](http://www.colar.net/camembert/)
+[http://www.colar.net/camembert/](http://www.colar.net/camembert/)
 
 Then run it, for example:
 
